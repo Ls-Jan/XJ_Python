@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget,QLabel,QFrame
+from PyQt5.QtWidgets import QWidget,QFrame
 from PyQt5.QtCore import Qt,QEvent,QTimer,QPoint,QSize,QRect
 from PyQt5.QtGui import QPainter
 
@@ -54,7 +54,7 @@ class XJQ_Marquee(QFrame):
 		self.__blankPercent=blankPercent
 		self.__dynamicSnap=dynamicSnap
 		self.__autoSize=autoSize
-		self.setAttribute(Qt.WA_Hover,True)#设置鼠标悬浮事件
+		self.setAttribute(Qt.WA_Hover,True)#设置鼠标悬浮事件：https://blog.csdn.net/chinley/article/details/95404282
 		self.installEventFilter(self)
 		if(self.__autoSize):
 			self.__AdjustSize()
@@ -105,6 +105,7 @@ class XJQ_Marquee(QFrame):
 			else:
 				self.__offset=0
 	def __CalcOffsetPos(self):
+		#这块代码，很有“算法”的味道(虽然本质上只是简单的取模操作)
 		sizeSelf=self.size()
 		sizeWid=self.__wid.size()
 		if(self.__horizontal):

@@ -4,8 +4,9 @@
 # from XJ.Widgets._test import XJQ_MouseStatus
 # from XJ.Widgets._test import XJQ_Tag
 # from XJ.Widgets._test import XJQ_Marquee
-from XJ.Widgets._test import XJQ_ListViewItem
-# from XJ.Widgets._test import XJQ_ListView
+# from XJ.Widgets._test import XJQ_PopupBox
+# from XJ.Widgets._test import XJQ_ListViewItem
+from XJ.Widgets._test import XJQ_ListView
 # from XJ.Widgets._test import XJQ_PageNavigation
 # from XJ.Widgets._test import XJQ_LoadingMask
 
