@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication,QLabel,QWidget,QVBoxLayout
 
 from ..XJQ_Tag import *
 
+
 if True:
 	app = QApplication(sys.argv)
 
@@ -18,7 +19,8 @@ if True:
 			XJQ_Tag.Style.Red,
 			XJQ_Tag.Style.Green,
 			]:
-		tag=XJQ_Tag(win,style.name,style)
+		tag=XJQ_Tag(win,style.name,style,clickable=True)
+		tag.clicked.connect(lambda val:print(val))
 		vbox.addWidget(tag)
 		tag.show()
 	win.setStyleSheet('background:rgb(20,20,20)')
