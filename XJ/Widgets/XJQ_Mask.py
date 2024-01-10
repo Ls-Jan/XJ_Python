@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QWidget,QLabel
 from PyQt5.QtGui import QPainter,QBitmap,QImage,QPixmap
 
 import numpy as np
-from cv2 import cv2
+import cv2
 
 __all__=['XJQ_Mask']
 class XJQ_Mask(QLabel):

@@ -1,9 +1,7 @@
+from ..XJQ_Tag import *
 
 import sys
 from PyQt5.QtWidgets import QApplication,QLabel,QWidget,QVBoxLayout
-
-from ..XJQ_Tag import *
-
 
 if True:
 	app = QApplication(sys.argv)

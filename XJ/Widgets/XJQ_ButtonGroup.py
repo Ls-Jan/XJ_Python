@@ -76,6 +76,7 @@ class XJQ_ButtonGroup(QWidget):
 					return btn
 		return None
 	def __ClickButton(self,btn):
+		tx=btn.text()
 		if(self.__group.exclusive()):
 			if(self.__currBtn==btn):
 				if(self.__clearClick):
@@ -83,7 +84,8 @@ class XJQ_ButtonGroup(QWidget):
 					btn.setChecked(Qt.Unchecked)
 					self.__group.setExclusive(True)
 					btn=None
+					tx=''
 				else:
 					return
-		self.changed.emit(btn.text())
+		self.changed.emit(tx)
 		self.__currBtn=btn

@@ -5,7 +5,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon,QPixmap,QImage,QPalette
 from PyQt5.QtWidgets import QStyleOption,QStyleOptionButton
 
-from cv2 import cv2
+import cv2
 import numpy as np
 from functools import reduce
 

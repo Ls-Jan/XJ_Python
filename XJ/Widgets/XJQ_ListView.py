@@ -10,6 +10,8 @@ class XJQ_ListView(QListWidget):#【半成品】列表
 	'''
 		半成品，可以塞控件的列表，但只建议塞XJQ_ListViewItem(因为单元格高度问题带来了不少麻烦)，
 		本质上是继承QListWidget并仅仅简单封装几个行为罢了
+
+		单行选中，屏蔽拖拽操作，主要作为导航栏使用
 	'''
 	changed=None#这个是信号，当需要显示其他页的数据时将会发出该信号，参数为start,count，分别对应起始索引和数据个数
 

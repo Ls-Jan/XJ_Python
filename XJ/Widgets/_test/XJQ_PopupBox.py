@@ -27,7 +27,7 @@ if True:
 	# pbox=XJQ_PopupBox(btn,arrowLength=20,arrowWidth=20)
 	# pbox=XJQ_PopupBox(btn,arrowLength=100,arrowWidth=50)
 	btn.clicked.connect(lambda:pbox.show())
-	pbox.Set_Container(wid)#设置容器
+	pbox.Set_Content(wid)#设置容器
 	pbox.resize(None)
 	pbox.show(True)
 

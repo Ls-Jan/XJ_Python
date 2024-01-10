@@ -15,7 +15,7 @@ if True:
 	wid.setMinimumHeight(100)
 	wid.setLayout(fbox)
 	wid.show()
-	fbox.heightChanged.connect(lambda h:print(h))
+	# fbox.heightChanged.connect(lambda h:print(h))
 	wid.resize(500,300)
 	sys.exit(app.exec_())
 	

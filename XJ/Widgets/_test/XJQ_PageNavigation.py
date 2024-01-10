@@ -1,9 +1,7 @@
+from ..XJQ_PageNavigation import *
 
 import sys
 from PyQt5.QtWidgets import QApplication
-
-from ..XJQ_PageNavigation import *
-
 
 
 if True:

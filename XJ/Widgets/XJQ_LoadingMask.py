@@ -1,6 +1,6 @@
 
 from PyQt5.QtWidgets import QHBoxLayout,QVBoxLayout,QLabel
-from PyQt5.QtGui import QMovie
+from PyQt5.QtGui import QMovie,QPixmap
 from PyQt5.QtCore import QSize
 
 __all__=['XJQ_LoadingMask']
@@ -62,5 +62,11 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 			mv=self.__lb_gif.movie()
 			if(not mv):
 				return
-		mv.setScaledSize(QSize(*size))
-		self.__lb_gif.setMovie(mv)
+		size=QSize(*size)
+		if(mv.frameCount()):#动图的frame不为0
+			mv.setScaledSize(size)
+			self.__lb_gif.setMovie(mv)
+		else:#静图，使用QPixmap
+			#虽然QMovie也能打开静图，不知道搭错什么筋，没法调整大小
+			pix=QPixmap(path).scaled(size)
+			self.__lb_gif.setPixmap(pix)
