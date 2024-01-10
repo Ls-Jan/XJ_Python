@@ -1,4 +1,4 @@
-from ..XJQ_Marquee import *
+from ..XJQ_MarqueeBox import *
 from ...Function import GetRealPath
 
 import sys
@@ -22,8 +22,8 @@ if True:
 	''')
 
 
-	mq_1=XJQ_Marquee(lb_1,pixel=5,keepOrigin=False,dynamicSnap=True,blankPercent=0,autoSize=False)
-	mq_2=XJQ_Marquee(lb_2,delay=0,interval=2,horizontal=False,forward=False,autoSize=False)
+	mq_1=XJQ_MarqueeBox(lb_1,pixel=5,keepOrigin=False,dynamicSnap=True,blankPercent=0,autoSize=False)
+	mq_2=XJQ_MarqueeBox(lb_2,delay=0,interval=2,horizontal=False,forward=False,autoSize=False)
 	wid=QWidget()
 	wid.show()
 	wid.resize(500,300)

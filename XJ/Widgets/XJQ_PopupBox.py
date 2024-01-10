@@ -5,9 +5,13 @@ from PyQt5.QtGui import QPainter,QColor,QPainterPath,QPen,QPixmap
 
 __all__=['XJQ_PopupBox']
 
-class XJQ_PopupBox(QWidget):
+class XJQ_PopupBox(QWidget):#弹窗式容器，
+	'''
+		弹窗式容器，其行为可参考组合框点击时弹出的列表，
+		只不过可以承载控件而非仅仅的列表，并且点击容器元素时并不会像组合框列表那样消失
+	'''
 	__size=None
-	__container=None
+	__content=None
 	__arrowL=None
 	__arrowW=None
 	__priority=None
@@ -50,8 +54,8 @@ class XJQ_PopupBox(QWidget):
 		if(parent==None):
 			raise Exception('参数不足！XJQ_PopupBox对象初始化参数parent缺失')
 
-		container=QWidget(self)
-		self.__container=container
+		content=QWidget(self)
+		self.__content=content
 		self.__arrowL=arrowLength
 		self.__arrowW=arrowWidth
 		self.__autoSize=autoSize
@@ -65,11 +69,11 @@ class XJQ_PopupBox(QWidget):
 		self.resize(size)
 		self.setParent(parent)
 		self.setStyleSheet('.XJQ_PopupBox{background:transparent;}')#避免无意间被染色，毕竟样式表的背景绘制无法被paintEvent拦截
-	def Get_Container(self):
-		return self.__container
-	def Set_Container(self,wid):
-		self.__container.setParent(None)
-		self.__container=wid
+	def Get_Content(self):
+		return self.__content
+	def Set_Content(self,wid):
+		self.__content.setParent(None)
+		self.__content=wid
 		wid.setParent(self)
 	def Set_Color(self,background=None,border=None):
 		if(background):
@@ -106,7 +110,7 @@ class XJQ_PopupBox(QWidget):
 		ptr=QPainter(self)
 		ptr.drawPixmap(0,0,pix)
 	def __UpdateCache(self):#更新缓存__cache，同时设置geometry属性。(只是将原本堆在paintEvent的大量代码转移过来罢了
-		if(self.__cache['pSize']==self.parent().size() and self.__cache['cRect']==self.__container.geometry()):
+		if(self.__cache['pSize']==self.parent().size() and self.__cache['cRect']==self.__content.geometry()):
 			return
 		pointAt,p,area=self.__CalcPosition()
 		if(not pointAt):#不作处理
@@ -207,9 +211,9 @@ class XJQ_PopupBox(QWidget):
 		RB-=TK
 		LT-=QPoint(2,2)#再找就太麻烦了，已经调了一个多小时就为了那么几像素偏差
 		RB-=QPoint(1,1)
-		self.__container.setGeometry(QRect(LT,RB))
+		self.__content.setGeometry(QRect(LT,RB))
 		self.__cache['pSize']=self.parent().size()
-		self.__cache['cRect']=self.__container.geometry()
+		self.__cache['cRect']=self.__content.geometry()
 		self.__cache['pix']=pix
 	def __CalcPosition(self):#计算位置，将依次返回：目标坐标(QPoint)、弹窗所在方位(LTRB之一)、弹窗所在区域(QRect)
 		pointAt=self.__pointAt
@@ -223,7 +227,7 @@ class XJQ_PopupBox(QWidget):
 			#参考sizeHint：
 			#https://blog.csdn.net/u013087068/article/details/44747621
 			#https://blog.csdn.net/qq_40732350/article/details/86703749
-			cSize=self.__container.sizeHint()
+			cSize=self.__content.sizeHint()
 			if(not cSize):
 				cSize=QSize(100,100)
 		boxW=cSize.width()+2*self.__thick

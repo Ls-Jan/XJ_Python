@@ -16,12 +16,12 @@ class SearchSet:#SELECT结果集
 		self.__DropTemp()#安全第一，先删为敬
 		#SQL使用关键字DISTINCT去重：https://blog.csdn.net/weixin_46348403/article/details/120487295
 		#SQL使用LIMIT跳过前n条数据：https://www.cnblogs.com/dongml/p/10953846.html
-		tcols=self.__GetColsName()
+		tcols=self.__GetColsName(tableName)
 		if(mainKey and mainKey in tcols):
 			self.__col=mainKey
 		else:
 			self.__col=tcols[0]
-		conditions=" AND ".join(conditions) if conditions else 'TRUE'
+		conditions=" OR ".join(conditions) if conditions else 'TRUE'
 		cmd='CREATE TEMPORARY TABLE {tempTable} AS SELECT DISTINCT {cmpCol} FROM {table} WHERE {conditions}'
 		cmd=cmd.format(tempTable=self.__temp,cmpCol=self.__col,table=tableName,conditions=conditions)
 		if(self.__conn.execute(cmd)==None):
@@ -37,20 +37,21 @@ class SearchSet:#SELECT结果集
 		cmd='DROP TABLE IF EXISTS {tempTable}'
 		cmd=cmd.format(tempTable=self.__temp)
 		self.__conn.execute(cmd)
-	def __GetColsName(self):#获取列表名
-		cmd='PRAGMA table_info({table})'.format(table=self.__table)
+	def __GetColsName(self,tableName):#获取列表名
+		cmd='PRAGMA table_info({table})'.format(table=tableName)
 		cols=[item[1] for item in self.__conn.execute(cmd).fetchall()]
 		return cols
-	def Get_Rows(self,start=0,count=-1,cols=[],tableName=None):#获取指定位置和指定列的数据内容，指定table的话将内联到其他表
+	def Get_Rows(self,start=0,count=-1,*,cols=[],tableName=None):#获取指定位置和指定列的数据内容，指定table的话将内联到其他表
+		if(not tableName):
+			tableName=self.__table
 		if(count<0):
 			count=self.Get_RowCount()
 		if(not cols):
-			cols=self.__GetColsName()
+			cols=self.__GetColsName(tableName)
 		if(self.__col in cols):
 			cols[cols.index(self.__col)]=f'{self.__temp}.{self.__col}'
-		table=tableName if tableName else self.__table
 		cmd='SELECT {cols} FROM {tempTable} INNER JOIN {table} ON {tempTable}.{cmpCol}={table}.{cmpCol} LIMIT {start},{count}'
-		cmd=cmd.format(tempTable=self.__temp,table=table,cmpCol=self.__col,cols=','.join(cols),start=start,count=count)
+		cmd=cmd.format(tempTable=self.__temp,table=tableName,cmpCol=self.__col,cols=','.join(cols),start=start,count=count)
 		cur=self.__conn.execute(cmd)
 		return cur.fetchall()
 	def Get_RowCount(self):#获取结果集大小
@@ -58,16 +59,20 @@ class SearchSet:#SELECT结果集
 		cmd=cmd.format(table=self.__temp)
 		cur=self.__conn.execute(cmd)
 		return cur.fetchone()[0]
-	def Set_SegData(self,**replaceMap):#更新当前结果集内的所有字段数据
+	def Set_SegData(self,tableName=None,**replaceMap):#更新当前结果集内的所有字段数据，指定table的话将设置其他表的数据
 		if(replaceMap):
+			if(not tableName):
+				tableName=self.__table
 			replacements=[]
 			extra=[]
 			for col,val in replaceMap.items():
-				extra.append(bytearray(str(val).encode()))
-				replacements.append(f"{col}=?")
+				if(not isinstance(val,str)):
+					extra.append(bytearray(str(val).encode()))
+					val='?'
+				replacements.append(f"{col}={val}")
 			replacements=','.join(replacements)
 			cmd='UPDATE {table} SET {replacements} WHERE {cmpCol} IN (SELECT {tempTable}.{cmpCol} FROM {tempTable} WHERE {tempTable}.{cmpCol}={table}.{cmpCol})'
-			cmd=cmd.format(table=self.__table,tempTable=self.__temp,cmpCol=self.__col,replacements=replacements)
+			cmd=cmd.format(table=tableName,tempTable=self.__temp,cmpCol=self.__col,replacements=replacements)
 			return self.__conn.execute(cmd,extra)!=None
 		return False
 	def Opt_DeleteRows(self):#将结果集对应的表格数据全部删干净
@@ -84,7 +89,7 @@ class ConnectionProxy:#包装Connection并记录历史execute(并且execute失�
 	def __init__(self,conn,count=500,echo=False):
 		self.__history=[]
 		self.__echo=echo
-		self.__cur=conn
+		self.__conn=conn
 		self.__count=count
 		self.__overflow=min(count/5,1000)
 		exclude=dir(self)
@@ -100,7 +105,7 @@ class ConnectionProxy:#包装Connection并记录历史execute(并且execute失�
 	def execute(self,*cmd):
 		cursor=None
 		try:
-			cursor=self.__cur.execute(*cmd)
+			cursor=self.__conn.execute(*cmd)
 			if(self.__echo):
 				print('sql>',cmd)
 		except Exception as e:
@@ -139,7 +144,7 @@ class XJ_SQLite:
 		return self.__conn.execute(cmd)!=None
 	def Opt_Commit(self):#提交修改
 		self.__conn.commit()
-	def Get_RowSearchSet(self,tableName,*conditions,mainKey=None):#搜索符合条件的数据，返回SearchSet对象
+	def Get_RowSearchSet(self,tableName,*conditions,mainKey=None):#搜索符合条件的数据，返回SearchSet对象。(条件是OR连接的
 		try:
 			return SearchSet(self.__conn,tableName,conditions,mainKey)
 		except:

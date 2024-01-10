@@ -11,9 +11,8 @@ if True:
 	sql.Opt_AppendRow('test',[4,'B',4.56])
 	sql.Opt_AppendRow('test',[5,'C',None])
 	sql.Opt_AppendRow('test',[6,'D',str({1:'100'})])
-	print(sql.Get_RowSearchSet('test','name="A"','INSTR(data,"b")').Get_Rows())
-	sql.Get_RowSearchSet('test','name="A"','INSTR(data,"b")').Set_SegData(data=str({'A':"AAA",3:["1",None,3]}))
-	# sql.Get_RowSearchSet('test','name="A"','INSTR(data,"b")').Set_SegData(data=str({'A':"AAA",3:["1",None,3]}))
+	print(sql.Get_RowSearchSet('test','name="A" AND INSTR(data,"b")').Get_Rows())
+	sql.Get_RowSearchSet('test','name="A" AND INSTR(data,"b")').Set_SegData(data={'A':"AAA",3:["1",None,3]})
 
 	print('\n\n表格内容')
 	for i in sql.Get_RowSearchSet('test').Get_Rows():

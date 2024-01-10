@@ -12,6 +12,9 @@ if True:
 	win.show()
 
 	vbox=QVBoxLayout(win)
+
+	clickTest=False
+	index=0
 	for style in [
 			XJQ_Tag.Style.Blue,
 			XJQ_Tag.Style.Gray,
@@ -19,9 +22,10 @@ if True:
 			XJQ_Tag.Style.Red,
 			XJQ_Tag.Style.Green,
 			]:
-		tag=XJQ_Tag(win,style.name,style,clickable=True)
+		tag=XJQ_Tag(win,style.name,style,clickable=clickTest or index%2==0)
 		tag.clicked.connect(lambda val:print(val))
 		vbox.addWidget(tag)
+		index+=1
 		tag.show()
 	win.setStyleSheet('background:rgb(20,20,20)')
 	sys.exit(app.exec_())

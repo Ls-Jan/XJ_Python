@@ -2,10 +2,15 @@
 from PyQt5.QtWidgets import QListWidget,QListWidgetItem,QLabel
 from PyQt5.QtCore import QPoint,Qt,QAbstractListModel,QVariant
 
-from .XJQ_ListViewItem import *
+# from .XJQ_ListViewItem import *
 __all__=['XJQ_ListView']
 
-class XJQ_ListView(QListWidget):
+#TODO:【半成品】列表
+class XJQ_ListView(QListWidget):#【半成品】列表
+	'''
+		半成品，可以塞控件的列表，但只建议塞XJQ_ListViewItem(因为单元格高度问题带来了不少麻烦)，
+		本质上是继承QListWidget并仅仅简单封装几个行为罢了
+	'''
 	changed=None#这个是信号，当需要显示其他页的数据时将会发出该信号，参数为start,count，分别对应起始索引和数据个数
 
 	#隐藏单元格虚线：https://blog.csdn.net/can3981132/article/details/115320235

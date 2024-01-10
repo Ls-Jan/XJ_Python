@@ -6,7 +6,12 @@ from PyQt5.QtCore import QSize
 __all__=['XJQ_LoadingMask']
 
 
-class XJQ_LoadingMask(QLabel):
+class XJQ_LoadingMask(QLabel):#加载动画蒙版
+	'''
+		加载动画蒙版，遮蔽控件的不二之选，
+		gif动画可以指定，文字也可以指定(文字是静态的，通常也不需要动态文字
+		动画大小以及文字的颜色和大小均可指定，实在不满足可以设置样式表
+	'''
 	def __init__(self,filePath,parent=None,text="加载中...",size=(50,50)):
 		super().__init__(parent)
 		self.__lb_tx=QLabel()

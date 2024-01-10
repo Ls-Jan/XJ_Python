@@ -1,12 +1,17 @@
 from enum import Enum
 from PyQt5.QtWidgets import QLabel,QPushButton,QSizePolicy
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal,Qt
 
 __all__=['XJQ_Tag']
 class XJQ_Tag(QPushButton):#原先是继承QLabel，后来需要扩展“点击”效果，只能换成QPushButton了
+	'''
+		颜色风格参考了Element-plus的按钮样式：https://element-plus.org/zh-CN/component/button.html
+		标签可点击，点击后会触发clicked信号
+		标签样式在XJQ_Tag.Style中提供，目前有五种颜色：蓝红绿灰橙
+		当然，对目前的样式不满的可以自行传入其他样式
+	'''
 	clicked=pyqtSignal(bool)#提供一个点击信号槽，参数为活跃状态
 	class Style(Enum):#别问，问就是一点一点试的。我也想扒样式表但不知道哪里才有。
-		#颜色取值参考了Element-plus的按钮样式：https://element-plus.org/zh-CN/component/button.html
 		Base='''
 			border-width:2px;
 			border-style:solid;
@@ -92,7 +97,7 @@ class XJQ_Tag(QPushButton):#原先是继承QLabel，后来需要扩展“点击�
 			border-color:rgba(255,192,128,160);
 			'''
 		OrangeActive='''
-			background:rgba(255,156,0,80);
+			background:rgba(255,156,0,112);
 			color:rgba(255,192,32,224);
 			border-color:rgba(255,192,128,224);
 			'''
@@ -117,11 +122,13 @@ class XJQ_Tag(QPushButton):#原先是继承QLabel，后来需要扩展“点击�
 		self.__style={'normal':None,'hover':None,'press':None,'active':None}
 		self.Set_Style(style,styleHover,stylePress,styleActive)
 		self.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+		self.Set_Clickable(clickable)
 	def Set_Active(self,flag):
 		self.__active=flag
 		self.__SetStyleSheet()
 	def Set_Clickable(self,flag):
 		self.__clickable=flag
+		self.setCursor(Qt.PointingHandCursor if flag else Qt.ArrowCursor)
 		self.__SetStyleSheet()
 	def Set_Text(self,text):
 		self.setText(text)
@@ -144,13 +151,14 @@ class XJQ_Tag(QPushButton):#原先是继承QLabel，后来需要扩展“点击�
 	def __SetStyleSheet(self):
 		styleB=self.Style.Base.value
 		styleN=self.__style['normal']
-		styleP=self.__style['press']
+		styleP=''
 		styleH=''
 		fontSize=f'font-size:{self.__fontSize}px;'
 		if(self.__clickable):
 			if(self.__active):
 				styleN=self.__style['active']
 			styleH=self.__style['hover']
+			styleP=self.__style['press']
 		style='''
 			.XJQ_Tag{
 				styleB
@@ -171,9 +179,10 @@ class XJQ_Tag(QPushButton):#原先是继承QLabel，后来需要扩展“点击�
 		style=style.replace('fontSize',fontSize)
 		self.setStyleSheet(style)
 	def mousePressEvent(self,event):
-		super().mousePressEvent(event)
-		self.Set_Active(not self.__active)
-		self.clicked.emit(self.__active)
+		if(self.__clickable):
+			super().mousePressEvent(event)
+			self.Set_Active(not self.__active)
+			self.clicked.emit(self.__active)
 
 
 

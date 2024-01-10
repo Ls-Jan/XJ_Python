@@ -5,6 +5,11 @@ from PyQt5.QtCore import Qt,pyqtSignal,QPoint
 
 __all__=['XJQ_ComboBox']
 class XJQ_ComboBox(QComboBox):
+	'''
+		QComboBox的简单优化，主要处理了一些样式上的问题，例如颜色、大小、文本居中
+		以及新增一个延迟动作行为，
+		当前行发生变化时并不会立即发送信号indexChanged，而是在指定的延迟时间后触发
+	'''
 	indexChanged=pyqtSignal(int,str)#当前行修改时发送信号(带延迟)，依次是索引值和对应文本
 	__timerId=None
 	__delay=150#延迟发送

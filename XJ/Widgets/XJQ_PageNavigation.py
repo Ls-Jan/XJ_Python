@@ -8,7 +8,15 @@ from .XJQ_Icon import *
 __all__=['XJQ_PageNavigation']
 
 
-class XJQ_PageNavigation(QWidget):
+#TODO：【半成品】页导航栏
+class XJQ_PageNavigation(QWidget):#【半成品】页导航栏
+	'''
+		页导航栏，半成品，按钮少，说好听点就是“精简”
+		因为布局空间不足也没这需求制作多按钮导航栏
+
+		每页显示数可定、数据总数可定，
+		当前页展示数据发生变化时发出信号change(int,int)，分别对应数据的索引值和数据个数
+	'''
 	changed=pyqtSignal(int,int)#切换当前页，发送信号start,count分别对应数据的索引值和数据个数
 
 	__pCount=None#每页数据个数(XJQ_ComboBox)

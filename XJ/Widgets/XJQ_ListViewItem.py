@@ -6,7 +6,12 @@ from .XJQ_Tag import *
 from .XJQ_Marquee import *
 
 __all__=['XJQ_ListViewItem']
-class XJQ_ListViewItem(QLabel):
+class XJQ_ListViewItem(QLabel):#主要为XJQ_ListView服务
+	'''
+		主要为XJQ_ListView服务，是字串型列表单元内容的扩充
+		有四个关键属性：标题、单元色、标签、额外图标
+		这四个属性足以覆盖通常应用场景
+	'''
 	def __init__(self,title,tags,itemColor,extraIcons=[]):
 		super().__init__()
 		lb=QLabel(title,self)

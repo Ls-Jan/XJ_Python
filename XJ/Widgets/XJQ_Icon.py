@@ -10,7 +10,11 @@ import numpy as np
 from functools import reduce
 
 __all__=['XJQ_Icon']
-class XJQ_Icon(QIcon):
+class XJQ_Icon(QIcon):#纯色图标
+	'''
+		纯色图标，可改图标色以及背景色，以及可以预置/修改图标大小(调用pixmap函数时可不必再传入大小参数了)。
+		当然，类似QPushButton在调用setIcon后，icon发生更新时QPushButton显示的图标并不会发生改变，需要再次调用setIcon才行
+	'''
 	def __init__(self,data,fg=(0,255,0,255),bg=(0,0,0,0),size=(20,20),hint=None):#data可以为图片路径(str)或是图片数据(np.ndarray)
 		# QIcon：https://doc.qt.io/qt-6/qicon.html
 		super().__init__()

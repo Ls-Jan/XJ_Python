@@ -2,9 +2,15 @@ from PyQt5.QtWidgets import QWidget,QFrame
 from PyQt5.QtCore import Qt,QEvent,QTimer,QPoint,QSize,QRect
 from PyQt5.QtGui import QPainter
 
-__all__=['XJQ_Marquee']
+__all__=['XJQ_MarqueeBox']
 
-class XJQ_Marquee(QFrame):
+class XJQ_MarqueeBox(QFrame):#跑马灯容器
+	'''
+		跑马灯容器，
+		不像烂大街代码只对QLabel进行重写，该跑马灯可以承载其他控件
+		仅在鼠标悬浮时运作
+		移动速率可调、移动方向可调(四向)、鼠标悬浮时间可调
+	'''
 	__wid=None
 	__hoverTimer=None
 	__moveTimer=None
@@ -18,8 +24,8 @@ class XJQ_Marquee(QFrame):
 	__offset=0
 	__blankPercent=0
 	def __init__(self,wid,*,#会给wid控件样式表额外追加“背景透明”的样式，以避免动画的不连贯
-			delay=100,#鼠标悬浮一小段时间后开始动画
-			interval=20,#动画刷新间隔
+			delay=100,#鼠标悬浮一小段时间后开始动画(ms)
+			interval=20,#动画刷新间隔(ms)
 			pixel=1,#动画每帧平移
 			blankPercent=0.25,#空白占比
 			horizontal=True,#水平滚动
