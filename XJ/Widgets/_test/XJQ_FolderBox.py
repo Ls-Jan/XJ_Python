@@ -4,7 +4,7 @@ from PyQt5.QtCore import QSize
 
 from ..XJQ_FolderBox import *
 from ..XJQ_ListView import *
-from ...Function import GetRealPath
+from ...Functions import GetRealPath
 
 if True:
 	app = QApplication([])

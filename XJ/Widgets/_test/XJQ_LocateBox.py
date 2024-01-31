@@ -9,6 +9,7 @@ if True:
 	wid=QWidget()
 	lstH=[Qt.AlignLeft,Qt.AlignHCenter,Qt.AlignRight]
 	lstV=[Qt.AlignTop,Qt.AlignVCenter,Qt.AlignBottom]
+	lbox=XJQ_LocateBox(wid)
 	for h in range(3):
 		for v in range(3):
 			H=lstH[h]
@@ -20,7 +21,7 @@ if True:
 				tx='正中'
 			btn=QPushButton(tx)
 			btn.clicked.connect(lambda:print("Click"))
-			lbox=XJQ_LocateBox(wid,btn,H|V,(10,10))
+			lbox.Opt_AddWidget(btn,H|V,(10,10))
 	wid.show()
 	wid.resize(400,400)
 	app.exec_()

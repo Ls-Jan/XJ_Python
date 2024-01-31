@@ -1,7 +1,7 @@
 
 
 from ..XJQ_LoadingMask import *
-from ...Function import GetRealPath
+from ...Functions import GetRealPath
 
 import os
 import sys

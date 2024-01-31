@@ -176,8 +176,7 @@ class XJQ_PageNavigation(QWidget):#【半成品】页导航栏
 	def Set_ArrowIcon(self,key,path,fg=(0,255,192,128),bg=(0,0,0,0)):#设置箭头图标，key值是字符串，取值为L、R，分别对应左、右
 		if(key in self.__aBtns):
 			icon=XJQ_Icon(path)
-			icon.Set_ForeColor(fg)
-			icon.Set_BackColor(bg)
+			icon.Set_Color(fg,bg)
 			self.__aBtns[key].setIcon(icon)
 	def Set_DataCount(self,count):#数据总数
 		self.__count=count

@@ -1,6 +1,6 @@
 from ..XJQ_ListViewItem import *
 from ..XJQ_Icon import *
-from ...Function import GetRealPath
+from ...Functions import GetRealPath
 
 import sys
 from PyQt5.QtWidgets import QApplication,QWidget,QVBoxLayout
@@ -15,11 +15,11 @@ if True:
 		XJQ_Icon(GetRealPath('../icons/文件袋.png')),
 		XJQ_Icon(GetRealPath('../icons/云下载.png')),
 		XJQ_Icon(GetRealPath('../icons/已锁.png')),]
-	icons[0].Set_ForeColor((255,0,255,192))
-	icons[1].Set_ForeColor((255,0,0,192))
-	icons[2].Set_ForeColor((0,255,0,192))
-	icons[3].Set_ForeColor((0,255,255,192))
-	icons[4].Set_ForeColor((255,255,0,192))
+	icons[0].Set_Color((255,0,255,192))
+	icons[1].Set_Color((255,0,0,192))
+	icons[2].Set_Color((0,255,0,192))
+	icons[3].Set_Color((0,255,255,192))
+	icons[4].Set_Color((255,255,0,192))
 
 	wid=QWidget()
 	vbox=QVBoxLayout(wid)
