@@ -47,9 +47,8 @@ class XJQ_ScrollBar(QScrollBar):
 		self.__radiusGroove=15
 		#设置WA_OpaquePaintEvent后控件底色不再是黑色：https://blog.csdn.net/eiilpux17/article/details/116502351
 		#但我这里不需要，因为哪怕设置了这玩意儿，绘制出来的效果依旧差，索性不用
-		# slider.setAttribute(Qt.WA_OpaquePaintEvent,False)
+		# self.setAttribute(Qt.WA_OpaquePaintEvent,False)
 		self.Opt_UpdateStyleSheet()
-	# def mouseDoubleClickEvent(self,event):#双击快速跳转指定位
 	def Set_Radius(self,handle=None,groove=None):
 		if(handle!=None):
 			self.__radiusHandle=handle
@@ -57,13 +56,18 @@ class XJQ_ScrollBar(QScrollBar):
 		if(groove!=None):
 			self.__radiusGroove=groove
 			self.update()
-	def Set_Color(self,add=None,sub=None,handle=None):
+	def Set_Color(self,add=None,sub=None,handleN=None,handleH=None,handleP=None):
 		if(add!=None):
 			self.__colAdd=add
 		if(sub!=None):
 			self.__colSub=sub
-		if(handle!=None):
-			self.__colHandle=handle
+		if(handleN!=None):
+			self.__colHandle_N=handleN
+		if(handleH!=None):
+			self.__colHandle_H=handleH
+		if(handleP!=None):
+			self.__colHandle_P=handleP
+		self.Opt_UpdateStyleSheet()
 	def Opt_UpdateStyleSheet(self):
 		radius=str(self.__radiusHandle)
 		qss=self.QSS_Base.replace('$radiusHandle',radius)
@@ -80,7 +84,10 @@ class XJQ_ScrollBar(QScrollBar):
 	def __GetPressPos(self,mousePos):#获取鼠标点击时滑块的对应位置
 		min=self.minimum()#最小值
 		wid=self.maximum()-min#取值区间长度
-		rate=mousePos.x()/self.size().width()#鼠标点击位置对应滑动条的位置(取值0.0~1.0)
+		if(self.orientation()==Qt.Vertical):
+			rate=mousePos.y()/self.height()#鼠标点击位置对应滑动条的位置(取值0.0~1.0)
+		else:
+			rate=mousePos.x()/self.width()#鼠标点击位置对应滑动条的位置(取值0.0~1.0)
 		pos=min+int(wid*rate)#鼠标点击位置对应的值
 		return pos
 	def mousePressEvent(self,event):#避免滑块反复横跳而重写该方法，使滑块总能移动到鼠标附近
