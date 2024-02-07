@@ -1,9 +1,10 @@
 
 from ..XJQ_SwitchBtn import *
+from ...Functions.GetRealPath import *
 
 from PyQt5.QtWidgets import QApplication,QPushButton,QWidget,QLabel,QHBoxLayout
 from PyQt5.QtCore import QRect
-from ...Functions import GetRealPath
+
 if True:
 	app = QApplication([])
 

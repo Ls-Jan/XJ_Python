@@ -1,5 +1,8 @@
 
-from PyQt5.QtCore import Qt,QRect,QPoint
+__version__='1.0.0'
+__author__='Ls_Jan'
+
+from PyQt5.QtCore import Qt,QRect,QPoint,pyqtSignal
 from PyQt5.QtWidgets import QSlider
 from PyQt5.QtGui import QColor,QPainter,QPixmap,QMouseEvent
 
@@ -43,6 +46,7 @@ class XJQ_Slider(QSlider):
 			stop:0.81 transparent);
 		}
 	'''
+	sliderWheeled=pyqtSignal()#以弥补sliderPress的不足(因为除了鼠标拖拽外还有鼠标滚轮可以修改值，虽然键盘也能修改值，啊麻烦死了)
 	def __init__(self,*args):
 		super().__init__(*args)
 		self.__extraValue=0#新增
@@ -50,9 +54,9 @@ class XJQ_Slider(QSlider):
 		self.__colAdd=QColor(0,0,0,80)
 		self.__colSub=QColor(0,255,0,128)
 		self.__colExtra=QColor(0,0,255,128)#新增
-		self.__colHandle_N=QColor(80,80,80)
+		self.__colHandle_N=QColor(96,96,96)
 		self.__colHandle_P=QColor(64,64,64)
-		self.__colHandle_H=QColor(96,96,96)
+		self.__colHandle_H=QColor(112,112,112)
 		self.__radiusGroove=5
 		self.__grooveWidth=10
 		self.Opt_UpdateStyleSheet()
@@ -76,6 +80,10 @@ class XJQ_Slider(QSlider):
 		self.update()
 	def Set_HandleWidth(self,width):
 		self.__handleWidth=width
+		lst=[width,0]
+		if(self.orientation()==Qt.Horizontal):
+			lst.reverse()
+		self.setMinimumSize(*lst)
 		self.Opt_UpdateStyleSheet()
 	def Set_GrooveWidth(self,width):
 		self.__grooveWidth=width
@@ -117,6 +125,9 @@ class XJQ_Slider(QSlider):
 	def mouseMoveEvents(self,event):
 		super().mouseMoveEvent(event)
 		self.update()
+	def wheelEvent(self,event):
+		super().wheelEvent(event)
+		self.sliderWheeled.emit()
 	def paintEvent(self,event):
 		pix=QPixmap(self.size())
 		pix.fill(Qt.transparent)

@@ -1,3 +1,7 @@
+
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 from PyQt5.QtWidgets import QWidget,QFrame
 from PyQt5.QtCore import Qt,QEvent,QTimer,QPoint,QSize,QRect
 from PyQt5.QtGui import QPainter

@@ -1,12 +1,13 @@
 
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
+from .XJQ_Icon import *
 
 from PyQt5.QtCore import QSize,QRect,QPoint,Qt
 from PyQt5.QtGui import QIcon,QPixmap,QPainter,QBitmap,QColor,QCursor
 from PyQt5.QtWidgets import QPushButton
-
-from .XJQ_Icon import *
-
 
 __all__=['XJQ_IconButton']
 class XJQ_IconButton(QPushButton):

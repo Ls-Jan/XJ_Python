@@ -1,3 +1,7 @@
+
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 import math
 from PyQt5.QtWidgets import QListView,QWidget,QApplication
 from PyQt5.QtCore import Qt,QPoint,QRect,QSize,QRectF

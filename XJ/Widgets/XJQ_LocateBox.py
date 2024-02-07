@@ -1,4 +1,6 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
 
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import QSize,Qt,QPoint,QRect

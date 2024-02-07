@@ -1,7 +1,9 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import Qt,QObject,QRect,pyqtSignal,QEvent
-
 
 
 __all__=['XJQ_MouseTrigger']

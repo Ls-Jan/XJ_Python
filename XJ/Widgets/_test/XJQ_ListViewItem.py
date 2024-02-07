@@ -1,6 +1,6 @@
 from ..XJQ_ListViewItem import *
 from ..XJQ_Icon import *
-from ...Functions import GetRealPath
+from ...Functions.GetRealPath import *
 
 import sys
 from PyQt5.QtWidgets import QApplication,QWidget,QVBoxLayout

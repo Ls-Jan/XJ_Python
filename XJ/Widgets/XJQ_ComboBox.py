@@ -1,3 +1,7 @@
+
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 from PyQt5.QtWidgets import QComboBox,QListView
 from PyQt5.QtWidgets import QStyle,QStylePainter,QStyleOptionComboBox,QStyleOptionButton
 from PyQt5.QtGui import QPalette,QPainter,QFontMetrics

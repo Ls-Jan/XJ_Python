@@ -1,13 +1,16 @@
+
+__version__='1.0.0'
+__author__='Ls_Jan'
+
+from .XJQ_ComboBox import *
+from .XJQ_Icon import *
+
 import os
 from PyQt5.QtWidgets import QWidget,QHBoxLayout,QVBoxLayout,QPushButton,QLabel
 from PyQt5.QtCore import Qt,pyqtSignal
 from PyQt5.QtGui import QCursor
 
-from .XJQ_ComboBox import *
-from .XJQ_Icon import *
 __all__=['XJQ_PageNavigation']
-
-
 #TODO：【半成品】页导航栏
 class XJQ_PageNavigation(QWidget):#【半成品】页导航栏
 	'''

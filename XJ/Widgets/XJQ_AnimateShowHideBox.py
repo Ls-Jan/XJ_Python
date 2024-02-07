@@ -1,4 +1,7 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 from PyQt5.QtWidgets import QGraphicsOpacityEffect,QFrame,QVBoxLayout,QWidget
 from PyQt5.QtCore import QPropertyAnimation,Qt
 
@@ -14,7 +17,7 @@ class XJQ_AnimateShowHideBox(QFrame):
 		如果不采用容器的方式的话实现动画效果势必调用目标控件的setGraphicsEffect方法，
 		而这增加了耦合度以及不确定的开发风险，(因为setGraphicsEffect会覆盖上一次的调用)
 	'''
-	def __init__(self,parent=None,allowTransparent=True):
+	def __init__(self,parent=None,content=None,allowTransparent=True):
 		'''
 			当allowTransparent为真时，仅控件完全显示后才可点击，
 			该值置假时控件在显隐过程中可点击，可将此作为遮罩的延迟关闭(仅遮罩完全消失后才能进一步操作)
@@ -29,6 +32,7 @@ class XJQ_AnimateShowHideBox(QFrame):
 		self.__effect.setOpacity(1)
 		self.__animate.setDuration(300)
 		self.__animate.finished.connect(self.__AnimateFinish)
+		self.Set_Content(content)
 		self.setGraphicsEffect(self.__effect)
 	def Set_Content(self,wid):
 		vbox=self.layout()
@@ -37,6 +41,8 @@ class XJQ_AnimateShowHideBox(QFrame):
 		self.__wid=wid
 		if(wid):
 			vbox.addWidget(wid)
+	def Get_Content(self):
+		return self.__wid
 	def Set_Duration(self,duration):
 		self.__animate.setDuration(duration)
 	def show(self):

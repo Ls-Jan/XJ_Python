@@ -1,7 +1,9 @@
 # from XJ.Widgets.XJQ_Clock import *
 
-# from XJ.Widgets._test import XJQ_PictCarousel
-from XJ.Widgets._test import XJQ_Slider
+# from XJ.Widgets._test import XJQ_CanvasBox
+# from XJ.Widgets._test import XJQ_PlayBar
+from XJ.Widgets._test import XJQ_PictCarousel
+# from XJ.Widgets._test import XJQ_Slider
 # from XJ.Widgets._test import XJQ_ScrollBar
 # from XJ.Widgets._test import XJQ_SwitchBtn
 # from XJ.Widgets._test import XJQ_ComboBox

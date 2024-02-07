@@ -1,4 +1,7 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 from PyQt5.QtCore import Qt,pyqtSignal
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QLabel,QColorDialog

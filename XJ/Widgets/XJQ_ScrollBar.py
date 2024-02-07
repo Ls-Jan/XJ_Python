@@ -1,4 +1,7 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 from PyQt5.QtCore import Qt,QRect
 from PyQt5.QtWidgets import QScrollBar
 from PyQt5.QtGui import QColor,QPainter,QPixmap

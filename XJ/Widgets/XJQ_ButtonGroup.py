@@ -1,3 +1,7 @@
+
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 from PyQt5.QtWidgets import QWidget,QRadioButton,QHBoxLayout,QButtonGroup
 from PyQt5.QtCore import Qt,pyqtSignal
 

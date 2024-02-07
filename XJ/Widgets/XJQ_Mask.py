@@ -1,11 +1,13 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 import sys
+import numpy as np
+import cv2
 from PyQt5.QtCore import Qt,QPoint,QRect,pyqtSignal
 from PyQt5.QtWidgets import QWidget,QLabel
 from PyQt5.QtGui import QPainter,QBitmap,QImage,QPixmap
-
-import numpy as np
-import cv2
 
 __all__=['XJQ_Mask']
 class XJQ_Mask(QLabel):

@@ -1,8 +1,12 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
+# from .XJQ_ListViewItem import *
+
 from PyQt5.QtWidgets import QListWidget,QListWidgetItem,QLabel
 from PyQt5.QtCore import QPoint,Qt,QAbstractListModel,QVariant
 
-# from .XJQ_ListViewItem import *
 __all__=['XJQ_ListView']
 
 #TODO:【半成品】列表

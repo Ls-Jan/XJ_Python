@@ -1,4 +1,7 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 import sqlite3
 import time
 

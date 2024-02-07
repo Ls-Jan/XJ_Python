@@ -1,4 +1,7 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 from PyQt5.QtGui import QPixmap,QGuiApplication,QPainter,QTransform
 from PyQt5.QtCore import QRect
 from functools import reduce

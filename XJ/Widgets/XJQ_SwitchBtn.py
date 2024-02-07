@@ -1,13 +1,16 @@
 
-from PyQt5.QtWidgets import QWidget,QStackedLayout
-from PyQt5.QtCore import pyqtSignal
+__version__='1.0.0'
+__author__='Ls_Jan'
 
 from .XJQ_IconButton import *
-from ..Functions import GetRealPath
+from ..Functions.GetRealPath import *
+
+from PyQt5.QtWidgets import QAbstractButton,QStackedLayout
+from PyQt5.QtCore import pyqtSignal
 
 __all__=['XJQ_SwitchBtn']
 
-class XJQ_SwitchBtn(QWidget):#因为太过于常用，趁早把它组件化。
+class XJQ_SwitchBtn(QAbstractButton):#因为太过于常用，趁早把它组件化。
 	'''
 		开关按钮
 	'''
@@ -25,8 +28,8 @@ class XJQ_SwitchBtn(QWidget):#因为太过于常用，趁早把它组件化。
 		off=XJQ_IconButton(iconOff)
 		stk=QStackedLayout(self)
 
-		on.clicked.connect(lambda:self.Opt_Switch(True))
-		off.clicked.connect(lambda:self.Opt_Switch(False))
+		on.clicked.connect(lambda:self.Opt_Switch(True,True))
+		off.clicked.connect(lambda:self.Opt_Switch(False,True))
 		stk.addWidget(on)
 		stk.addWidget(off)
 		self.__on=on
@@ -34,9 +37,13 @@ class XJQ_SwitchBtn(QWidget):#因为太过于常用，趁早把它组件化。
 		self.__stk=stk
 	def Get_IsON(self):
 		return self.__stk.currentIndex()==1
-	def Opt_Switch(self,ON=True):
-		self.__stk.setCurrentIndex(1 if ON else 0)
-		self.valueChanged.emit(ON)
+	def Opt_Switch(self,ON=True,isClicked=False):
+		i=1 if ON else 0
+		if(self.__stk.currentIndex()!=i):
+			self.__stk.setCurrentIndex(i)
+			self.valueChanged.emit(ON)
+			if(isClicked):
+				self.clicked.emit()
 	def Get_BtnON(self):
 		return self.__on
 	def Get_BtnOFF(self):
@@ -55,6 +62,8 @@ class XJQ_SwitchBtn(QWidget):#因为太过于常用，趁早把它组件化。
 		btn.clicked.connect(lambda:self.Opt_Switch(False))
 		self.__off=btn
 		self.__off.setParent(None)
+	def paintEvent(self,event):
+		pass
 
 
 

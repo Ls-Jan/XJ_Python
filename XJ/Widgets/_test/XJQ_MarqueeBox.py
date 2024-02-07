@@ -1,5 +1,5 @@
 from ..XJQ_MarqueeBox import *
-from ...Functions import GetRealPath
+from ...Functions.GetRealPath import *
 
 import sys
 from PyQt5.QtWidgets import QApplication,QLabel,QHBoxLayout,QWidget

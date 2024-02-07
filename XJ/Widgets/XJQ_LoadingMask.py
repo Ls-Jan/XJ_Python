@@ -1,4 +1,7 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 from PyQt5.QtWidgets import QHBoxLayout,QVBoxLayout,QLabel
 from PyQt5.QtGui import QMovie,QPixmap
 from PyQt5.QtCore import QSize
@@ -56,6 +59,9 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 		self.__lb_tx.setStyleSheet(style)
 	def Set_Icon(self,size,path=None):
 		if(path):
+			#貌似这玩意儿会导致内存泄漏：https://blog.csdn.net/V10_x/article/details/135514227
+			#但在PyQt中不知道有没有被优化掉(因为Python中的析构是通过引用数来控制的)
+			#没心情去试它的析构条件，估摸着py的垃圾回收机制会好好干活
 			mv=QMovie(path)
 			mv.start()
 		else:

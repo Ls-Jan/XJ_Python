@@ -1,4 +1,7 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 __all__=['XJ_Array2D']
 
 class XJ_Array2D:

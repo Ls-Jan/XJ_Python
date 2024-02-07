@@ -1,10 +1,11 @@
-from PyQt5.QtWidgets import QApplication,QPushButton,QBoxLayout,QVBoxLayout,QWidget
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import QSize
 
 from ..XJQ_FolderBox import *
 from ..XJQ_ListView import *
-from ...Functions import GetRealPath
+from ...Functions.GetRealPath import *
+
+from PyQt5.QtWidgets import QApplication,QPushButton,QBoxLayout,QVBoxLayout,QWidget
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import QSize
 
 if True:
 	app = QApplication([])

@@ -1,5 +1,8 @@
 
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 
 from PyQt5.QtCore import QSize,Qt
 from PyQt5.QtGui import QIcon,QPixmap,QImage,QPalette,QColor
@@ -16,10 +19,13 @@ class XJQ_Icon(QIcon):#纯色图标
 	def __init__(self,data,fg=(0,255,0,255),bg=(0,0,0,0),size=(20,20),hint=None):#data可以为图片路径(str)或是图片数据(np.ndarray)或是QIcon/XJQ_Icon或是QPixmap或是None
 		# QIcon：https://doc.qt.io/qt-6/qicon.html
 		super().__init__()
-		if(isinstance(data,np.ndarray)):
+		if(isinstance(data,str)):
+			try:
+				im=self.Opt_LoadPictAsArray(data)
+			except:
+				raise Exception(f'路径{data}不存在')
+		elif(isinstance(data,np.ndarray)):
 			im=data
-		elif(isinstance(data,str)):
-			im=self.Opt_LoadPictAsArray(data)
 		elif(data==None or isinstance(data,QIcon)):
 			if(data==None):
 				data=QIcon()
@@ -32,21 +38,24 @@ class XJQ_Icon(QIcon):#纯色图标
 			im=self.Trans_PixmapToArray(im)
 		else:
 			raise Exception('data参数错误，类型仅能为np.ndarray(图片数据)或是str(图片路径)或是QIcon/XJQ_Icon或是QPixmap或是None')
-		if(len(fg)==3):
-			fg=(*fg,255)
-		if(len(bg)==3):
-			bg=(*bg,255)
 
-		msk=cv2.split(im)[3]
-		self.__msk=cv2.threshold(msk,127,255,cv2.THRESH_BINARY)[1]
-		#cv2纯色图：https://blog.csdn.net/qq_45666248/article/details/107666586
-		self.__bg=np.zeros((*msk.shape,4),np.uint8)
-		self.__fg=np.zeros((*msk.shape,4),np.uint8)
-		self.__bg[:] = bg
-		self.__fg[:] = fg
-		self.__size=QSize(*size)
-		self.__hint=hint
-		self.__UpdatePixmap()
+		try:
+			if(len(fg)==3):
+				fg=(*fg,255)
+			if(len(bg)==3):
+				bg=(*bg,255)
+			msk=cv2.split(im)[3]
+			self.__msk=cv2.threshold(msk,127,255,cv2.THRESH_BINARY)[1]
+			#cv2纯色图：https://blog.csdn.net/qq_45666248/article/details/107666586
+			self.__bg=np.zeros((*msk.shape,4),np.uint8)
+			self.__fg=np.zeros((*msk.shape,4),np.uint8)
+			self.__bg[:] = bg
+			self.__fg[:] = fg
+			self.__size=QSize(*size)
+			self.__hint=hint
+			self.__UpdatePixmap()
+		except:
+			raise Exception('转换失败！data数据错误！')
 	def Set_Color(self,fg=None,bg=None,wid=None):#指定wid时将根据wid来决定前景背景色(别用，不靠谱，时灵时不灵)
 		if(wid!=None):
 			#获取控件颜色(本质获取调色板)：https://blog.csdn.net/c_shell_python/article/details/98895712

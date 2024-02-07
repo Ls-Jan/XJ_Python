@@ -1,6 +1,7 @@
 
-import sys
 from ..XJQ_ScrollBar import *
+
+import sys
 from PyQt5.QtWidgets import QApplication,QVBoxLayout,QWidget
 from PyQt5.QtCore import Qt
 

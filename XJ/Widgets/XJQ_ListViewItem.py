@@ -1,9 +1,11 @@
 
-
-from PyQt5.QtWidgets import QLabel,QVBoxLayout,QHBoxLayout,QWidget,QGridLayout
+__version__='1.0.0'
+__author__='Ls_Jan'
 
 from .XJQ_Tag import *
 from .XJQ_MarqueeBox import *
+
+from PyQt5.QtWidgets import QLabel,QVBoxLayout,QHBoxLayout,QWidget,QGridLayout
 
 __all__=['XJQ_ListViewItem']
 class XJQ_ListViewItem(QLabel):#主要为XJQ_ListView服务

@@ -1,6 +1,6 @@
 
 from ..XJQ_Icon import *
-from ...Functions import GetRealPath
+from ...Functions.GetRealPath import *
 
 import os
 import sys

@@ -1,4 +1,7 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtCore import QRect
 

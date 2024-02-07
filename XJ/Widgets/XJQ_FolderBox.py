@@ -1,4 +1,7 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 from PyQt5.QtWidgets import QWidget,QPushButton,QBoxLayout,QLabel,QSizePolicy
 from PyQt5.QtCore import QSize,Qt
 from PyQt5.QtGui import QPixmap

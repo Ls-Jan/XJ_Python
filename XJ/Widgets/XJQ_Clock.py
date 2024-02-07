@@ -1,4 +1,7 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 from .XJQ_MouseTrigger import *
 from .XJQ_Icon import *
 from .XJQ_LocateBox import *
