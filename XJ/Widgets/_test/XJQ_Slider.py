@@ -17,6 +17,7 @@ if True:
 	# slider.setInvertedControls(True)
 	# slider.setInvertedAppearance(True)
 	slider.setMaximum(50)
+	# slider.Set_HandleWidth(50)
 	# slider.setMaximum(500000000)
 	# slider.setMaximum(5)
 	slider.setValue(25)

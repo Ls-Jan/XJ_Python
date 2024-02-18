@@ -2,17 +2,16 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
-# from .XJQ_ListViewItem import *
+# from .XJQ_ListWidgetItem import *
 
-from PyQt5.QtWidgets import QListWidget,QListWidgetItem,QLabel
-from PyQt5.QtCore import QPoint,Qt,QAbstractListModel,QVariant
+from PyQt5.QtWidgets import QListWidget,QListWidgetItem,QWidget
 
-__all__=['XJQ_ListView']
+__all__=['XJQ_ListWidget']
 
 #TODO:【半成品】列表
-class XJQ_ListView(QListWidget):#【半成品】列表
+class XJQ_ListWidget(QListWidget):#【半成品】列表
 	'''
-		半成品，可以塞控件的列表，但只建议塞XJQ_ListViewItem(因为单元格高度问题带来了不少麻烦)，
+		半成品，可以塞控件的列表，但只建议塞XJQ_ListWidgetItem(因为单元格高度问题带来了不少麻烦)，
 		本质上是继承QListWidget并仅仅简单封装几个行为罢了
 
 		单行选中，屏蔽拖拽操作，主要作为导航栏使用
@@ -69,15 +68,24 @@ class XJQ_ListView(QListWidget):#【半成品】列表
 		super().__init__()
 		self.setStyleSheet(self.__style)
 		self.resize(400,600)
-	def Opt_AppendWidget(self,wid):#添加控件
+	def Opt_AppendWidget(self,wid:QWidget):
+		'''
+			添加控件
+		'''
 		#向QListWidget中插入控件：https://blog.csdn.net/fsfsfsdfsdfdr/article/details/84036584
 		item=QListWidgetItem()
 		self.addItem(item)
 		self.setItemWidget(item,wid)
-	def Opt_RemoveRow(self,row):#移除指定行
+	def Opt_RemoveRow(self,row):
+		'''
+			移除指定行
+		'''
 		#删除item：https://blog.csdn.net/u011417605/article/details/50935696
 		self.takeItem(row)
-	def Opt_Clear(self):#清空
+	def Opt_Clear(self):
+		'''
+			清空
+		'''
 		self.clear()
 	def mouseMoveEvent(self,event):#屏蔽拖拽时当前行切换的疯狂行为
 		pass

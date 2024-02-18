@@ -10,12 +10,13 @@ __all__=['XJQ_MarqueeBox']
 
 class XJQ_MarqueeBox(QFrame):#跑马灯容器
 	'''
-		跑马灯容器，
+		跑马灯容器(仅在内容物不完全显示的时候跑马灯才会生效)，
 		不像烂大街代码只对QLabel进行重写，该跑马灯可以承载其他控件
 		仅在鼠标悬浮时运作
 		移动速率可调、移动方向可调(四向)、鼠标悬浮时间可调
 	'''
 	__wid=None
+	__widStyle=None
 	__hoverTimer=None
 	__moveTimer=None
 	__stepPixel=None
@@ -27,17 +28,30 @@ class XJQ_MarqueeBox(QFrame):#跑马灯容器
 	__autoSize=None
 	__offset=0
 	__blankPercent=0
-	def __init__(self,wid,*,#会给wid控件样式表额外追加“背景透明”的样式，以避免动画的不连贯
-			delay=100,#鼠标悬浮一小段时间后开始动画(ms)
-			interval=20,#动画刷新间隔(ms)
-			pixel=1,#动画每帧平移
-			blankPercent=0.25,#空白占比
-			horizontal=True,#水平滚动
-			forward=True,#正向滚动
-			keepOrigin=True,#动画结束后控件位置保持不变
-			dynamicSnap=False,#控件的动态截取，静态控件不需要设置该值，避免造成性能损耗
-			autoSize=True,#大小自适应，当水平滚动时跑马灯高度随控件，竖直滚动时跑马灯宽度随控件
+	def __init__(self,wid:QWidget=None,*,#会给wid的样式表额外追加“背景透明”的样式，以避免动画的不连贯
+			delay:int=100,#鼠标悬浮一小段时间后开始动画(ms)
+			interval:int=20,#动画刷新间隔(ms)
+			pixel:int=1,#动画每帧平移
+			blankPercent:float=0.25,#空白占比量
+			horizontal:bool=True,#水平滚动，为假则竖直滚动
+			forward:bool=True,#正向滚动
+			keepOrigin:bool=True,#动画结束后控件位置保持不变
+			dynamicSnap:bool=False,#控件的动态截取，静态控件不需要设置该值，避免造成性能损耗
+			autoSize:bool=True,#大小自适应，当水平滚动时跑马灯高度随控件，竖直滚动时跑马灯宽度随控件
 	):
+		'''
+			参数特多
+			wid：目标控件，会给wid的样式表额外追加“背景透明”的样式，以避免动画的不连贯
+			delay：鼠标悬浮一小段时间后开始动画(ms)
+			interval：动画刷新间隔(ms)
+			pixel：动画每帧平移量
+			blankPercent：空白占比
+			horizontal：水平滚动，为假则竖直滚动
+			forward：正向滚动
+			keepOrigin：动画结束后控件位置保持不变
+			dynamicSnap：控件的动态截取，静态控件不需要设置该值，避免造成性能损耗
+			autoSize：大小自适应，当水平滚动时跑马灯高度随控件，竖直滚动时跑马灯宽度随控件
+		'''
 		super().__init__()
 		hTimer=QTimer()
 		hTimer.setSingleShot(True)
@@ -46,16 +60,9 @@ class XJQ_MarqueeBox(QFrame):#跑马灯容器
 		mTimer=QTimer()
 		mTimer.setInterval(interval)
 		mTimer.timeout.connect(self.__StepMove)
-		wid.setParent(self)
-
-		style=wid.styleSheet()
-		if(style.find('{')==-1):
-			style+=';\n background:transparent; \n';
-		else:
-			style+=f'\n .{type(wid).__name__}'+'{background:transparent;}'
-		wid.setStyleSheet(style)
-		self.setStyleSheet('.XJQ_Marquee{background:transparent}')
-		self.__wid=wid
+		self.setStyleSheet('.XJQ_MarqueeBox{background:transparent}')
+		self.__widStyle=''
+		self.__wid=None
 		self.__hoverTimer=hTimer
 		self.__moveTimer=mTimer
 		self.__stepPixel=pixel if forward else -pixel
@@ -68,8 +75,34 @@ class XJQ_MarqueeBox(QFrame):#跑马灯容器
 		self.installEventFilter(self)
 		if(self.__autoSize):
 			self.__AdjustSize()
+		self.Set_Widget(wid)
 	def Get_Widget(self):
+		'''
+			获取内容物
+		'''
 		return self.__wid
+	def Set_Widget(self,wid):
+		'''
+			设置内容物。
+			特别补充：会对wid控件的样式表追加一条background:transparent规则
+		'''
+		owid=self.__wid
+		if(owid):
+			owid.hide()
+			owid.setStyleSheet(self.__widStyle)
+			owid.setParent(None)
+		wid.setParent(self)
+		style=wid.styleSheet()
+		widStyle=style
+		if(style.find('{')==-1):
+			style+=';\n background:transparent; \n'
+		else:
+			style+=f'\n .{type(wid).__name__}'+'{background:transparent;}'
+		wid.setStyleSheet(style)
+		self.__wid=wid
+		self.__widStyle=widStyle
+		self.update()
+
 	def paintEvent(self,event):
 		if(self.__autoSize):
 			self.__AdjustSize()

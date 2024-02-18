@@ -3,7 +3,7 @@ __version__='1.0.0'
 __author__='Ls_Jan'
 
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt,pyqtSignal
-from PyQt5.QtWidgets import QLayout, QPushButton, QSizePolicy, QWidget
+from PyQt5.QtWidgets import QLayout, QPushButton, QSizePolicy, QWidget,QSpacerItem
 
 __all__=['XJQ_FlowLayout']
 

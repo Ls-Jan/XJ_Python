@@ -2,6 +2,7 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
+from typing import Union
 from PyQt5.QtWidgets import QHBoxLayout,QVBoxLayout,QLabel
 from PyQt5.QtGui import QMovie,QPixmap
 from PyQt5.QtCore import QSize
@@ -15,7 +16,16 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 		gif动画可以指定，文字也可以指定(文字是静态的，通常也不需要动态文字
 		动画大小以及文字的颜色和大小均可指定，实在不满足可以设置样式表
 	'''
-	def __init__(self,filePath,parent=None,text="加载中...",size=(50,50)):
+	def __init__(self,
+			  filePath:str,
+			  parent=None,
+			  text:str="加载中...",
+			  size:tuple=(50,50)):
+		'''
+			filePath为动图路径
+			size为动图大小
+			text为额外的文本提示
+		'''
 		super().__init__(parent)
 		self.__lb_tx=QLabel()
 		self.__lb_gif=QLabel()
@@ -40,12 +50,11 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 		vbox.addLayout(hbox1)
 		vbox.addLayout(hbox2)
 		vbox.addStretch(1)
-	def paintEvent(self,event):
-		if(not self.parent()):
-			return
-		self.resize(self.parent().size())
-		super().paintEvent(event)
-	def Set_Hint(self,text=None,color=None,size=None):
+	def Set_Hint(self,text:str=None,color:tuple=None,size:int=None):
+		'''
+			设置文本。
+			color和size以样式表的方式生效
+		'''
 		style=''
 		if(size!=None):
 			style+=f'font-size:{size}px;'
@@ -57,7 +66,10 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 		if(text!=None):
 			self.__lb_tx.setText(text)
 		self.__lb_tx.setStyleSheet(style)
-	def Set_Icon(self,size,path=None):
+	def Set_Icon(self,size:Union[QSize,tuple],path:str=None):
+		'''
+			设置图标
+		'''
 		if(path):
 			#貌似这玩意儿会导致内存泄漏：https://blog.csdn.net/V10_x/article/details/135514227
 			#但在PyQt中不知道有没有被优化掉(因为Python中的析构是通过引用数来控制的)
@@ -68,7 +80,8 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 			mv=self.__lb_gif.movie()
 			if(not mv):
 				return
-		size=QSize(*size)
+		if(isinstance(size,tuple)):
+			size=QSize(*size)
 		if(mv.frameCount()):#动图的frame不为0
 			mv.setScaledSize(size)
 			self.__lb_gif.setMovie(mv)
@@ -76,3 +89,10 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 			#虽然QMovie也能打开静图，不知道搭错什么筋，没法调整大小
 			pix=QPixmap(path).scaled(size)
 			self.__lb_gif.setPixmap(pix)
+
+	def paintEvent(self,event):
+		if(not self.parent()):
+			return
+		self.resize(self.parent().size())
+		super().paintEvent(event)
+

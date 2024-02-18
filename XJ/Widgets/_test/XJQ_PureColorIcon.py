@@ -1,5 +1,5 @@
 
-from ..XJQ_Icon import *
+from ..XJQ_PureColorIcon import *
 from ...Functions.GetRealPath import *
 
 import os
@@ -12,8 +12,8 @@ if True:
 	app = QApplication(sys.argv)
 
 	path=GetRealPath('../icons/V左箭头.png')
-	# icon=XJQ_Icon(QIcon())
-	icon=XJQ_Icon(path)
+	# icon=XJQ_PureColorIcon(QIcon())
+	icon=XJQ_PureColorIcon(path)
 	icon.Set_Color(fg=(0,0,255,192))
 
 	btn=QPushButton("ABC")

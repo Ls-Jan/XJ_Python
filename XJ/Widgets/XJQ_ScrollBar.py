@@ -52,14 +52,26 @@ class XJQ_ScrollBar(QScrollBar):
 		#但我这里不需要，因为哪怕设置了这玩意儿，绘制出来的效果依旧差，索性不用
 		# self.setAttribute(Qt.WA_OpaquePaintEvent,False)
 		self.Opt_UpdateStyleSheet()
-	def Set_Radius(self,handle=None,groove=None):
+	def Set_Radius(self,handle:int=None,groove:int=None):
+		'''
+			设置滑块和滚动条的倒角半径
+		'''
 		if(handle!=None):
 			self.__radiusHandle=handle
 			self.Opt_UpdateStyleSheet()
 		if(groove!=None):
 			self.__radiusGroove=groove
 			self.update()
-	def Set_Color(self,add=None,sub=None,handleN=None,handleH=None,handleP=None):
+	def Set_Color(self,
+			   add:QColor=None,
+			   sub:QColor=None,
+			   handleN:QColor=None,
+			   handleH:QColor=None,
+			   handleP:QColor=None):
+		'''
+			设置颜色，add、sub为槽的颜色
+			handleN、handleH、handleP为滑块的颜色，分别对应于默认、悬浮和拖拽
+		'''
 		if(add!=None):
 			self.__colAdd=add
 		if(sub!=None):
@@ -72,6 +84,9 @@ class XJQ_ScrollBar(QScrollBar):
 			self.__colHandle_P=handleP
 		self.Opt_UpdateStyleSheet()
 	def Opt_UpdateStyleSheet(self):
+		'''
+			更新样式表(一般不需要手动调用)
+		'''
 		radius=str(self.__radiusHandle)
 		qss=self.QSS_Base.replace('$radiusHandle',radius)
 		for item in [

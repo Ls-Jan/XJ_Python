@@ -6,10 +6,11 @@ import cv2
 import numpy as np
 
 __all__=['DrawRoundedRect']
-
-#圆角矩形绘制，代码是copy他人的
-#镜像站：https://cloud.tencent.com/developer/ask/sof/100455675
-def DrawRoundedRect(src, top_left, bottom_right, radius=1, color=255, thickness=1, line_type=cv2.LINE_AA):
+def DrawRoundedRect(src:np.ndarray, top_left:tuple, bottom_right:tuple, radius:int=1, color:tuple=(255,), thickness:int=1, line_type=cv2.LINE_AA):
+	'''
+		用于补充cv2的圆角矩形绘制功能
+		代码是copy他人的，镜像站：https://cloud.tencent.com/developer/ask/sof/100455675
+	'''
 	#  corners:
 	#  p1 - p2
 	#  |     |

@@ -21,8 +21,8 @@ class XJQ_PictCarousel(QWidget):#图片轮播
 	__frames=None
 	__pict=None
 	__scale=1
-	def __init__(self,loop=True):
-		super().__init__()
+	def __init__(self,*args):
+		super().__init__(*args)
 		pb=XJQ_PlayBar()
 		pb.valueChanged.connect(self.__Update)
 		pb.Set_SliderStep(1)
@@ -32,35 +32,59 @@ class XJQ_PictCarousel(QWidget):#图片轮播
 		self.__frames=[]
 		self.__pict=None
 		self.__scale=1
-		self.__loop=loop
+		self.__loop=True
 		vbox=QVBoxLayout(self)
 		vbox.addStretch(1)
 		vbox.addWidget(shBox)
 	def Get_IsActive(self):
+		'''
+			判断是否播放中
+		'''
 		return self.__pb.Get_IsActive()
-	def Set_SliderStep(self,step):
+	def Set_SliderStep(self,step:int):
+		'''
+			设置播放条的步长
+		'''
 		self.__pb.Set_SliderStep(step)
-	def Set_Loop(self,interval=None,flag=None):
+	def Set_Loop(self,interval:int=None,flag:bool=None):
+		'''
+			设置循环播放，
+			interval为每次播放之间的时间间隔(ms)
+			flag为是否循环播放
+		'''
 		self.__pb.Set_Loop(interval,flag)
-	def Set_Duration(self,duration):
+	def Set_Duration(self,duration:int):
+		'''
+			设置帧播放的时间间隔(ms)
+		'''
 		self.__pb.Set_Duration(duration)
-	def Set_Index(self,index):
+	def Set_Index(self,index:int):
+		'''
+			设置当前帧索引
+		'''
 		self.__pb.Set_Index(index)
-	def Set_Scale(self,scale):
+	def Set_Scale(self,scale:float):
+		'''
+			设置画面缩放比
+		'''
 		self.__scale=scale
 		self.update()
-	def Set_Frames(self,lst):
+	def Set_Frames(self,lst:list):
+		'''
+			设置帧列表
+		'''
 		self.__frames=lst
-		self.__pb.Set_Index(total=len(lst)-1)
+		self.__pb.Set_Index(max=len(lst)-1)
 		self.update()
-	def Opt_Play(self,flag=True):
+	def Opt_Play(self,flag:bool=True):
+		'''
+			播放或者暂停
+		'''
 		self.__pb.Opt_Play(flag)
+
 	def __Update(self,index,isNext):
 		self.__pict=self.__frames[index]
 		self.update()
-	def __NextLoop(self):
-		self.__pb.Set_Index(0)
-		self.__pb.Opt_Play(True)
 	def leaveEvent(self,event):
 		self.__shBox.hide()
 	def enterEvent(self,event):

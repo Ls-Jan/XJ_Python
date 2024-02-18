@@ -61,18 +61,20 @@ class XJQ_MouseStatus(QObject):#鼠标状态记录
 			if(not self.__move and record['currMouse'].pressStatus!=press[0]):#未发生移动，未抬起鼠标，触发长按信号
 				self.longClick.emit()
 
-	def Set_DoubleClickInterval(self,interval):#设置双击时间间隔(ms)
-		self.__doubleClickInterval=interval
-	def Set_LongPressInterval(self,interval):#设置长按时间间隔(ms)
-		self.__longPressInterval=interval
-	def Set_AntiJitter(self,val):#设置防抖值
-		self.__antiJitter=val if val>0 else 0
-
-	def Get_Position(self):#返回鼠标坐标。是屏幕坐标(global)，需要使用QWidget.mapFromGlobal(QPoint)自行转换为控件相对坐标
+	def Get_Position(self):
+		'''
+			返回鼠标坐标。是屏幕坐标(global)，需要使用QWidget.mapFromGlobal(QPoint)自行转换为控件相对坐标
+		'''
 		return self.__record['currMouse'].pos
-	def Get_PressButtonStatus(self):#返回当前鼠标的键(左中右)以及按下状态(单击/双击/抬起)
+	def Get_PressButtonStatus(self):
+		'''
+			返回当前鼠标的键(左中右)以及按下状态(单击/双击/抬起)
+		'''
 		return self.__record['currMouse'].btn,self.__record['currMouse'].pressStatus
-	def Get_MoveDelta(self,total=True,strict=True):#返回鼠标移动量(仅鼠标按下时有效)，为QPoint对象
+	def Get_MoveDelta(self,total:bool=True,strict:bool=True):
+		'''
+			返回鼠标移动量(仅鼠标按下时有效)，为QPoint对象
+		'''
 		press=self.__press
 		record=self.__record
 		data_curr=record['currMouse']
@@ -85,10 +87,30 @@ class XJQ_MouseStatus(QObject):#鼠标状态记录
 					p2=record['lastMouse'].pos
 				return QPoint(p1.x()-p2.x(),p1.y()-p2.y())
 		return QPoint(0,0)
-	def Get_HasMoved(self):#判断是否发生移动(毕竟用Get_MoveDelta来判断移动的发生是有点麻烦，还不如多一个函数
+	def Get_HasMoved(self):
+		'''
+			判断是否发生移动(毕竟用Get_MoveDelta来判断移动的发生是有点麻烦，还不如多一个函数
+		'''
 		return self.__move
-
-	def Opt_Update(self,event):#更新状态
+	def Set_DoubleClickInterval(self,interval:int):
+		'''
+			设置双击时间间隔(ms)
+		'''
+		self.__doubleClickInterval=interval
+	def Set_LongPressInterval(self,interval:int):
+		'''
+			设置长按时间间隔(ms)
+		'''
+		self.__longPressInterval=interval
+	def Set_AntiJitter(self,val:int):
+		'''
+			设置防抖值
+		'''
+		self.__antiJitter=val if val>0 else 0
+	def Opt_Update(self,event:QMouseEvent):
+		'''
+			更新状态，传入鼠标事件
+		'''
 		press=self.__press
 		record=self.__record
 		data_curr=self.__Data(event)

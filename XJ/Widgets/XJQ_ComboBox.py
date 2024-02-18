@@ -11,8 +11,9 @@ __all__=['XJQ_ComboBox']
 class XJQ_ComboBox(QComboBox):
 	'''
 		QComboBox的简单优化，主要处理了一些样式上的问题，例如颜色、大小、文本居中
-		以及新增一个延迟动作行为，
-		当前行发生变化时并不会立即发送信号indexChanged，而是在指定的延迟时间后触发
+		内容发生变化时发送indexChanged(int,str)信号
+		滚轮滚动可修改当前值(这是QComboBox自带的功能)，
+		为了避免滚轮修改时频繁触发indexChanged信号，特地增加了一个延迟行为(时长可指定)
 	'''
 	indexChanged=pyqtSignal(int,str)#当前行修改时发送信号(带延迟)，依次是索引值和对应文本
 	__timerId=None
@@ -25,11 +26,20 @@ class XJQ_ComboBox(QComboBox):
 		self.setView(QListView())
 		self.setFocusPolicy(Qt.NoFocus)
 		self.currentIndexChanged.connect(self.__indexChanged)
-	def Opt_SetDelay(self,delay):
+	def Opt_SetDelay(self,delay:int):
+		'''
+			设置延迟时长(ms)
+		'''
 		self.__delay=delay
-	def Set_ShowArrow(self,flag):#箭头绘制可以通过styleSheet修正，也可以通过本函数设置
+	def Set_ShowArrow(self,flag:bool):
+		'''
+			箭头绘制可以通过styleSheet修正，也可以通过本函数设置
+		'''
 		self.__showArrow=flag
-	def Set_List(self,lst):
+	def Set_List(self,lst:list):
+		'''
+			设置组合框下拉列表
+		'''
 		for i in range(len(lst),self.count()):
 			self.removeItem(0)
 		for i in range(self.count(),len(lst)):

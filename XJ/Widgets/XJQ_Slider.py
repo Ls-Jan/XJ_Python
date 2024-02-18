@@ -60,11 +60,23 @@ class XJQ_Slider(QSlider):
 		self.__radiusGroove=5
 		self.__grooveWidth=10
 		self.Opt_UpdateStyleSheet()
-	def Set_Color(self,add=None,sub=None,extra=None,handleN=None,handleH=None,handleP=None):
+	def Set_Color(self,
+			   add:QColor=None,
+			   sub:QColor=None,
+			   extra:QColor=None,
+			   handleN:QColor=None,
+			   handleH:QColor=None,
+			   handleP:QColor=None):
+		'''
+			设置颜色，add、sub、extra为槽的颜色
+			handleN、handleH、handleP为滑块的颜色，分别对应于默认、悬浮和拖拽
+		'''
 		if(add!=None):
 			self.__colAdd=add
 		if(sub!=None):
 			self.__colSub=sub
+		if(extra!=None):
+			self.__colExtra=extra
 		if(handleN!=None):
 			self.__colHandle_N=handleN
 		if(handleH!=None):
@@ -72,23 +84,36 @@ class XJQ_Slider(QSlider):
 		if(handleP!=None):
 			self.__colHandle_P=handleP
 		self.Opt_UpdateStyleSheet()
-	def setValue(self,value=None,extra=None):
+	def setValue(self,value:int=None,extra:int=None):
+		'''
+			设置当前值，
+			特别的，指定extra会有形如“缓存条”的效果
+		'''
 		if(value!=None):
 			super().setValue(value)
 		if(extra!=None):
 			self.__extraValue=extra
 		self.update()
-	def Set_HandleWidth(self,width):
+	def Set_HandleWidth(self,width:int):
+		'''
+			设置滑块大小(直径)
+		'''
 		self.__handleWidth=width
 		lst=[width,0]
 		if(self.orientation()==Qt.Horizontal):
 			lst.reverse()
 		self.setMinimumSize(*lst)
 		self.Opt_UpdateStyleSheet()
-	def Set_GrooveWidth(self,width):
+	def Set_GrooveWidth(self,width:int):
+		'''
+			设置槽宽
+		'''
 		self.__grooveWidth=width
 		self.update()
 	def Opt_UpdateStyleSheet(self):
+		'''
+			更新样式表(一般不需要手动调用)
+		'''
 		qss=self.QSS_Base
 		for item in [
 				('$dire','height' if self.orientation()==Qt.Vertical else 'width'),
@@ -100,6 +125,7 @@ class XJQ_Slider(QSlider):
 			qss=qss.replace(key,args)
 		self.setStyleSheet(qss)
 		self.update()
+
 	def __GetHandlePos(self,mousePos=None,value=None):#获取滑块的对应位置
 		if(value==None):
 			value=self.value()

@@ -5,6 +5,7 @@ __author__='Ls_Jan'
 from .XJQ_MouseStatus import *
 
 import numpy as np
+from typing import Union#与py的“类型注解”用法有关：https://zhuanlan.zhihu.com/p/419955374
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import Qt,QRect,QPoint,QChildEvent,QTimer
 from PyQt5.QtGui import QPainter,QMouseEvent
@@ -47,7 +48,11 @@ class XJQ_CanvasBox(QWidget):#画布容器(抛弃了权重这个笨重的玩意�
 		self.__timer.timeout.connect(self.__WheelDelay)
 		self.installEventFilter(self)
 		self.Set_WheelDelay()
-	def Set_Option(self,scale=None,drag=None,autoScale=None):#设置功能
+	def Set_Option(self,scale:bool=None,drag:bool=None,autoScale:bool=None):
+		'''
+			可以开启或关闭指定的功能
+			可以禁用滚轮缩放、鼠标拖拽以及画布大小发生变化时的缩放自动调整
+		'''
 		if(scale==None):
 			scale=self.__option['scale']
 		if(drag==None):
@@ -57,14 +62,24 @@ class XJQ_CanvasBox(QWidget):#画布容器(抛弃了权重这个笨重的玩意�
 		self.__option['drag']=drag
 		self.__option['scale']=scale
 		self.__option['autoScale']=autoScale
-	def Set_WheelDelay(self,delay=100):#滚轮缩放时刷新画面的时间间隔(默认100ms)
+	def Set_WheelDelay(self,delay:int=100):
+		'''
+			滚轮缩放时刷新画面的时间间隔(默认100ms)
+		'''
 		self.__timer.setInterval(delay)
-	def Set_ScaleLimit(self,*,min=0,max=0):#设置缩放极限值
-		if(min!=0):
+	def Set_ScaleLimit(self,*,min:int=None,max:int=None):
+		'''
+			设置缩放极限值
+		'''
+		if(min!=None):
 			self.__scaleLimit['min']=min
-		if(max!=0):
+		if(max!=None):
 			self.__scaleLimit['max']=max
-	def Opt_MoveCenter(self,obj_or_pos,lock=False):#移动画布中心，传入的可以是QPoint也可以是控件对象
+	def Opt_MoveCenter(self,obj_or_pos:Union[QWidget,QPoint],lock:bool=False):
+		'''
+			移动画布中心，传入的可以是QPoint也可以是控件对象
+			当lock为真时将锁定缩放中心(禁用拖拽时生效)
+		'''
 		pos=None
 		if(isinstance(obj_or_pos,QPoint)):
 			pos=obj_or_pos
@@ -79,14 +94,21 @@ class XJQ_CanvasBox(QWidget):#画布容器(抛弃了权重这个笨重的玩意�
 			self.__Update()
 			if(lock):
 				self.__option['center']=obj_or_pos
-	def Set_WidgetPos(self,obj,pos):#设置控件逻辑位置
+	def Set_WidgetPos(self,obj:QWidget,pos:QRect):
+		'''
+			设置控件逻辑位置
+		'''
 		if(obj in self.__poses and isinstance(pos,QRect)):
 			self.__poses[obj]=pos
 		rect=QRect()
 		for obj in self.__poses:
 			rect=rect.united(obj.geometry())
 		self.__range=rect
-	def Set_Scale(self,rate,pos=None,increase=False):#设置缩放，pos为缩放中心(QPoint对象)
+	def Set_Scale(self,rate,pos:QPoint=None,*,increase:bool=False):
+		'''
+			设置缩放比，pos为缩放中心(QPoint对象)
+			如果increase为真那么以“增量”的形式调整缩放比(一般用不上)
+		'''
 		if(pos==None):
 			center=self.__option['center']
 			if(isinstance(center,QPoint)):
@@ -106,7 +128,7 @@ class XJQ_CanvasBox(QWidget):#画布容器(抛弃了权重这个笨重的玩意�
 		for obj in objs:
 			obj.setGeometry(*self.__MapToRealRect(self.__poses[obj]))
 		self.update()
-	def __HideWidgets(self,exclude=set()):#将除了exclude以外的控件全部隐藏
+	def __HideWidgets(self,exclude:set=set()):#将除了exclude以外的控件全部隐藏
 		for obj in self.__poses:
 			if(obj not in exclude):
 				obj.hide()

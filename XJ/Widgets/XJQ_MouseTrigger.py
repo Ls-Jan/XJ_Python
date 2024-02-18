@@ -8,9 +8,10 @@ from PyQt5.QtCore import Qt,QObject,QRect,pyqtSignal,QEvent
 
 __all__=['XJQ_MouseTrigger']
 
+#TODO：可优化(不急)
 class XJQ_MouseTrigger(QObject):#当鼠标进出指定区域时发出信号
 	'''
-		当鼠标进出控件指定区域时发出信号
+		当鼠标进出控件指定区域时发出信号enter(str,bool)，进入时为真
 		创建对象时需指定目标控件。
 
 		由于能力有限，暂未找到“向兄弟控件传递事件”的有效方法
@@ -18,8 +19,8 @@ class XJQ_MouseTrigger(QObject):#当鼠标进出指定区域时发出信号
 		底层对目标控件调用了两个函数：setMouseTracking、installEventFilter
 		也就是本类与目标控件出现了不可避免的耦合
 	'''
-	enter=pyqtSignal(str,bool)#为真则enter，为假则leave
-	def __init__(self,win):
+	enter=pyqtSignal(str,bool)
+	def __init__(self,win:QWidget):
 		super().__init__(win)
 		win.setMouseTracking(True)#鼠标跟踪
 		win.installEventFilter(self)
@@ -39,13 +40,20 @@ class XJQ_MouseTrigger(QObject):#当鼠标进出指定区域时发出信号
 		elif(eType==QEvent.Resize):
 			self.__UpdateCache()
 		return False
-	def Opt_AddRange(self,name,pos=(0.0,0.0),size=(1.0,1.0),*,target=None):#添加探测区
+	def Opt_AddRange(self,name:str,pos:tuple=(0.0,0.0),size:tuple=(1.0,1.0),*,target:QWidget=None):
+		'''
+			添加探测区
+			如果指定target那么以目标控件target的坐标为准
+		'''
 		if(isinstance(target,QWidget)):
 			self.__range.append((name,target))
 		else:
 			self.__range.append((name,(pos,size)))
 		self.__UpdateCache()
-	def Opt_RemoveRange(self,name):#移除探测区
+	def Opt_RemoveRange(self,name:str):
+		'''
+			移除探测区
+		'''
 		for i in range(len(self.__range)-1,-1,-1):
 			if(self.__range[i][0]==name):
 				self.__range.pop(i)

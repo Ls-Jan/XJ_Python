@@ -1,6 +1,6 @@
 
 from ..XJQ_FolderBox import *
-from ..XJQ_ListView import *
+from ..XJQ_ListWidget import *
 from ...Functions.GetRealPath import *
 
 from PyQt5.QtWidgets import QApplication,QPushButton,QBoxLayout,QVBoxLayout,QWidget

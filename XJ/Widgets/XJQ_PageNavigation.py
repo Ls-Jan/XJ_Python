@@ -3,11 +3,12 @@ __version__='1.0.0'
 __author__='Ls_Jan'
 
 from .XJQ_ComboBox import *
-from .XJQ_Icon import *
+from .XJQ_PureColorIcon import *
+from ..Functions.GetRealPath import *
 
 import os
 from PyQt5.QtWidgets import QWidget,QHBoxLayout,QVBoxLayout,QPushButton,QLabel
-from PyQt5.QtCore import Qt,pyqtSignal
+from PyQt5.QtCore import Qt,pyqtSignal,QSize
 from PyQt5.QtGui import QCursor
 
 __all__=['XJQ_PageNavigation']
@@ -33,25 +34,26 @@ class XJQ_PageNavigation(QWidget):#【半成品】页导航栏
 	__pCountLst_Tx=None#pCount文本列表
 	__pCountLst_Val=None#pCount数值列表
 	__dIndex=0#当前页首个数据对应的索引值
-	def __init__(self,count,*args):
+	def __init__(self,*args):
 		super().__init__(*args)
-		self.__count=count
+		self.__count=100
 		self.__aBtns={'L':QPushButton(),'R':QPushButton()}
 		self.__cPage=XJQ_ComboBox(self)
 		self.__pCount=XJQ_ComboBox(self)
 		self.__countHint=QLabel()
 
-		arrows={
+		icons={
 			'L':'V左箭头.png',
 			'R':'V右箭头.png',
 		}
-		path=os.path.split(__file__)[0]#获取所在目录
-		path=os.path.join(path,'icons')
-		for key in arrows:
+		path=GetRealPath('icons')
+		for key in icons:
+			icons[key]=XJQ_PureColorIcon(os.path.join(path,icons[key]))
+		self.Set_ArrowIcon(icons['L'],icons['R'])
+		for key in icons:
 			btn=self.__aBtns[key]
-			# btn.setIconSize(QSize(32,32))
-			self.__SetCursor(btn,False)
-			self.Set_ArrowIcon(key,os.path.join(path,arrows[key]))
+			btn.setIconSize(QSize(16,16))
+			self.__SetCursor(btn,clickable=False)
 		self.__pCount.indexChanged.connect(lambda index,text:self.Set_PerCount(self.__pCountLst_Val[index]))
 		self.__cPage.indexChanged.connect(lambda index,text:self.Set_CurrPage(index+1))
 		self.__cPage.Set_ShowArrow(False)
@@ -59,6 +61,112 @@ class XJQ_PageNavigation(QWidget):#【半成品】页导航栏
 		self.__aBtns['R'].clicked.connect(self.Opt_NextPage)
 		self.Set_PerCountList([10])
 		self.__InitUI()
+	def Get_CurrIndexCount(self):
+		'''
+			获取当前页对应的数据索引和数据量
+		'''
+		count=self.__pCountLst_Val[self.__pCount.currentIndex()]
+		page=self.__cPage.currentIndex()
+		return page*count,count
+	def Set_ArrowIcon(self,iconL:XJQ_PureColorIcon=None,iconR:XJQ_PureColorIcon=None):
+		'''
+			设置箭头图标
+		'''
+		if(iconL):
+			self.__aBtns['L'].setIcon(iconL)
+		if(iconR):
+			self.__aBtns['R'].setIcon(iconR)
+	def Set_DataCount(self,count:int):
+		'''
+			设置数据总数
+		'''
+		self.__count=count
+		cPage=self.__cPage
+		if True:
+			cPage.blockSignals(True)
+			pages=count//self.__pCountLst_Val[self.__pCount.currentIndex()]
+			if(pages*count<self.__count):
+				pages+=1
+			self.__cPage.Set_List(range(1,pages+1))
+			self.Set_CurrPage(index=self.__dIndex)
+			cPage.blockSignals(False)
+			self.__countHint.setText(self.__countHintTx())
+		return True
+	def Set_PerCountList(self,countLst:list):
+		'''
+			设置每页可选的数据个数
+		'''
+		lst=[self.__pCountTx(tx) for tx in countLst]
+		self.__pCountLst_Tx=lst
+		self.__pCountLst_Val=list(countLst)
+		self.__pCount.Set_List(lst)
+		return True
+	def Set_PerCount(self,count:int):
+		'''
+			设置每页的数据个数
+		'''
+		pCount=self.__pCount
+		cPage=self.__cPage
+		if(count in self.__pCountLst_Val):
+			pCount.blockSignals(True)
+			cPage.blockSignals(True)
+			pages=self.__count//count
+			if(pages*count<self.__count):
+				pages+=1
+			self.__cPage.Set_List(range(1,pages+1))
+			pCount.setCurrentIndex(self.__pCountLst_Val.index(count))
+			self.Set_CurrPage(index=self.__dIndex)
+			cPage.blockSignals(False)
+			pCount.blockSignals(False)
+			self.__countHint.setText(self.__countHintTx())
+			return True
+		return False
+	def Set_CurrPage(self,page:int=0,index:int=0):
+		'''
+			设置当前页。如果指定index那么将跳转到对应数据所在页
+		'''
+		cPage=self.__cPage
+		count=self.__pCountLst_Val[self.__pCount.currentIndex()]
+		if(index>0):
+			pageIndex=index//count
+		else:
+			pageIndex=page-1
+		maxPageIndex=cPage.count()-1
+		if(pageIndex>maxPageIndex):
+			pageIndex=maxPageIndex
+		elif(pageIndex<0):
+			pageIndex=0
+		cPage.blockSignals(True)
+		cPage.setCurrentIndex(pageIndex)
+		cPage.blockSignals(False)
+		self.__SetCursor(self.__aBtns['L'],pageIndex>0)#左箭头
+		self.__SetCursor(self.__aBtns['R'],pageIndex<maxPageIndex)#右箭头
+
+		index=pageIndex*count
+		count=min(self.__count-index,count)
+		if(count<0):
+			count=0
+		self.__dIndex=index
+		self.changed.emit(index,count)
+	def Opt_NextPage(self):
+		'''
+			下一页
+		'''
+		page=self.__cPage.currentIndex()+1
+		if(page<self.__cPage.count()):
+			self.Set_CurrPage(page+1)
+			return True
+		return False
+	def Opt_BackPage(self):
+		'''
+			上一页
+		'''
+		page=self.__cPage.currentIndex()+1
+		if(page>1):
+			self.Set_CurrPage(page-1)
+			return True
+		return False
+	
 	def __InitUI(self):
 		groupL=QWidget()
 		groupR=QWidget()
@@ -160,84 +268,3 @@ class XJQ_PageNavigation(QWidget):#【半成品】页导航栏
 		else:
 			cursor=Qt.ForbiddenCursor
 		wid.setCursor(QCursor(cursor))
-	def Opt_NextPage(self):#下一页
-		page=self.__cPage.currentIndex()+1
-		if(page<self.__cPage.count()):
-			self.Set_CurrPage(page+1)
-			return True
-		return False
-	def Opt_BackPage(self):#上一页
-		page=self.__cPage.currentIndex()+1
-		if(page>1):
-			self.Set_CurrPage(page-1)
-			return True
-		return False
-	def Get_CurrIndexCount(self):#获取当前页对应的数据索引和数据量
-		count=self.__pCountLst_Val[self.__pCount.currentIndex()]
-		page=self.__cPage.currentIndex()
-		return page*count,count
-	def Set_ArrowIcon(self,key,path,fg=(0,255,192,128),bg=(0,0,0,0)):#设置箭头图标，key值是字符串，取值为L、R，分别对应左、右
-		if(key in self.__aBtns):
-			icon=XJQ_Icon(path)
-			icon.Set_Color(fg,bg)
-			self.__aBtns[key].setIcon(icon)
-	def Set_DataCount(self,count):#数据总数
-		self.__count=count
-		cPage=self.__cPage
-		if True:
-			cPage.blockSignals(True)
-			pages=count//self.__pCountLst_Val[self.__pCount.currentIndex()]
-			if(pages*count<self.__count):
-				pages+=1
-			self.__cPage.Set_List(range(1,pages+1))
-			self.Set_CurrPage(index=self.__dIndex)
-			cPage.blockSignals(False)
-			self.__countHint.setText(self.__countHintTx())
-		return True
-	def Set_PerCountList(self,countLst):#设置每页可选的数据个数
-		lst=[self.__pCountTx(tx) for tx in countLst]
-		self.__pCountLst_Tx=lst
-		self.__pCountLst_Val=list(countLst)
-		self.__pCount.Set_List(lst)
-		return True
-	def Set_PerCount(self,count):#设置每页的数据个数
-		pCount=self.__pCount
-		cPage=self.__cPage
-		if(count in self.__pCountLst_Val):
-			pCount.blockSignals(True)
-			cPage.blockSignals(True)
-			pages=self.__count//count
-			if(pages*count<self.__count):
-				pages+=1
-			self.__cPage.Set_List(range(1,pages+1))
-			pCount.setCurrentIndex(self.__pCountLst_Val.index(count))
-			self.Set_CurrPage(index=self.__dIndex)
-			cPage.blockSignals(False)
-			pCount.blockSignals(False)
-			self.__countHint.setText(self.__countHintTx())
-			return True
-		return False
-	def Set_CurrPage(self,page=0,index=0):#设置当前页。如果指定index那么将跳转到对应数据所在页
-		cPage=self.__cPage
-		count=self.__pCountLst_Val[self.__pCount.currentIndex()]
-		if(index>0):
-			pageIndex=index//count
-		else:
-			pageIndex=page-1
-		maxPageIndex=cPage.count()-1
-		if(pageIndex>maxPageIndex):
-			pageIndex=maxPageIndex
-		elif(pageIndex<0):
-			pageIndex=0
-		cPage.blockSignals(True)
-		cPage.setCurrentIndex(pageIndex)
-		cPage.blockSignals(False)
-		self.__SetCursor(self.__aBtns['L'],pageIndex>0)#左箭头
-		self.__SetCursor(self.__aBtns['R'],pageIndex<maxPageIndex)#右箭头
-
-		index=pageIndex*count
-		count=min(self.__count-index,count)
-		if(count<0):
-			count=0
-		self.__dIndex=index
-		self.changed.emit(index,count)

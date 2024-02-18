@@ -20,7 +20,12 @@ class XJQ_Mask(QLabel):
 	'''
 	__exclude=None
 	clicked=pyqtSignal()
-	def __init__(self,parent=None,*exclude,color='rgba(0,0,0,128)',clickBlock=True):
+	def __init__(self,parent:QWidget=None,*exclude,color:str='rgba(0,0,0,128)',clickBlock:bool=True):
+		'''
+			exclude指定不被遮挡的对象
+			color为遮罩颜色，由于通过样式表生效，color甚至可以传入渐变色
+			clickBolck决定是否屏蔽点击
+		'''
 		super().__init__(parent)
 		exclude=list(exclude)
 		for pst in range(len(exclude)):

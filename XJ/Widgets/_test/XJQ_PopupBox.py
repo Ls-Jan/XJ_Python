@@ -13,8 +13,8 @@ if True:
 	# win.resize(900,700)
 	win.setStyleSheet('.QWidget{background:rgb(164,192,255)}')
 	win.resize(400,300)
-	btn=QPushButton('ABC',win)
-	btn.setGeometry(150,150,100,50)
+	btn=QPushButton('试着调整窗口大小',win)
+	btn.setGeometry(50,50,200,100)
 	btn.show()
 
 	wid=QWidget()

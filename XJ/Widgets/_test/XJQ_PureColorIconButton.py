@@ -1,5 +1,5 @@
-from ..XJQ_IconButton import *
-from ..XJQ_Icon import *
+from ..XJQ_PureColorIconButton import *
+from ..XJQ_PureColorIcon import *
 from ...Functions.GetRealPath import *
 
 from PyQt5.QtWidgets import QApplication,QWidget,QStackedLayout
@@ -9,7 +9,7 @@ if True:
 	win=QWidget()
 	win.show()
 	win.resize(300,300)
-	ib=XJQ_IconButton(GetRealPath('../icons/停止.png'),win)
+	ib=XJQ_PureColorIconButton(GetRealPath('../icons/停止.png'),win)
 	ib.clicked.connect(lambda:print("CLICK"))
 	stk=QStackedLayout(win)
 	stk.addWidget(ib)

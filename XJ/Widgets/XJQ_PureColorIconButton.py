@@ -3,21 +3,24 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
-from .XJQ_Icon import *
+from .XJQ_PureColorIcon import *
 
 from PyQt5.QtCore import QSize,QRect,QPoint,Qt
 from PyQt5.QtGui import QIcon,QPixmap,QPainter,QBitmap,QColor,QCursor
-from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QAbstractButton
 
-__all__=['XJQ_IconButton']
-class XJQ_IconButton(QPushButton):
+__all__=['XJQ_PureColorIconButton']
+class XJQ_PureColorIconButton(QAbstractButton):
 	'''
-		基于XJQ_Icon的可改色图标按钮
+		基于XJQ_PureColorIcon的可改色图标按钮(无文本)
 
 		简单试过，QLabel.setPixmap会复制pixmap，真的是，无语，索性直接重写paintEvent。
-		原本继承QWidget，但后来想想为了减少风险(同时也让代码更加规范)还是选择继承QPushButton
+		原本继承QWidget，但后来想想为了减少风险(同时也让代码更加规范)还是选择继承QAbstractButton
 	'''
-	def __init__(self,iconData=None,parent=None):#iconData将直接传给XJQ_Icon
+	def __init__(self,iconData=None,parent=None):
+		'''
+			iconData将直接传给XJQ_PureColorIcon
+		'''
 		super().__init__(parent)
 		self.__rRadius=20
 		self.__rMask=False
@@ -31,19 +34,25 @@ class XJQ_IconButton(QPushButton):
 			'disable':{'fg':QColor(224,224,224,128),'bg':QColor(0,0,0,0),'pix':None},
 		#虽然看似很多，但因为图标都很小，它们对内存的影响可谓忽略不计
 		#以64*64*4字节为例，一个pixmap占16kb左右，一组4个，即64KB，
-		#即16个XJQ_IconButton对象的图片占用内存才1MB
+		#即16个XJQ_PureColorIconButton对象的图片占用内存才1MB
 		}
 		self.setIcon(iconData)
 		self.setDisabled(False)
 	def setIcon(self,iconData):
+		'''
+			iconData将直接传给XJQ_PureColorIcon
+		'''
 		if(self.__icon):
 			size=self.__icon.size()
 		else:
 			size=QSize(32,32)
-		self.__icon=XJQ_Icon(iconData)
+		self.__icon=XJQ_PureColorIcon(iconData)
 		self.__icon.resize(size)
 		self.__UpdateCache()
-	def Set_FgColor(self,default=None,hover=None,pressed=None,disable=None):
+	def Set_FgColor(self,default:QColor=None,hover:QColor=None,pressed:QColor=None,disable:QColor=None):
+		'''
+			设置前景色
+		'''
 		keys=[]
 		for key in self.__cache:
 			val=eval(key)
@@ -51,7 +60,7 @@ class XJQ_IconButton(QPushButton):
 				self.__cache[key]['fg']=val
 				keys.append(key)
 		self.__UpdateCache(*keys)
-	def Set_BgColor(self,default=None,hover=None,pressed=None,disable=None):
+	def Set_BgColor(self,default:QColor=None,hover:QColor=None,pressed:QColor=None,disable:QColor=None):
 		keys=[]
 		for key in self.__cache:
 			val=eval(key)
@@ -59,6 +68,7 @@ class XJQ_IconButton(QPushButton):
 				self.__cache[key]['bg']=val
 				keys.append(key)
 		self.__UpdateCache(*keys)
+
 	def resizeEvent(self,event):
 		self.resize(event.size())
 	def resize(self,*size):
@@ -69,7 +79,6 @@ class XJQ_IconButton(QPushButton):
 		self.__icon.resize(size)
 		size=self.__icon.size()
 		if(True):
-		# if(size!=self.size()):
 			super().resize(size)
 			self.__UpdateCache()
 			self.Set_Mask(roundRect=self.__rMask,circle=self.__cMask)
@@ -77,7 +86,6 @@ class XJQ_IconButton(QPushButton):
 		rect=QRect(*args)
 		self.resize(rect.size())
 		super().move(rect.topLeft())
-		# super().setGeometry(QRect(rect.topLeft(),self.size()))
 	def setDisabled(self,flag):
 		if(flag):
 			self.__status='disable'

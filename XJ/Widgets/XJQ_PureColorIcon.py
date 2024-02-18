@@ -4,19 +4,36 @@ __version__='1.0.0'
 __author__='Ls_Jan'
 
 
+import cv2
+import numpy as np
+from typing import Union#与py的“类型注解”用法有关：https://zhuanlan.zhihu.com/p/419955374
 from PyQt5.QtCore import QSize,Qt
 from PyQt5.QtGui import QIcon,QPixmap,QImage,QPalette,QColor
 
-import cv2
-import numpy as np
-
-__all__=['XJQ_Icon']
-class XJQ_Icon(QIcon):#纯色图标
+__all__=['XJQ_PureColorIcon']
+class XJQ_PureColorIcon(QIcon):#纯色图标
 	'''
 		纯色图标，可改图标色以及背景色，以及可以预置/修改图标大小(调用pixmap函数时可不必再传入大小参数了)。
 		当然，类似QPushButton在调用setIcon后，icon发生更新时QPushButton显示的图标并不会发生改变，需要再次调用setIcon才行
 	'''
-	def __init__(self,data,fg=(0,255,0,255),bg=(0,0,0,0),size=(20,20),hint=None):#data可以为图片路径(str)或是图片数据(np.ndarray)或是QIcon/XJQ_Icon或是QPixmap或是None
+	def __init__(self,
+			  data:Union[str,np.ndarray,QIcon,QPixmap,QImage],
+			  fg:tuple=(0,255,0,255),
+			  bg:tuple=(0,0,0,0),
+			  size:tuple=(20,20),
+			  hint=None,
+			  squareSize=True):
+		'''
+			data可以是
+				图片路径(str)
+				图片数据(np.ndarray)
+				图标类(QIcon/XJQ_PureColorIcon)
+				图片类(QPixmap/QImage)
+				None
+			size设置图标大小，特殊场合有用(例如在调用pixmap()时如果缺省参数那么将以size为准
+			hint额外信息补充，在特殊场合下有用
+			squareSize若为真，则设置图标大小时会强制调整为正方形大小
+		'''
 		# QIcon：https://doc.qt.io/qt-6/qicon.html
 		super().__init__()
 		if(isinstance(data,str)):
@@ -36,8 +53,10 @@ class XJQ_Icon(QIcon):#纯色图标
 				im=QPixmap(1,1)
 				im.fill(Qt.transparent)
 			im=self.Trans_PixmapToArray(im)
+		elif(isinstance(data,QImage) or isinstance(data,QPixmap)):
+			im=self.Trans_PixmapToArray(QPixmap(data))
 		else:
-			raise Exception('data参数错误，类型仅能为np.ndarray(图片数据)或是str(图片路径)或是QIcon/XJQ_Icon或是QPixmap或是None')
+			raise Exception('data参数错误，类型仅能为np.ndarray(图片数据)或是str(图片路径)或是QIcon/XJQ_PureColorIcon或是QPixmap或是None')
 
 		try:
 			if(len(fg)==3):
@@ -51,12 +70,18 @@ class XJQ_Icon(QIcon):#纯色图标
 			self.__fg=np.zeros((*msk.shape,4),np.uint8)
 			self.__bg[:] = bg
 			self.__fg[:] = fg
-			self.__size=QSize(*size)
+			self.__squareSize=squareSize
+			self.__size=QSize()
 			self.__hint=hint
 			self.__UpdatePixmap()
+			self.resize(*size)
 		except:
 			raise Exception('转换失败！data数据错误！')
-	def Set_Color(self,fg=None,bg=None,wid=None):#指定wid时将根据wid来决定前景背景色(别用，不靠谱，时灵时不灵)
+	def Set_Color(self,fg:Union[QColor,tuple]=None,bg:Union[QColor,tuple]=None,wid=None):
+		'''
+			设置前景背景色。
+			如果指定wid那么将根据wid来决定前景背景色(别用wid方法指定颜色，不靠谱，时灵时不灵)
+		'''
 		if(wid!=None):
 			#获取控件颜色(本质获取调色板)：https://blog.csdn.net/c_shell_python/article/details/98895712
 			pt=wid.palette()
@@ -80,20 +105,37 @@ class XJQ_Icon(QIcon):#纯色图标
 					bg=(*bg,255)
 				self.__bg[:] = bg
 		self.__UpdatePixmap()
-	def pixmap(self,*arg):#少写额外的大小参数，很好
+	def pixmap(self,*arg):
+		'''
+			获取QPixmap对象，如果无参数那么以默认size为准
+		'''
 		if(arg):
 			return super().pixmap(*arg)
-		return super().pixmap(self.__size).scaled(self.__size)#调用scaled强制放大
-	def size(self):#特殊场合有用
+		pix=super().pixmap(self.__size)
+		if(not pix.isNull()):#如果不判空就调用scaled的话会有烦人的警告输出
+			pix=pix.scaled(self.__size)#调用scaled强制放大
+		return pix
+	def size(self):
+		'''
+			特殊场合有用
+		'''
 		return self.__size
-	def resize(self,*size):#设置size值。特殊场合有用
+	def resize(self,*size):
+		'''
+			设置size值，特殊场合有用
+			调用方式可以是resize(32,32)或是resize(QSize(32,32))
+		'''
 		if(len(size)>1):
 			size=QSize(*size)
 		else:
 			size=size[0]
-		size=size.boundedTo(size.transposed())#最小正方形
+		if(self.__squareSize):
+			size=size.boundedTo(size.transposed())#最小正方形
 		self.__size=size
-	def hint(self):#特殊场合有用
+	def hint(self):
+		'''
+			获取补充信息，特殊场合有用
+		'''
 		return self.__hint
 	def __UpdatePixmap(self):
 		#模运算bitwise_and：https://blog.csdn.net/qq_40210586/article/details/106572504

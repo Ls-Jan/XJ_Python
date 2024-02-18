@@ -17,7 +17,10 @@ class XJQ_AnimateShowHideBox(QFrame):
 		如果不采用容器的方式的话实现动画效果势必调用目标控件的setGraphicsEffect方法，
 		而这增加了耦合度以及不确定的开发风险，(因为setGraphicsEffect会覆盖上一次的调用)
 	'''
-	def __init__(self,parent=None,content=None,allowTransparent=True):
+	def __init__(self,
+			  parent:QWidget=None,
+			  content:QWidget=None,
+			  allowTransparent:bool=True):
 		'''
 			当allowTransparent为真时，仅控件完全显示后才可点击，
 			该值置假时控件在显隐过程中可点击，可将此作为遮罩的延迟关闭(仅遮罩完全消失后才能进一步操作)
@@ -34,7 +37,10 @@ class XJQ_AnimateShowHideBox(QFrame):
 		self.__animate.finished.connect(self.__AnimateFinish)
 		self.Set_Content(content)
 		self.setGraphicsEffect(self.__effect)
-	def Set_Content(self,wid):
+	def Set_Content(self,wid:QWidget=None):
+		'''
+			设置内容物(为None则清空)
+		'''
 		vbox=self.layout()
 		if(self.__wid):
 			vbox.removeWidget(self.__wid)
@@ -42,8 +48,14 @@ class XJQ_AnimateShowHideBox(QFrame):
 		if(wid):
 			vbox.addWidget(wid)
 	def Get_Content(self):
+		'''
+			获取内容物
+		'''
 		return self.__wid
-	def Set_Duration(self,duration):
+	def Set_Duration(self,duration:int):
+		'''
+			设置显隐动画间隔(ms)
+		'''
 		self.__animate.setDuration(duration)
 	def show(self):
 		super().show()

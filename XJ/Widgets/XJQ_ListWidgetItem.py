@@ -7,15 +7,25 @@ from .XJQ_MarqueeBox import *
 
 from PyQt5.QtWidgets import QLabel,QVBoxLayout,QHBoxLayout,QWidget,QGridLayout
 
-__all__=['XJQ_ListViewItem']
-class XJQ_ListViewItem(QLabel):#主要为XJQ_ListView服务
+__all__=['XJQ_ListWidgetItem']
+class XJQ_ListWidgetItem(QLabel):#主要为XJQ_ListWidget服务
 	'''
-		主要为XJQ_ListView服务，是字串型列表单元内容的扩充
+		主要为XJQ_ListWidget服务，是字串型列表单元内容的扩充
 		有四个关键属性：标题、单元色、标签、额外图标
 		这四个属性足以覆盖通常应用场景
 		标签具有跑马灯功能
 	'''
-	def __init__(self,title,tags,itemColor,extraIcons=[]):
+	def __init__(self,
+			  title:str,
+			  tags:list,
+			  itemColor:str,
+			  extraIcons:list=None):
+		'''
+			title：标题
+			tags：标签
+			itemColor：单元色(该值将插入样式表中)
+			extraIcons：额外图标
+		'''
 		super().__init__()
 		lb=QLabel(title,self)
 		lb.setStyleSheet('''
@@ -43,17 +53,17 @@ class XJQ_ListViewItem(QLabel):#主要为XJQ_ListView服务
 		self.__tagsBox=hbox_tag
 		self.__iconsBox=hbox_icons
 		self.Opt_Change(title,tags,itemColor,extraIcons)
-	def __SetMarkColor(self,itemColor):
-		styleSheet='''
-				.XJQ_ListViewItem{
-					background:qlineargradient(x1:0, y1:0, x2:1, y2:0,
-					stop:0 $col, 
-					stop:0.04 rgba(0,0,0,0), 
-					stop:1 rgba(0,0,0,0));
-				}'''
-		styleSheet=styleSheet.replace('$col',itemColor)
-		self.setStyleSheet(styleSheet)
-	def Opt_Change(self,title=None,tags=None,itemColor=None,extraIcons=None):
+	def Opt_Change(self,
+				title:str,
+				tags:list,
+				itemColor:str,
+				extraIcons:list=None):
+		'''
+			title：标题
+			tags：标签
+			itemColor：单元色(该值将插入样式表中)
+			extraIcons：额外图标
+		'''
 		if(title):
 			self.__lb.setText(title)
 		if(itemColor):
@@ -80,9 +90,14 @@ class XJQ_ListViewItem(QLabel):#主要为XJQ_ListView服务
 				lb.setPixmap(icon.pixmap())
 				self.__iconsBox.insertWidget(len(self.__icons),lb)
 				self.__icons.append(lb)
-
-		# if(extraIcons):
-		# icon.pixmap(QSize(25,25))
-		# lb.setPixmap()
-		# btn.setIconSize(QSize(100,100))
+	def __SetMarkColor(self,itemColor):
+		styleSheet='''
+				.XJQ_ListWidgetItem{
+					background:qlineargradient(x1:0, y1:0, x2:1, y2:0,
+					stop:0 $col, 
+					stop:0.04 rgba(0,0,0,0), 
+					stop:1 rgba(0,0,0,0));
+				}'''
+		styleSheet=styleSheet.replace('$col',itemColor)
+		self.setStyleSheet(styleSheet)
 

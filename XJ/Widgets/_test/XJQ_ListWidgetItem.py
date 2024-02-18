@@ -1,5 +1,5 @@
-from ..XJQ_ListViewItem import *
-from ..XJQ_Icon import *
+from ..XJQ_ListWidgetItem import *
+from ..XJQ_PureColorIcon import *
 from ...Functions.GetRealPath import *
 
 import sys
@@ -9,12 +9,12 @@ if True:
 	app = QApplication(sys.argv)
 
 	icons=[
-		XJQ_Icon(GetRealPath('../icons/收藏.png')),
-		XJQ_Icon(GetRealPath('../icons/云锁-002.png')),
-		XJQ_Icon(GetRealPath('../icons/对勾.png')),
-		XJQ_Icon(GetRealPath('../icons/文件袋.png')),
-		XJQ_Icon(GetRealPath('../icons/云下载.png')),
-		XJQ_Icon(GetRealPath('../icons/已锁.png')),]
+		XJQ_PureColorIcon(GetRealPath('../icons/收藏.png')),
+		XJQ_PureColorIcon(GetRealPath('../icons/云锁-002.png')),
+		XJQ_PureColorIcon(GetRealPath('../icons/对勾.png')),
+		XJQ_PureColorIcon(GetRealPath('../icons/文件袋.png')),
+		XJQ_PureColorIcon(GetRealPath('../icons/云下载.png')),
+		XJQ_PureColorIcon(GetRealPath('../icons/已锁.png')),]
 	icons[0].Set_Color((255,0,255,192))
 	icons[1].Set_Color((255,0,0,192))
 	icons[2].Set_Color((0,255,0,192))
@@ -31,7 +31,7 @@ if True:
 		('测试5',['标签1','标签2'],'rgba(0,0,255,128)',(icons[0],)),
 		]
 	for data in lst:
-		vbox.addWidget(XJQ_ListViewItem(*data))
+		vbox.addWidget(XJQ_ListWidgetItem(*data))
 	wid.show()
 	wid.resize(300,400)
 	wid.setStyleSheet('background:#222222')

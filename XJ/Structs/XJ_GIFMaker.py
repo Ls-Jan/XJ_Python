@@ -5,6 +5,7 @@ __author__='Ls_Jan'
 import os
 import cv2
 import numpy as np
+import ctypes
 from PIL import Image#动图类型的，cv2处理不了(或者是我没找到方法?)，只能借助PIL.Image
 from threading import Thread
 from io import BytesIO
@@ -103,7 +104,8 @@ class XJ_GIFMaker:
 					ret, frame = video_cap.read()
 					if ret is False:
 						break
-					frame = frame[..., ::-1]# opencv读取BGR，转成RGB
+					frame=cv2.cvtColor(frame,cv2.COLOR_BGR2RGBA)#opencv读取BGR，转成RGBA
+					# frame = frame[..., ::-1]#这个只是转成RGB罢了
 					frames.append(frame)
 		except Exception as e:
 			frames.pop()
@@ -129,3 +131,4 @@ class XJ_GIFMaker:
 	@staticmethod
 	def Func_ThreadForceStop(th):#线程强制终止
 		ctypes.pythonapi.PyThreadState_SetAsyncExc(th.ident, ctypes.py_object(SystemExit))
+

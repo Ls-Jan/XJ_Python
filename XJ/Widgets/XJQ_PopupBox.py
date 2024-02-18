@@ -3,9 +3,11 @@ __version__='1.0.0'
 __author__='Ls_Jan'
 
 import math
+from typing import Union
 from PyQt5.QtWidgets import QListView,QWidget,QApplication
 from PyQt5.QtCore import Qt,QPoint,QRect,QSize,QRectF
 from PyQt5.QtGui import QPainter,QColor,QPainterPath,QPen,QPixmap
+from ..Functions.CalcHintArea import *
 
 __all__=['XJQ_PopupBox']
 
@@ -14,7 +16,7 @@ class XJQ_PopupBox(QWidget):#弹窗式容器，
 		弹窗式容器，其行为可参考组合框点击时弹出的列表，
 		只不过可以承载控件而非仅仅的列表，并且点击容器元素时并不会像组合框列表那样消失
 
-		目前的缺点是如果窗口一下缩小到弹窗看不见的大小时弹窗不会更新位置,
+		目前的缺点是如果窗口一下缩小到弹窗看不见的大小时弹窗不会更新位置(这个漏洞得大动刀才能修，说实话不想搞),
 		只不过这个问题影响不大，连调用两次show()即可
 	'''
 	__size=None
@@ -30,18 +32,30 @@ class XJQ_PopupBox(QWidget):#弹窗式容器，
 	__round=None
 	__thick=None
 	__cache={'pSize':None,'cRect':None,'pix':None}#绘制缓存
-	#pointAt可以为组件，也可以为QPoint、QRect。当作为后两者时必须额外指定parent
-	def __init__(self,pointAt,*,
-			parent=None,#指定父控件
-			size=None,#指定大小，为None则随容器控件变化
-			arrowLength=10,#箭头长度
-			arrowWidth=10,#箭头底部宽
-			borderThick=4,#边界厚度
-			cornerRound=20,#圆角半径
-			background=QColor(0,0,0,96),#背景色
-			borderColor=QColor(0,0,255),#边界色
-			priority='RBLT',#位置优先级，弹窗优先出现的位置
-			autoSize=False,):#在无法充分显示时，大小自调节【功能未落实，太靠肝度了】
+	def __init__(self,pointAt:Union[QWidget,QPoint,QRect],*,#pointAt可以为组件，也可以为QPoint、QRect。当作为后两者时必须额外指定parent
+			parent:QWidget=None,#指定父控件
+			size:QSize=None,#指定大小，为None则随容器控件变化
+			arrowLength:int=10,#箭头长度
+			arrowWidth:int=10,#箭头底部宽
+			borderThick:int=4,#边界厚度
+			cornerRound:int=20,#圆角半径
+			background:QColor=QColor(0,0,0,96),#背景色
+			borderColor:QColor=QColor(0,0,255),#边界色
+			priority:str='RBLT',#位置优先级，弹窗优先出现的位置
+			autoSize:bool=False,):#在无法充分显示时，大小自调节【功能未落实，太靠肝度了】
+		'''
+			pointAt：可以为组件，也可以为QPoint、QRect。当作为后两者时必须额外指定parent
+			parent：指定父控件，不显式指定的话会自动寻找pointAt的顶级父控件
+			size：指定大小，为None则随容器控件变化
+			arrowLength：箭头长度
+			arrowWidth：箭头底部宽
+			borderThick：边界厚度
+			cornerRound：圆角半径
+			background：背景色
+			borderColor：边界色
+			priority：位置优先级，弹窗优先出现的位置
+			autoSize：在无法充分显示时，大小自调节【功能未落实，太靠肝度了】
+		'''
 		super().__init__()
 		if(isinstance(pointAt,QWidget)):
 			temp=pointAt
@@ -62,6 +76,7 @@ class XJQ_PopupBox(QWidget):#弹窗式容器，
 			raise Exception('参数不足！XJQ_PopupBox对象初始化参数parent缺失')
 
 		content=QWidget(self)
+		self.__size=None
 		self.__content=content
 		self.__arrowL=arrowLength
 		self.__arrowW=arrowWidth
@@ -77,17 +92,30 @@ class XJQ_PopupBox(QWidget):#弹窗式容器，
 		self.setParent(parent)
 		self.setStyleSheet('.XJQ_PopupBox{background:transparent;}')#避免无意间被染色，毕竟样式表的背景绘制无法被paintEvent拦截
 	def Get_Content(self):
+		'''
+			获取内容物
+		'''
 		return self.__content
-	def Set_Content(self,wid):
+	def Set_Content(self,wid:QWidget):
+		'''
+			设置内容物
+		'''
 		self.__content.setParent(None)
 		self.__content=wid
 		wid.setParent(self)
-	def Set_Color(self,background=None,border=None):
+	def Set_Color(self,background:QColor=None,border:QColor=None):
+		'''
+			设置背景色以及边界色
+		'''
 		if(background):
 			self.__bg=background
 		if(border):
 			self.__bd=border
+
 	def show(self,force=False):
+		'''
+			force为假时会根据当前聚焦控件来判断是否进行显示
+		'''
 		wid=QApplication.focusWidget()
 		if(not force):
 			if(wid==self.__trigger):
@@ -96,8 +124,9 @@ class XJQ_PopupBox(QWidget):#弹窗式容器，
 				return
 		self.__trigger=wid
 		self.setFocus(Qt.MouseFocusReason)
-		area=self.__CalcPosition()[2]
-		if(area):
+		rst=self.__CalcPosition()
+		if(rst):
+			area=rst[2]
 			self.setGeometry(area)
 			super().show()
 	def resize(self,size):
@@ -108,6 +137,7 @@ class XJQ_PopupBox(QWidget):#弹窗式容器，
 			self.hide()
 			if(wid!=self.__trigger):
 				self.__trigger=None
+
 		self.__UpdateCache()
 		pix=self.__cache['pix']
 		if(not pix):#容器控件在区域外，隐藏不显示
@@ -119,10 +149,12 @@ class XJQ_PopupBox(QWidget):#弹窗式容器，
 	def __UpdateCache(self):#更新缓存__cache，同时设置geometry属性。(只是将原本堆在paintEvent的大量代码转移过来罢了
 		if(self.__cache['pSize']==self.parent().size() and self.__cache['cRect']==self.__content.geometry()):
 			return
-		pointAt,p,area=self.__CalcPosition()
-		if(not pointAt):#不作处理
+		rst=self.__CalcPosition()
+		if(not rst):
 			self.__cache['pix']=None
 			return
+		pointAt,p,area=rst
+
 		self.setGeometry(area)
 		x,y=pointAt.x(),pointAt.y()
 		aW=self.__arrowW
@@ -223,101 +255,18 @@ class XJQ_PopupBox(QWidget):#弹窗式容器，
 		self.__cache['cRect']=self.__content.geometry()
 		self.__cache['pix']=pix
 	def __CalcPosition(self):#计算位置，将依次返回：目标坐标(QPoint)、弹窗所在方位(LTRB之一)、弹窗所在区域(QRect)
-		pointAt=self.__pointAt
+		target=self.__pointAt
 		parent=self.parent()
-		if(isinstance(pointAt,QWidget)):
-			pointAt=QRect(pointAt.mapTo(parent,QPoint(0,0)),pointAt.size())
+		if(isinstance(target,QWidget)):
+			target=QRect(target.mapTo(parent,QPoint(0,0)),target.size())
 		pSize=parent.size()
 		if(self.__size):
-			cSize=self.__size
+			hSize=self.__size
 		else:
 			#参考sizeHint：
 			#https://blog.csdn.net/u013087068/article/details/44747621
 			#https://blog.csdn.net/qq_40732350/article/details/86703749
-			cSize=self.__content.sizeHint()
-			if(not cSize):
-				cSize=QSize(100,100)
-		boxW=cSize.width()+2*self.__thick
-		boxH=cSize.height()+2*self.__thick
-		lst=[]
-		for p in self.__priority:
-			L,T,R,B=pointAt.left(),pointAt.top(),pointAt.right(),pointAt.bottom()
-			W,H=pSize.width(),pSize.height()
-			if(p=='L'):
-				area=QRect(QPoint(0,0),QPoint(min(L,W),H))
-				line=QRect(pointAt.topLeft(),pointAt.bottomLeft())
-			elif(p=='R'):
-				area=QRect(QPoint(max(0,R),0),QPoint(W,H))
-				line=QRect(pointAt.topRight(),pointAt.bottomRight())
-			elif(p=='T'):
-				area=QRect(QPoint(0,0),QPoint(W,max(0,T)))
-				line=QRect(pointAt.topLeft(),pointAt.topRight())
-			elif(p=='B'):
-				area=QRect(QPoint(0,min(B,H)),QPoint(W,H))
-				line=QRect(pointAt.bottomLeft(),pointAt.bottomRight())
-			newline=area.intersected(line)
-			if(newline and area):
-				W,H=boxW,boxH
-				if(p in 'LR'):
-					W+=self.__arrowL
-				else:
-					H+=self.__arrowL
-				aW=area.width()
-				aH=area.height()
-				lst.append((
-					newline.center(),
-					p,
-					area,
-					min(aW,W)*min(aH,H)))
-				if(aW>W and aH>H):#空间充裕
-					if(not area.contains(line)):#边界被截过，作为次要判断
-						continue
-					else:#理想情况
-						lst=lst[-1:]
-						break
-		if(lst):
-			lst.sort(key=lambda item:(-item[3],self.__priority.index(item[1])))
-			pointAt,p,area=lst[0][:3]
-			x,y=pointAt.x(),pointAt.y()
-			W,H=boxW,boxH
-			if(p in 'LR'):
-				W+=self.__arrowL
-				if(p =='L'):
-					area.setLeft(area.right()-W+1)
-				else:
-					area.setRight(area.left()+W-1)
-				aT=area.top()+H/2
-				aB=area.bottom()-H/2
-				if(aT>y):
-					aB=aT
-				elif(aB<y):
-					aT=aB
-				else:
-					aT=y
-					aB=y
-				aT-=H/2-1
-				aB+=H/2
-				area.setTop(aT)
-				area.setBottom(aB)
-			else:
-				H+=self.__arrowL
-				if(p =='T'):
-					area.setTop(area.bottom()-H+1)
-				else:
-					area.setBottom(area.top()+H-1)
-				aL=area.left()+W/2
-				aR=area.right()-W/2
-				if(aL>x):
-					aR=aL
-				elif(aR<x):
-					aL=aR
-				else:
-					aL=x
-					aR=x
-				aL-=W/2-1
-				aR+=W/2
-				area.setLeft(aL)
-				area.setRight(aR)
-			return pointAt,p,area
-		return [None,None,None]
-
+			hSize=self.__content.sizeHint()
+			if(not hSize):
+				hSize=QSize(100,100)
+		return CalcHintArea(target,hSize,pSize,self.__arrowL,priority=self.__priority)

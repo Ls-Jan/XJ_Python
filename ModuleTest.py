@@ -1,23 +1,32 @@
 
+
+
+# from XJ.Widgets._test.XJQ_PopupBox import *
+# from XJ.Widgets._test.XJQ_PlayBar import *
+# from XJ.Widgets._test.XJQ_ButtonGroup import *
+# from XJ.Widgets._test.XJQ_NumInput import *
+# from XJ.Widgets._test.XJQ_PictCarousel import *
+# from XJ.Widgets._test.XJQ_Clock import *
+# from XJ.Widgets._test.XJQ_SwitchBtn import *
+# exit()
+
+
 import os
 import time
 
 class XJ_ModTest:
-	__parts=[
-		'Widgets',
-		'Functions',
-		'Scripts',
-		'Arithmetic',]
 	def __init__(self):
 		self.__mods={}
+		self.__parts=tuple(filter(lambda name:name[0].isupper(),next(os.walk('XJ'))[1]))
 	def Opt_GetParts(self):
 		return self.__parts
 	def Opt_LoadMods(self,part):
 		if(part not in self.__parts):
 			raise Exception(f'模块{part}不存在')
 		mods=[]
+		exclude={'__init__.py'}
 		for file in next(os.walk(self.GetPath(part)))[2]:
-			if('XJ' in file):
+			if(file not in exclude):
 				mod=file[:-3]
 				pmod=self.GetPath(part,mod)
 				ptmod=self.GetPath(part,mod,test=False)
@@ -33,14 +42,16 @@ class XJ_ModTest:
 		mods.sort(key=lambda item:-item['mTime'])#升序排序
 		for item in mods:
 			mTime=item['mTime']
-			item['mTime']=time.strftime('%Y/%m/%d %H:%M:%S',time.localtime(mTime))
+			item['mTime']=time.strftime('[%Y/%m/%d]%H:%M:%S',time.localtime(mTime))
 		self.__mods=mods
 		return mods
 	def Opt_TestMod(self,index=0):
-		mod=self.__mods[0]
-		print(mod['pmTest'])
-		print(mod['mTime'])
-		exec(f'import {mod["pmTest"]}')
+		if(0<=index<len(self.__mods)):
+			mod=self.__mods[index]
+			print(mod['pmTest'])
+			print(mod['mTime'])
+			pmTest=mod["pmTest"]
+			os.system(f'py -c "import {pmTest}"')
 	@staticmethod
 	def GetPath(part,mod='',seq='/',suffix='.py',test=True):
 		lst=['XJ',part]
@@ -52,7 +63,12 @@ class XJ_ModTest:
 
 if __name__=='__main__':
 	mt=XJ_ModTest()
-	mt.Opt_LoadMods('Widgets')
+	# mods=mt.Opt_LoadMods('Functions')
+	mods=mt.Opt_LoadMods('Widgets')
+	print(len(mods))
+	for mod in mods:
+		print(mod['mTime'],mod['mod'])
+	print('\n\n')
 	mt.Opt_TestMod()
 
 

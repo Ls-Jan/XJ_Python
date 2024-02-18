@@ -7,7 +7,8 @@ from PyQt5.QtWidgets import QApplication
 if True:
 	app = QApplication(sys.argv)
 
-	pn=XJQ_PageNavigation(150)
+	pn=XJQ_PageNavigation()
+	pn.Set_DataCount(150)
 	pn.Set_PerCountList([1,2,3,4,5,10,100])
 	pn.resize(250,50)
 	pn.changed.connect(lambda start,count:print(start,start+count-1))

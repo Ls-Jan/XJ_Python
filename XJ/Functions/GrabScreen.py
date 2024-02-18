@@ -6,12 +6,15 @@ from PyQt5.QtGui import QPixmap,QGuiApplication,QPainter,QTransform
 from PyQt5.QtCore import QRect
 from functools import reduce
 
-def GrabScreen(screenID=0):
+__all__=['GrabScreen']
+def GrabScreen(screenID:int=0):
 	'''
+		screenID为屏幕ID，多屏时可通过该值指定某一屏幕截图
+		如果screenID小于0那么会将多屏画面拼接成完整的一张图
+		返回QPixmap和QRect，无效正值则返回空QPixmap和空QRect
+
 		考虑到跨平台问题，没用到与Windows直接相关的东西(像是win32gui啥的)
-		
 		使用Qt的截屏，返回QPixmap和QRect。后期可以使用QPixmap.copy来截取指定区域
-		负值则全截，无效正值则返回空QPixmap和空QRect
 	'''
 	screens=QGuiApplication.screens()
 	if(0<=screenID<len(screens)):
