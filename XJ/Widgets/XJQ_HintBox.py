@@ -1,4 +1,7 @@
 
+__version__='1.0.0'
+__author__='Ls_Jan'
+
 from ..Functions.GetScreensArea import *
 from ..Functions.CalcHintArea import *
 
@@ -9,13 +12,12 @@ from PyQt5.QtGui import QCursor, QFocusEvent, QShowEvent
 __all__=['XJQ_HintBox']
 class XJQ_HintBox(QWidget):
 	'''
-		置顶显示型容器(鼠标追随)(牛皮癣)，
-		用来顶替只能显示纯文本的tooltip，
-		调用update更新窗口位置。
+		置顶显示型容器，连续调用update函数的话可实现鼠标追随显示功能(牛皮癣)，
+		本质上是用来顶替只能显示纯文本的tooltip，
 		弹窗与内容物的大小总是一致的。
 
 		可开启自动隐藏功能(在鼠标点击弹窗之外的地方弹窗会自动隐藏)，
-		需注意的一点是该功能开启后弹窗显示时会获取窗口焦点
+		需注意的一点是该功能开启后弹窗显示时会将活跃窗口设置为本弹窗
 	'''
 	def __init__(self,content:QWidget=None,size:QSize=None):
 		'''

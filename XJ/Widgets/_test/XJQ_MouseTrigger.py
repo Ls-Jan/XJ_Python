@@ -5,34 +5,28 @@ from PyQt5.QtWidgets import QApplication,QPushButton,QWidget,QLabel
 from PyQt5.QtCore import QRect
 
 if True:
-	app = QApplication([])
+	app=QApplication([])
 
-	win=QWidget()
-	win.resize(400,400)
+	win=QPushButton("移动鼠标")
+	t=XJQ_MouseTrigger(win)
+	btn=QPushButton("Test",t)
+
+	t.Opt_AddArea('矩形-百分数',QRectF(0.25,0.25,0.5,0.5))
+	t.Opt_AddArea('矩形-固定值',QRectF(0,0,100,100))
+	t.Opt_AddArea('按钮',btn)
+	t.enter.connect(lambda name,flag:print('进入' if flag else '离开',name))
+	t.hover.connect(lambda name,flag:print('显示Tooltip' if flag else '隐藏Tooltip',name))
+	btn.setGeometry(100,100,100,100)
+	win.resize(600,400)
 	win.show()
-	lb=QLabel("移动鼠标",win)
-	lb.setGeometry(QRect(150,150,100,100))
-	lb.show()
-	btn=QPushButton("Test",win)
-	btn.setGeometry(QRect(100,100,200,200))
-	btn.clicked.connect(lambda:print("CLICK"))
-	btn.hide()
-	mt=XJQ_MouseTrigger(win)
-	# mt.Opt_AddRange('Center',(0.25,0.25),(0.5,0.5))
-	mt.Opt_AddRange('Left',(0,0),(100,1.0))
-	mt.Opt_AddRange('Btn',target=btn)
 
-	def Func(name,enter):
-		print('->Enter' if enter else 'Leave',name)
-		if(name=='Btn'):
-			if(enter):
-				btn.show()
-			else:
-				btn.hide()
-	mt.enter.connect(Func)
+	print('添加了三块区域，分别是')
+	print('【按钮】')
+	print('【矩形-百分数[QRectF(0.25,0.25,0.5,0.5)]】')
+	print('【矩形-固定值[QRectF(0,0,100,100)]】')
+	print('移动鼠标进行尝试')
 
+	app.exec()
 
-
-	app.exec_()
 
 

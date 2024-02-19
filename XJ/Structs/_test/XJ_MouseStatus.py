@@ -1,5 +1,5 @@
 
-from ..XJQ_MouseStatus import *
+from ..XJ_MouseStatus import *
 
 
 import sys
@@ -12,7 +12,7 @@ class Test(QWidget):
 	__mouseStatus=None
 	def __init__(self,*arg):
 		super().__init__(*arg)
-		ms=XJQ_MouseStatus()
+		ms=XJ_MouseStatus()
 		ms.longClick.connect(lambda:print("<LongClick!>"))
 		self.__mouseStatus=ms
 	def __EasyPrint(self):

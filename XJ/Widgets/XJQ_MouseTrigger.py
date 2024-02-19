@@ -1,96 +1,126 @@
 
-__version__='1.0.0'
+__version__='1.1.0'
 __author__='Ls_Jan'
+from typing import Union
 
 from PyQt5.QtWidgets import QWidget
-from PyQt5.QtCore import Qt,QObject,QRect,pyqtSignal,QEvent
+from PyQt5.QtCore import pyqtSignal,QEvent,QPoint,QRect,QRectF,Qt
 
-
-__all__=['XJQ_MouseTrigger']
-
-#TODO：可优化(不急)
-class XJQ_MouseTrigger(QObject):#当鼠标进出指定区域时发出信号
+class XJQ_MouseTrigger(QWidget):
 	'''
-		当鼠标进出控件指定区域时发出信号enter(str,bool)，进入时为真
-		创建对象时需指定目标控件。
+		鼠标触发器，无使用限制，被控件压在底下亦能生效。
+		1.当鼠标进入指定区域时发出信号enter(str,QPoint,bool)并且第三参数为True，
+			离开时触发enter信号并且第三参数为False，
+		2.鼠标在指定区域停留一定时长时将发出信号hover(str,QPoint,bool)并且第三参数为True，
+			触发hover信号后移动鼠标时将再次触发hover并且第三参数为False
+		3.当设置父控件后该触发器总会自动调整位置大小使其完全恰好覆盖父控件(牛皮癣效果)
 
-		由于能力有限，暂未找到“向兄弟控件传递事件”的有效方法
-		底层采用的是对目标控件安装事件过滤器的方法实现的鼠标追踪
-		底层对目标控件调用了两个函数：setMouseTracking、installEventFilter
-		也就是本类与目标控件出现了不可避免的耦合
+		底层是利用hoverEvent事件会连续传递的特点来实现相关功能的，非常省心。
 	'''
 	enter=pyqtSignal(str,bool)
-	def __init__(self,win:QWidget):
-		super().__init__(win)
-		win.setMouseTracking(True)#鼠标跟踪
-		win.installEventFilter(self)
-		self.__range=[]
-		self.__cache=[]
-		self.__active=set()
+	hover=pyqtSignal(str,bool)
+	def __init__(self,parent:QWidget=None):
+		super().__init__()
+		self.__area={}
+		self.__cache={}
+		self.__hover=set()
+		self.__enter=set()
+		self.installEventFilter(self)
+		self.setAttribute(Qt.WA_Hover,True)
+		self.setParent(parent)
 	def eventFilter(self,obj,event):
 		eType=event.type()
-		if(eType==QEvent.MouseMove):
-			self.__UpdateActive(event.pos())
-		elif(eType==QEvent.Enter):
-			self.__UpdateActive(event.pos())
-		elif(eType==QEvent.Leave):
-			for name in self.__active:
+		if(eType==QEvent.HoverMove):
+			pos=event.pos()
+			include=set()
+			for name,area in self.__cache.items():
+				if(area.contains(pos)):
+					include.add(name)
+			for name in include.difference(self.__enter):
+				self.enter.emit(name,True)
+			for name in self.__enter.difference(include):
 				self.enter.emit(name,False)
-			self.__active.clear()
-		elif(eType==QEvent.Resize):
-			self.__UpdateCache()
+			for name in self.__hover:
+				self.hover.emit(name,False)
+			self.__hover.clear()
+			self.__enter=include
+		elif(eType==QEvent.ToolTip):
+			for name in self.__enter:
+				self.hover.emit(name,True)
+			self.__hover=self.__enter
+		elif(eType==QEvent.Leave):
+			for name in self.__enter:
+				self.enter.emit(name,False)
+			for name in self.__hover:
+				self.hover.emit(name,False)
+			self.__hover.clear()
+			self.__enter.clear()
+		elif(eType==QEvent.Resize or eType==QEvent.Move or eType==QEvent.Show):
+			self.update()
+		elif(eType==QEvent.Paint):
+			parent=self.parent()
+			if(parent):
+				pSize=parent.size()
+				if(self.size()!=pSize):
+					self.resize(pSize)
 		return False
-	def Opt_AddRange(self,name:str,pos:tuple=(0.0,0.0),size:tuple=(1.0,1.0),*,target:QWidget=None):
+	def setParent(self,parent:QWidget):
+		super().setParent(parent)
+		if(parent!=None):
+			self.setGeometry(QRect(QPoint(0,0),parent.size()))
+	def update(self,name:str=None):
 		'''
-			添加探测区
-			如果指定target那么以目标控件target的坐标为准
+			探测区位置发生变化时调用，窗体大小位置变化时会自动调用，一般不需要显式调用
 		'''
-		if(isinstance(target,QWidget)):
-			self.__range.append((name,target))
+		self.__cache.clear()
+		keys=self.__area.keys()
+		if(name in keys):
+			keys=[name]
+		for key in keys:
+			area=self.__area[key]
+			if(isinstance(area,QWidget)):
+				rect=area.geometry()
+				p1=area.mapToGlobal(QPoint(0,0))
+				p2=self.mapFromGlobal(p1)
+				rect.moveTo(p2)
+				area=rect
+			else:
+				attrs=['left','top','right','bottom']
+				size=[self.width(),self.height()]
+				for i in range(len(attrs)):
+					attr=attrs[i]
+					val=getattr(area,attr)()
+					if(0<=val<=1):
+						val=val*size[i%2]
+						getattr(area,'set'+attr.capitalize())(val)#py字符串首字母大写：str.capitalize
+				area=area.toRect()
+			self.__cache[key]=area.normalized()
+		super().update()
+	def Get_Area(self,name:str):
+		'''
+			获取探测区，探测区不存在则返回None
+		'''
+		if(name not in self.__area):
+			return None
+		return self.__area[name]
+	def Opt_AddArea(self,name:str,target:Union[QRectF,QWidget]):
+		'''
+			添加探测区，探测区可以是矩形也可以是控件。
+			target如果是矩形，在坐标取值小于1时将视作百分比进行计算实际位置。
+		'''
+		if(isinstance(target,QWidget) or isinstance(target,QRectF)):
+			self.__area[name]=target
+			self.update(name)
+			return True
 		else:
-			self.__range.append((name,(pos,size)))
-		self.__UpdateCache()
-	def Opt_RemoveRange(self,name:str):
+			return False
+	def Opt_RemoveArea(self,name:str):
 		'''
 			移除探测区
 		'''
-		for i in range(len(self.__range)-1,-1,-1):
-			if(self.__range[i][0]==name):
-				self.__range.pop(i)
-				self.__UpdateCache()
-				return True
+		if(name in self.__area):
+			self.__area.pop(name)
+			self.update()
+			return True
 		return False
-	def __UpdateCache(self):
-		self.__cache.clear()
-		win=self.parent()
-		pSize=win.size()
-		pSize=(pSize.width(),pSize.height())
-		for item in self.__range:
-			name,target=item
-			if(isinstance(target,QWidget)):
-				pos=target.pos()
-				size=target.size()
-				if(target.parent()!=win):
-					pos=target.mapTo(win,pos)
-				pos=[pos.x(),pos.y()]
-				size=[size.width(),size.height()]
-			else:
-				pos=list(target[0])
-				size=list(target[1])
-			for i in range(2):
-				if(isinstance(pos[i],float)):
-					pos[i]=pSize[i]*pos[i]
-				if(isinstance(size[i],float)):
-					size[i]=pSize[i]*size[i]
-			self.__cache.append((name,QRect(*pos,*size)))
-	def __UpdateActive(self,pos):
-		active=set()
-		for item in self.__cache:
-			name,rect=item
-			if(rect.contains(pos)):
-				active.add(name)
-		for name in active.difference(self.__active):
-			self.enter.emit(name,True)
-		for name in self.__active.difference(active):
-			self.enter.emit(name,False)
-		self.__active=active
+

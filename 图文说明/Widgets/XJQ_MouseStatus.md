@@ -1,4 +1,4 @@
-# XJQ_MouseStatus
+# XJ_MouseStatus
 
 鼠标状态记录，不单独使用，只处理单键(多键行为请在外部代码控制)
 
@@ -11,11 +11,11 @@
 可设置长按间隔、双击间隔、防抖距离(鼠标按下时移动量不超过该值时鼠标被视为未移动状态)
 
 
-![XJQ_MouseStatus](../pict/XJQ_MouseStatus.gif)
+![XJ_MouseStatus](../pict/XJ_MouseStatus.gif)
 
 
 ```py
-from XJ.Widgets import XJQ_MouseStatus
+from XJ.Widgets import XJ_MouseStatus
 
 import sys
 from PyQt5.QtWidgets import QApplication,QWidget
@@ -27,7 +27,7 @@ class Test(QWidget):
 	__mouseStatus=None
 	def __init__(self,*arg):
 		super().__init__(*arg)
-		ms=XJQ_MouseStatus()
+		ms=XJ_MouseStatus()
 		ms.longClick.connect(lambda:print("<LongClick!>"))
 		self.__mouseStatus=ms
 	def __EasyPrint(self):

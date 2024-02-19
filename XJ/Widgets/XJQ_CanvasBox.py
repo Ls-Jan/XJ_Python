@@ -2,7 +2,7 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
-from .XJQ_MouseStatus import *
+from ..Structs.XJ_MouseStatus import *
 
 import numpy as np
 from typing import Union#与py的“类型注解”用法有关：https://zhuanlan.zhihu.com/p/419955374
@@ -32,7 +32,7 @@ class XJQ_CanvasBox(QWidget):#画布容器(抛弃了权重这个笨重的玩意�
 	__range=QRect()#控件的总范围(逻辑位置)
 	__poses={}#{obj:QRect}#控件对应逻辑位置
 	__matrix=None#转换矩阵(np.array)，逻辑坐标→显示坐标
-	__mouseStatus=None#XJQ_MouseStatus
+	__mouseStatus=None#XJ_MouseStatus
 	__snapshoot={#用于解决画布拖拽及缩放时的卡顿问题
 		'img':None,#QPixmap
 		'rect':None,}#QRect
@@ -42,7 +42,7 @@ class XJQ_CanvasBox(QWidget):#画布容器(抛弃了权重这个笨重的玩意�
 		self.__poses={}
 		self.__option=self.__option.copy()
 		self.__matrix=np.array([[3,0,0],[0,3,0],[0,0,1]])
-		self.__mouseStatus=XJQ_MouseStatus()
+		self.__mouseStatus=XJ_MouseStatus()
 		self.__timer=QTimer()
 		self.__timer.setSingleShot(True)
 		self.__timer.timeout.connect(self.__WheelDelay)
