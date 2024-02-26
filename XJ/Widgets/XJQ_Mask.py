@@ -2,7 +2,10 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
-import sys
+
+from ..Functions.CV2ToQPixmap import *
+from ..Functions.CV2FromQPixmap import *
+
 import numpy as np
 import cv2
 from PyQt5.QtCore import Qt,QPoint,QRect,pyqtSignal
@@ -27,19 +30,19 @@ class XJQ_Mask(QLabel):
 			clickBolck决定是否屏蔽点击
 		'''
 		super().__init__(parent)
-		exclude=list(exclude)
-		for pst in range(len(exclude)):
-			if(type(exclude[pst])!=tuple):
-				exclude[pst]=(exclude[pst],self.Trans_WidMask_Default)
+		self.__exclude=[]
+		for nape in exclude:
+			if(type(nape)!=tuple):
+				item=(nape,self.Trans_WidMask_Default)
 			else:
-				if(len(exclude[pst])<2):
-					exclude[pst]=(exclude[pst][0],self.Trans_WidMask_Default)
-				elif(type(exclude[pst][1])==bool):
-					if(exclude[pst][1]==False):
-						exclude[pst]=(exclude[pst][0],self.Trans_WidMask_Default)
+				if(len(nape)<2):
+					item=(nape[0],self.Trans_WidMask_Default)
+				elif(type(nape[1])==bool):
+					if(nape[1]==False):
+						item=(nape[0],self.Trans_WidMask_Default)
 					else:
-						exclude[pst]=(exclude[pst][0],self.Trans_WidMask_Style)
-		self.__exclude=exclude
+						item=(nape[0],self.Trans_WidMask_Style)
+			self.__exclude.append(item)
 		self.setAttribute(Qt.WA_TransparentForMouseEvents, not clickBlock)#鼠标事件穿透
 		self.setStyleSheet(f'background:{color}')
 		self.show()
@@ -89,7 +92,7 @@ class XJQ_Mask(QLabel):
 		return pix
 	@classmethod
 	def Trans_WidMask_Style(self,wid):
-		arr=self.Trans_PixToArray(wid.grab())
+		arr=CV2FromQPixmap(wid.grab())
 		#洪填，将外围填充
 		arr=cv2.cvtColor(arr,cv2.COLOR_RGBA2GRAY)
 		h, w = arr.shape[:2]
@@ -100,17 +103,5 @@ class XJQ_Mask(QLabel):
 		arr=arr==arr_copy
 		arr=arr*255
 		arr=arr.astype(np.uint8)
-		return self.Trans_ArrayToPix(arr)
-	@staticmethod
-	def Trans_PixToArray(pix):#pix是RGBA四通道QPixmap。不使用PIL.Image模块
-		h,w=pix.height(),pix.width()
-		buffer = QImage(pix).constBits()
-		buffer.setsize(h*w*4)
-		arr = np.frombuffer(buffer, dtype=np.uint8).reshape((h,w,4))
-		return arr.copy()
-	@staticmethod
-	def Trans_ArrayToPix(arr):#arr对应四通道图片。不使用PIL.Image模块
-		arr=cv2.cvtColor(arr,cv2.COLOR_RGBA2BGRA)
-		img=QImage(arr.data, arr.shape[1], arr.shape[0], arr.shape[1]*4, QImage.Format_RGBA8888)
-		return QPixmap(img)
+		return CV2ToQPixmap(arr)
 

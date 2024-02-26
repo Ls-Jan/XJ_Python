@@ -64,7 +64,8 @@ class XJ_ModTest:
 if __name__=='__main__':
 	mt=XJ_ModTest()
 	# mods=mt.Opt_LoadMods('Functions')
-	mods=mt.Opt_LoadMods('Widgets')
+	mods=mt.Opt_LoadMods('Structs')
+	# mods=mt.Opt_LoadMods('Widgets')
 	print(len(mods))
 	for mod in mods:
 		print(mod['mTime'],mod['mod'])

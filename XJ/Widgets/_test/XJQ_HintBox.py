@@ -16,7 +16,7 @@ if True:
 	hibox=XJQ_HintBox()
 	hibox.update()
 	hibox.Set_Content(tp)
-	# hibox.Set_AutoHide(100)
+	# hibox.Set_AutoHide(True)
 
 	win=QPushButton("点击按钮查看效果")
 	win.resize(500,300)

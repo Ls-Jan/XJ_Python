@@ -64,6 +64,7 @@ class XJQ_PlayBar(QFrame):#播放条
 		self.__timerPause=timerPause
 		self.__loop=loop
 		self.setStyleSheet('.XJQ_PlayBar{background:rgba(0,0,0,160)}')
+		widIndex.setStyleSheet('color:#AAAAAA')
 		self.Set_Duration(50)
 		self.Set_Loop(250)
 		self.Set_Index()

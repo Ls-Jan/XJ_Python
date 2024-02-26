@@ -3,6 +3,9 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
+from ..Functions.CV2ToQPixmap import *
+from ..Functions.CV2FromQPixmap import *
+from ..Functions.CV2LoadPict import *
 
 import cv2
 import numpy as np
@@ -38,7 +41,7 @@ class XJQ_PureColorIcon(QIcon):#纯色图标
 		super().__init__()
 		if(isinstance(data,str)):
 			try:
-				im=self.Opt_LoadPictAsArray(data)
+				im=CV2LoadPict(data)
 			except:
 				raise Exception(f'路径{data}不存在')
 		elif(isinstance(data,np.ndarray)):
@@ -52,9 +55,9 @@ class XJQ_PureColorIcon(QIcon):#纯色图标
 			else:
 				im=QPixmap(1,1)
 				im.fill(Qt.transparent)
-			im=self.Trans_PixmapToArray(im)
+			im=CV2ToQPixmap(im)
 		elif(isinstance(data,QImage) or isinstance(data,QPixmap)):
-			im=self.Trans_PixmapToArray(QPixmap(data))
+			im=CV2ToQPixmap(QPixmap(data))
 		else:
 			raise Exception('data参数错误，类型仅能为np.ndarray(图片数据)或是str(图片路径)或是QIcon/XJQ_PureColorIcon或是QPixmap或是None')
 
@@ -143,29 +146,10 @@ class XJQ_PureColorIcon(QIcon):#纯色图标
 		bg=self.__bg
 		fg=cv2.bitwise_and(fg,fg, mask=self.__msk)
 		bg=cv2.addWeighted(bg,1,fg,1,0)
-		pix=self.Trans_ArrayToPixmap(bg)
+		pix=CV2ToQPixmap(bg)
 		#虽然没有setPixmap但有这个addPixmap函数，简单看了下这个函数的功能，符合预期，很好
 		#https://wenku.baidu.com/view/8d3284563269a45177232f60ddccda38376be1ba.html
 		self.addPixmap(pix)
 	@staticmethod
-	def Opt_LoadPictAsArray(path):
-		#cv2读取中文路径图片：https://www.zhihu.com/question/67157462/answer/251754530
-		return cv2.imdecode(np.fromfile(path,dtype=np.uint8),cv2.IMREAD_UNCHANGED)
-	@staticmethod
 	def Trans_QColorToList(col):
 		return [getattr(col,key)() for key in ['red','green','blue','alpha']]
-	@staticmethod
-	def Trans_ArrayToPixmap(arr):#arr对应四通道图片。不使用PIL.Image模块
-		#https://blog.csdn.net/comedate/article/details/121259033
-		#https://blog.csdn.net/weixin_44431795/article/details/122016214
-		img=QImage(arr.data, arr.shape[1], arr.shape[0], arr.shape[1]*4, QImage.Format_RGBA8888)
-		return QPixmap(img)
-	@staticmethod
-	def Trans_PixmapToArray(pix):#pix是RGBA四通道QPixmap。不使用PIL.Image模块
-		#https://deepinout.com/numpy/numpy-questions/700_numpy_qimage_to_numpy_array_using_pyside.html#ftoc-heading-3
-		h,w=pix.height(),pix.width()
-		buffer = QImage(pix).constBits()
-		buffer.setsize(h*w*4)
-		arr = np.frombuffer(buffer, dtype=np.uint8).reshape((h,w,4))
-		return arr.copy()
-

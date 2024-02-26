@@ -21,7 +21,7 @@ if True:
 	
 	show=QPushButton("Show",win)
 	show.setGeometry(QRect(150,50,100,50))
-	show.clicked.connect(lambda:shbox.show())
+	show.clicked.connect(lambda:shbox.show(autoHide=100))
 
 	hide=QPushButton("Hide",win)
 	hide.setGeometry(QRect(150,100,100,50))

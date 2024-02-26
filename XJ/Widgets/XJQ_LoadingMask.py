@@ -4,7 +4,7 @@ __author__='Ls_Jan'
 
 from typing import Union
 from PyQt5.QtWidgets import QHBoxLayout,QVBoxLayout,QLabel
-from PyQt5.QtGui import QMovie,QPixmap
+from PyQt5.QtGui import QMovie,QPixmap, QShowEvent
 from PyQt5.QtCore import QSize
 
 __all__=['XJQ_LoadingMask']
@@ -14,22 +14,23 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 	'''
 		加载动画蒙版，遮蔽控件的不二之选，
 		gif动画可以指定，文字也可以指定(文字是静态的，通常也不需要动态文字
-		动画大小以及文字的颜色和大小均可指定，实在不满足可以设置样式表
+		动画大小以及文字的颜色和大小均可指定，实在不满足可以设置样式表。
+		额外的，即使调用setParent更改父控件也不会影响正常使用
 	'''
 	def __init__(self,
 			  filePath:str,
 			  parent=None,
 			  text:str="加载中...",
-			  size:tuple=(50,50)):
+			  iconSize:tuple=(50,50)):
 		'''
 			filePath为动图路径
-			size为动图大小
+			iconSize为动图大小
 			text为额外的文本提示
 		'''
 		super().__init__(parent)
 		self.__lb_tx=QLabel()
 		self.__lb_gif=QLabel()
-		self.Set_Icon(size,filePath)
+		self.Set_Icon(iconSize,filePath)
 		self.Set_Hint(text,(0,255,255,192),20)
 		self.setStyleSheet('''
 			.XJQ_LoadingMask{
@@ -50,6 +51,17 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 		vbox.addLayout(hbox1)
 		vbox.addLayout(hbox2)
 		vbox.addStretch(1)
+	def showEvent(self,event):
+		mv=self.__lb_gif.movie()
+		if(mv):
+			mv.start()
+		self.raise_()
+		return super().showEvent(event)
+	def hideEvent(self,event):
+		mv=self.__lb_gif.movie()
+		if(mv):
+			mv.stop()
+		return super().hideEvent(event)
 	def Set_Hint(self,text:str=None,color:tuple=None,size:int=None):
 		'''
 			设置文本。
@@ -66,7 +78,7 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 		if(text!=None):
 			self.__lb_tx.setText(text)
 		self.__lb_tx.setStyleSheet(style)
-	def Set_Icon(self,size:Union[QSize,tuple],path:str=None):
+	def Set_Icon(self,iconSize:Union[QSize,tuple],path:str=None):
 		'''
 			设置图标
 		'''
@@ -80,14 +92,14 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 			mv=self.__lb_gif.movie()
 			if(not mv):
 				return
-		if(isinstance(size,tuple)):
-			size=QSize(*size)
+		if(isinstance(iconSize,tuple)):
+			iconSize=QSize(*iconSize)
 		if(mv.frameCount()):#动图的frame不为0
-			mv.setScaledSize(size)
+			mv.setScaledSize(iconSize)
 			self.__lb_gif.setMovie(mv)
 		else:#静图，使用QPixmap
 			#虽然QMovie也能打开静图，不知道搭错什么筋，没法调整大小
-			pix=QPixmap(path).scaled(size)
+			pix=QPixmap(path).scaled(iconSize)
 			self.__lb_gif.setPixmap(pix)
 
 	def paintEvent(self,event):

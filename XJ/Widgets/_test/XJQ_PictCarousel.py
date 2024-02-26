@@ -10,19 +10,20 @@ if True:
 
 	file='../icons/加载动画-1.gif'
 	gm=XJ_GIFMaker()
-	size=gm.Opt_LoadSource(GetRealPath(file))
-	frames=[QPixmap(QImage(f.data,*size, size[0]*4,QImage.Format_RGBA8888)) for f in gm.frames]
+	gm.Opt_LoadSource(GetRealPath(file),callback=None)
+	frames=[QPixmap(QImage(f.data,*gm.size, gm.size[0]*4,QImage.Format_RGBA8888)) for f in gm.frames]
 
-	t=XJQ_PictCarousel()
+	pc=XJQ_PictCarousel()
 	# t.Set_Duration(im.info.get('duration',50))
-	t.Set_Frames(frames)
-	t.Opt_Play(True)
-	t.Set_Duration(50)
-	t.Set_Loop(50)
-	t.show()
-	t.resize(1200,700)
+	pc.Set_Frames(frames)
+	pc.Opt_Play(True)
+	pc.Set_Duration(50)
+	pc.Set_Loop(50)
+	pc.show()
+	pc.resize(1200,700)
 
-	# t.setStyleSheet('background:#222222;')
+	pc.setStyleSheet('.XJQ_PictCarousel{background:#333333;}')
+	# pc.setStyleSheet('.XJQ_PictCarousel{background:#222222;};QLabel{color:#FFFFFF;background:#FF0000;}')
 
 	app.exec_()
 

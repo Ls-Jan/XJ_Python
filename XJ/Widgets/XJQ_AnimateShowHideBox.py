@@ -3,7 +3,7 @@ __version__='1.0.0'
 __author__='Ls_Jan'
 
 from PyQt5.QtWidgets import QGraphicsOpacityEffect,QFrame,QVBoxLayout,QWidget
-from PyQt5.QtCore import QPropertyAnimation,Qt
+from PyQt5.QtCore import QPropertyAnimation,Qt,QTimer
 
 __all__=['XJQ_AnimateShowHideBox']
 
@@ -26,6 +26,9 @@ class XJQ_AnimateShowHideBox(QFrame):
 			该值置假时控件在显隐过程中可点击，可将此作为遮罩的延迟关闭(仅遮罩完全消失后才能进一步操作)
 		'''
 		super().__init__(parent)
+		timerHide=QTimer()
+		timerHide.setSingleShot(True)
+		timerHide.timeout.connect(self.hide)
 		vbox=QVBoxLayout(self)
 		vbox.setContentsMargins(0,0,0,0)
 		self.__trans=allowTransparent
@@ -35,6 +38,7 @@ class XJQ_AnimateShowHideBox(QFrame):
 		self.__effect.setOpacity(1)
 		self.__animate.setDuration(300)
 		self.__animate.finished.connect(self.__AnimateFinish)
+		self.__timerHide=timerHide
 		self.Set_Content(content)
 		self.setGraphicsEffect(self.__effect)
 	def Set_Content(self,wid:QWidget=None):
@@ -57,17 +61,35 @@ class XJQ_AnimateShowHideBox(QFrame):
 			设置显隐动画间隔(ms)
 		'''
 		self.__animate.setDuration(duration)
-	def show(self):
+	def show(self,immediate:bool=False,autoHide:int=0):
+		'''
+			如果immediate为真那么直接显示。
+			新增：autoHide用于自动隐藏，在控件完全显示后经过一段时间将自动动画隐藏，单位为ms
+		'''
 		super().show()
 		self.__animate.stop()
-		self.__animate.setEndValue(1)
-		self.__animate.start()
-	def hide(self):
+		if(immediate):
+			self.__effect.setOpacity(1)
+		else:
+			self.__animate.setEndValue(1)
+			self.__animate.start()
+		if(autoHide>0):
+			timerHide=self.__timerHide
+			timerHide.stop()
+			timerHide.setInterval((self.__animate.duration() if not immediate else 0)+autoHide)
+			timerHide.start()
+	def hide(self,immediate:bool=False):
+		'''
+			如果immediate为真那么直接隐藏
+		'''
 		if(self.__trans):
 			self.setAttribute(Qt.WA_TransparentForMouseEvents,True)
 		self.__animate.stop()
-		self.__animate.setEndValue(0)
-		self.__animate.start()
+		if(immediate):
+			self.__effect.setOpacity(0)
+		else:
+			self.__animate.setEndValue(0)
+			self.__animate.start()
 	def __AnimateFinish(self):
 		if(self.__effect.opacity()==0):
 			super().hide() 

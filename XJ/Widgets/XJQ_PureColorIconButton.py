@@ -68,7 +68,8 @@ class XJQ_PureColorIconButton(QAbstractButton):
 				self.__cache[key]['bg']=val
 				keys.append(key)
 		self.__UpdateCache(*keys)
-
+	def sizeHint(self):
+		return self.__icon.size()
 	def resizeEvent(self,event):
 		self.resize(event.size())
 	def resize(self,*size):

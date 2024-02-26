@@ -11,7 +11,8 @@ if True:
 	ni.show()
 	
 	ni.Set_ValueRange(0,50)
-	ni.Set_Precision(1,1)
+	# ni.Set_Precision(10,1)
+	ni.Set_Precision(0.1,1)
 	ni.Set_Value(17.33)
 	ni.valueChanged.connect(lambda i:print(ni.Get_Value()))
 

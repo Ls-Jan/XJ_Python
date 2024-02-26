@@ -3,7 +3,7 @@ __version__='1.0.0'
 __author__='Ls_Jan'
 
 from ..Functions.GetScreensArea import *
-from ..Functions.CalcHintArea import *
+from ..Functions.CalcPopupArea import *
 
 from PyQt5.QtWidgets import QWidget,QApplication
 from PyQt5.QtCore import QEvent, QTimerEvent, Qt,QSize,QPoint,QRect,pyqtSignal
@@ -15,6 +15,7 @@ class XJQ_HintBox(QWidget):
 		置顶显示型容器，连续调用update函数的话可实现鼠标追随显示功能(牛皮癣)，
 		本质上是用来顶替只能显示纯文本的tooltip，
 		弹窗与内容物的大小总是一致的。
+		某种程度上甚至能用来替代QMenu(但没啥必要造轮子，QMenu提供的功能也足够使用的了
 
 		可开启自动隐藏功能(在鼠标点击弹窗之外的地方弹窗会自动隐藏)，
 		需注意的一点是该功能开启后弹窗显示时会将活跃窗口设置为本弹窗
@@ -27,23 +28,24 @@ class XJQ_HintBox(QWidget):
 		super().__init__()
 		self.setAttribute(Qt.WA_TranslucentBackground, True)#透明背景。该属性要和Qt.FramelessWindowHint配合使用，单独用的话不生效
 		self.setWindowFlags(Qt.FramelessWindowHint|Qt.ToolTip)#无边框置顶窗体
+		self.installEventFilter(self)
 		self.__content=None
 		self.__size=size
 		self.__margin=10
-		self.__interval=0
-		self.__timerID=None
+		self.__autoHide=False
 		self.Set_Content(content)
-	def Set_AutoHide(self,interval:int):
+	def Set_AutoHide(self,flag:bool):
 		'''
 			用于实现自动隐藏功能，在弹窗弹出后如果点击其他地方那么弹窗会自动消失，
-			底层采用定时器的方式实现，interval为刷新间隔(ms)，传入0则关闭“自动隐藏”功能
 			特别的，开启自动隐藏时会将窗口焦点转移至弹窗上
 		'''
 		isVisible=self.isVisible()
 		self.hide()
-		self.__interval=interval
+		self.__autoHide=flag
 		if(isVisible):
 			self.show()
+		if(flag):
+			self.activateWindow()
 	def Set_Margin(self,margin:int):
 		'''
 			设置弹窗与鼠标之间的距离
@@ -75,13 +77,6 @@ class XJQ_HintBox(QWidget):
 			super().resize(size)
 		self.__size=size
 		self.update()
-	def showEvent(self,event):
-		if(self.__interval>0):
-			if(self.__content):
-				self.activateWindow()
-			if(self.__timerID==None):
-				self.__timerID=self.startTimer(self.__interval)
-		return super().showEvent(event)
 	def update(self,pos:QPoint=None):
 		'''
 			更新状态。
@@ -95,19 +90,21 @@ class XJQ_HintBox(QWidget):
 				content.resize(self.size())
 		if(pos==None):
 			pos=QCursor().pos()#获取鼠标位置：https://blog.csdn.net/weixin_43862688/article/details/108180908
-		area=GetScreensArea(includeCursor=True).size()
+		area=GetScreensArea(includeCursor=True)
 		size=self.size()
-		rst=CalcHintArea(pos,size,area,self.__margin,True)
+		rst=CalcPopupArea(pos,size,area,self.__margin,True)
 		if(rst):#如果鼠标在屏幕之外就可能会导致rst为空，以防万一
 			self.setGeometry(rst[2])
 			self.show()
 		else:
 			self.hide()
 		super().update()
-	def timerEvent(self,event):
-		win=QApplication.activeWindow()
-		if(win!=self):
-			self.killTimer(self.__timerID)
-			self.hide()
-			self.__timerID=None
-
+	def eventFilter(self,obj,event):
+		if(event.type()==QEvent.WindowDeactivate):#窗口非活跃
+			if(self.__autoHide):
+				self.hide()
+		return super().eventFilter(obj,event)
+	def showEvent(self,event):
+		if(self.__autoHide and self.__content):
+			self.activateWindow()
+		return super().showEvent(event)

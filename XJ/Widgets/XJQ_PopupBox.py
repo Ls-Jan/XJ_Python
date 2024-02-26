@@ -7,7 +7,7 @@ from typing import Union
 from PyQt5.QtWidgets import QListView,QWidget,QApplication
 from PyQt5.QtCore import Qt,QPoint,QRect,QSize,QRectF
 from PyQt5.QtGui import QPainter,QColor,QPainterPath,QPen,QPixmap
-from ..Functions.CalcHintArea import *
+from ..Functions.CalcPopupArea import *
 
 __all__=['XJQ_PopupBox']
 
@@ -269,4 +269,4 @@ class XJQ_PopupBox(QWidget):#弹窗式容器，
 			hSize=self.__content.sizeHint()
 			if(not hSize):
 				hSize=QSize(100,100)
-		return CalcHintArea(target,hSize,pSize,self.__arrowL,priority=self.__priority)
+		return CalcPopupArea(target,hSize,pSize,self.__arrowL,priority=self.__priority)

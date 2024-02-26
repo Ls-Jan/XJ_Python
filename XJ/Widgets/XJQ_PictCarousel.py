@@ -17,25 +17,33 @@ class XJQ_PictCarousel(QWidget):#图片轮播
 		其主要作用是作为视频/动图的预览，用于快速调整分辨率以及播放速率
 	'''
 	__pb=None
-	__shBox=None
+	__shBox_pb=None
+	__shBox_ht=None
 	__frames=None
 	__pict=None
 	__scale=1
+	__hint=None
 	def __init__(self,*args):
 		super().__init__(*args)
 		pb=XJQ_PlayBar()
 		pb.valueChanged.connect(self.__Update)
 		pb.Set_SliderStep(1)
-		shBox=XJQ_AnimateShowHideBox(content=pb)
+		hint=QLabel('x1.0')
+		shBox_pb=XJQ_AnimateShowHideBox(content=pb)
+		shBox_ht=XJQ_AnimateShowHideBox(content=hint)
+		shBox_ht.setParent(self)
+		hint.setStyleSheet('font-size:30px;color:#000000;background:#88FFFFFF')
 		self.__pb=pb
-		self.__shBox=shBox
+		self.__shBox_pb=shBox_pb
+		self.__shBox_ht=shBox_ht
 		self.__frames=[]
 		self.__pict=None
 		self.__scale=1
-		self.__loop=True
+		self.__hint=hint
+		self.Set_Scale(self.__scale)
 		vbox=QVBoxLayout(self)
 		vbox.addStretch(1)
-		vbox.addWidget(shBox)
+		vbox.addWidget(shBox_pb)
 	def Get_IsActive(self):
 		'''
 			判断是否播放中
@@ -67,7 +75,13 @@ class XJQ_PictCarousel(QWidget):#图片轮播
 		'''
 			设置画面缩放比
 		'''
+		if(scale<0.1):
+			scale=0.1
+		elif(scale>10):
+			scale=10
 		self.__scale=scale
+		self.__shBox_ht.show(immediate=True,autoHide=1000)
+		self.__hint.setText(f'x{round(scale,1)}')
 		self.update()
 	def Set_Frames(self,lst:list):
 		'''
@@ -76,6 +90,11 @@ class XJQ_PictCarousel(QWidget):#图片轮播
 		self.__frames=lst
 		self.__pb.Set_Index(max=len(lst)-1)
 		self.update()
+	def Get_Frames(self):
+		'''
+			获取帧列表
+		'''
+		return self.__frames
 	def Opt_Play(self,flag:bool=True):
 		'''
 			播放或者暂停
@@ -83,24 +102,21 @@ class XJQ_PictCarousel(QWidget):#图片轮播
 		self.__pb.Opt_Play(flag)
 
 	def __Update(self,index,isNext):
-		self.__pict=self.__frames[index]
-		self.update()
+		if(0<=index<len(self.__frames)):
+			self.__pict=self.__frames[index]
+			self.update()
 	def leaveEvent(self,event):
-		self.__shBox.hide()
+		self.__shBox_pb.hide()
 	def enterEvent(self,event):
-		self.__shBox.show()
+		self.__shBox_pb.show()
 	def wheelEvent(self,event):
-		if(event.angleDelta().y()<0):
-			self.__scale*=0.9
-		else:
-			self.__scale*=1.1
+		rate=0.9 if event.angleDelta().y()<0 else 1.1
+		self.Set_Scale(self.__scale*rate)
 	def paintEvent(self,event):
 		ptr=QPainter(self)
 		if(self.__pict):
 			size=self.__pict.size()*self.__scale
 			LT=(self.size()-size)/2
 			ptr.drawPixmap(LT.width(),LT.height(),size.width(),size.height(),self.__pict)
-
-
 
 

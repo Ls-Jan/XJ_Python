@@ -6,16 +6,14 @@ from typing import Union
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import pyqtSignal,QEvent,QPoint,QRect,QRectF,Qt
 
-class XJQ_MouseTrigger(QWidget):
+class XJQ_MouseTriggerBox(QWidget):
 	'''
-		鼠标触发器，无使用限制，被控件压在底下亦能生效。
+		鼠标触发器容器，自身不带布局。
 		1.当鼠标进入指定区域时发出信号enter(str,QPoint,bool)并且第三参数为True，
 			离开时触发enter信号并且第三参数为False，
 		2.鼠标在指定区域停留一定时长时将发出信号hover(str,QPoint,bool)并且第三参数为True，
 			触发hover信号后移动鼠标时将再次触发hover并且第三参数为False
-		3.当设置父控件后该触发器总会自动调整位置大小使其完全恰好覆盖父控件(牛皮癣效果)
-
-		底层是利用hoverEvent事件会连续传递的特点来实现相关功能的，非常省心。
+		3.当设置父控件后该触发器总会自动调整位置大小使其完全恰好覆盖父控件(牛皮癣效果)(功能可禁用)。
 	'''
 	enter=pyqtSignal(str,bool)
 	hover=pyqtSignal(str,bool)
@@ -25,9 +23,11 @@ class XJQ_MouseTrigger(QWidget):
 		self.__cache={}
 		self.__hover=set()
 		self.__enter=set()
+		self.__autoResize=False
 		self.installEventFilter(self)
 		self.setAttribute(Qt.WA_Hover,True)
 		self.setParent(parent)
+		self.lower()
 	def eventFilter(self,obj,event):
 		eType=event.type()
 		if(eType==QEvent.HoverMove):
@@ -59,14 +59,18 @@ class XJQ_MouseTrigger(QWidget):
 			self.update()
 		elif(eType==QEvent.Paint):
 			parent=self.parent()
-			if(parent):
+			if(parent and self.__autoResize):
 				pSize=parent.size()
 				if(self.size()!=pSize):
 					self.resize(pSize)
 		return False
-	def setParent(self,parent:QWidget):
+	def setParent(self,parent:QWidget,autoResize:bool=False):
+		'''
+			设置父控件，如果autoResize为真那么触发器总会自动调整大小位置以恰好完全覆盖父控件
+		'''
 		super().setParent(parent)
-		if(parent!=None):
+		self.__autoResize=autoResize
+		if(parent and autoResize):
 			self.setGeometry(QRect(QPoint(0,0),parent.size()))
 	def update(self,name:str=None):
 		'''
