@@ -129,7 +129,8 @@ class XJQ_Slider(QSlider):
 	def __GetHandlePos(self,mousePos=None,value=None):#获取滑块的对应位置
 		if(value==None):
 			value=self.value()
-		rate=value/self.maximum()
+		diff=self.maximum()-self.minimum()
+		rate=value/diff if diff>0 else 0
 		if(self.invertedAppearance() ^ (self.orientation()==Qt.Vertical)):
 			rate=1-rate
 		hw=self.__handleWidth

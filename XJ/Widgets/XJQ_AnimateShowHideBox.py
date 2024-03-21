@@ -9,7 +9,7 @@ __all__=['XJQ_AnimateShowHideBox']
 
 class XJQ_AnimateShowHideBox(QFrame):
 	'''
-		动画显隐容器，继承自QFrame是因为可能有调用setStyleSheet设置背景色的需要
+		动画显隐容器，继承自QFrame是因为可能有调用setStyleSheet设置背景色的需要。
 		附赠点击穿透，仅控件完全显示后才能响应鼠标事件
 
 		一开始是不打算使用Box形式的，

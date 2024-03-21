@@ -1,21 +1,30 @@
 from ..XJQ_ComboBox import *
 
 import sys
-from PyQt5.QtWidgets import QWidget,QHBoxLayout,QApplication
+from PyQt5.QtWidgets import QWidget,QHBoxLayout,QApplication,QPushButton
 
 
 if True:
 	app = QApplication(sys.argv)
 
 	cb=XJQ_ComboBox()
-	cb.Set_List([str(i)*3 for i in range(20)])
 	cb.indexChanged.connect(lambda index,text:print(index,text))
-	# print(cb.count())
+
+	num=[0,10]
+	def Refresh(num):
+		cb.clear()
+		cb.Set_List([str(i) for i in range(*num)])
+		diff=num[1]-num[0]
+		num[0]=num[1]
+		num[1]+=diff
+	btn=QPushButton('Refresh')
+	btn.clicked.connect(lambda:Refresh(num))
 
 	wid=QWidget()
 	hbox=QHBoxLayout(wid)
 	hbox.addStretch(1)
-	hbox.addWidget(cb,1)
+	hbox.addWidget(cb)
+	hbox.addWidget(btn)
 	hbox.addStretch(1)
 	wid.show()
 

@@ -2,9 +2,8 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
-from .XJQ_PureColorIcon import *
-from .XJQ_PureColorIconButton import *
-from ..Functions.GetRealPath import *
+from .XJQ_PureColorIconButton import XJQ_PureColorIconButton
+from ..Functions.GetRealPath import GetRealPath
 
 from PyQt5.QtWidgets import QAbstractButton,QStackedLayout,QSizePolicy
 from PyQt5.QtCore import pyqtSignal
@@ -24,9 +23,9 @@ class XJQ_SwitchBtn(QAbstractButton):#因为太过于常用，趁早把它组件
 		'''
 		super().__init__()
 		if(btnON==None):
-			btnON=XJQ_PureColorIconButton(GetRealPath('./icons/播放.png'))
+			btnON=XJQ_PureColorIconButton(GetRealPath('../Icons/播放.png'))
 		if(btnOFF==None):
-			btnOFF=XJQ_PureColorIconButton(GetRealPath('./icons/暂停.png'))
+			btnOFF=XJQ_PureColorIconButton(GetRealPath('../Icons/暂停.png'))
 		btnON.clicked.connect(lambda:self.Opt_Switch(True,isClicked=True))
 		btnOFF.clicked.connect(lambda:self.Opt_Switch(False,isClicked=True))
 
@@ -38,6 +37,8 @@ class XJQ_SwitchBtn(QAbstractButton):#因为太过于常用，趁早把它组件
 		#debug半小时，找到核心，设置大小调整策略setSizePolicy：https://blog.csdn.net/qq_40732350/article/details/86703749
 		#不调整的话按钮会最小的方式呈现(这好吗这不好)
 		self.setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Preferred)
+	def sizeHint(self):
+		return self.__stk.currentWidget().sizeHint()
 	def Get_IsON(self):
 		'''
 			获取当前开关状态

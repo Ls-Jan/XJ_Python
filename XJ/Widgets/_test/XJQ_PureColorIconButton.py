@@ -9,7 +9,7 @@ if True:
 	win=QWidget()
 	win.show()
 	win.resize(300,300)
-	ib=XJQ_PureColorIconButton(GetRealPath('../icons/停止.png'),win)
+	ib=XJQ_PureColorIconButton(GetRealPath('../../Icons/停止.png'),win)
 	ib.clicked.connect(lambda:print("CLICK"))
 	stk=QStackedLayout(win)
 	stk.addWidget(ib)

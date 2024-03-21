@@ -3,9 +3,9 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
-from ..Functions.CV2ToQPixmap import *
-from ..Functions.CV2FromQPixmap import *
-from ..Functions.CV2LoadPict import *
+from ..Functions.CV2ToQPixmap import CV2ToQPixmap
+from ..Functions.CV2FromQPixmap import CV2FromQPixmap
+from ..Functions.CV2LoadPict import CV2LoadPict
 
 import cv2
 import numpy as np
@@ -55,9 +55,9 @@ class XJQ_PureColorIcon(QIcon):#纯色图标
 			else:
 				im=QPixmap(1,1)
 				im.fill(Qt.transparent)
-			im=CV2ToQPixmap(im)
+			im=CV2FromQPixmap(im)
 		elif(isinstance(data,QImage) or isinstance(data,QPixmap)):
-			im=CV2ToQPixmap(QPixmap(data))
+			im=CV2FromQPixmap(QPixmap(data))
 		else:
 			raise Exception('data参数错误，类型仅能为np.ndarray(图片数据)或是str(图片路径)或是QIcon/XJQ_PureColorIcon或是QPixmap或是None')
 

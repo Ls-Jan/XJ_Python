@@ -3,7 +3,7 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
-from .XJQ_PureColorIcon import *
+from .XJQ_PureColorIcon import XJQ_PureColorIcon
 
 from PyQt5.QtCore import QSize,QRect,QPoint,Qt
 from PyQt5.QtGui import QIcon,QPixmap,QPainter,QBitmap,QColor,QCursor

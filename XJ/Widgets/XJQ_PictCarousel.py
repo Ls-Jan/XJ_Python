@@ -5,9 +5,8 @@ __author__='Ls_Jan'
 from .XJQ_AnimateShowHideBox import *
 from .XJQ_PlayBar import *
 
-from PyQt5.QtWidgets import QVBoxLayout,QHBoxLayout,QFrame,QWidget,QLabel
-from PyQt5.QtCore import Qt,QTimer,pyqtSignal
-from PyQt5.QtGui import QPixmap,QColor,QPainter
+from PyQt5.QtWidgets import QVBoxLayout,QWidget,QLabel
+from PyQt5.QtGui import QPainter
 
 __all__=['XJQ_PictCarousel']
 
@@ -54,18 +53,18 @@ class XJQ_PictCarousel(QWidget):#图片轮播
 			设置播放条的步长
 		'''
 		self.__pb.Set_SliderStep(step)
-	def Set_Loop(self,interval:int=None,flag:bool=None):
+	def Set_Loop(self,msec:int=None,flag:bool=None):
 		'''
 			设置循环播放，
-			interval为每次播放之间的时间间隔(ms)
+			msec为每次播放之间的时间间隔(ms)
 			flag为是否循环播放
 		'''
-		self.__pb.Set_Loop(interval,flag)
-	def Set_Duration(self,duration:int):
+		self.__pb.Set_Loop(msec,flag)
+	def Set_Duration(self,msec:int):
 		'''
 			设置帧播放的时间间隔(ms)
 		'''
-		self.__pb.Set_Duration(duration)
+		self.__pb.Set_Duration(msec)
 	def Set_Index(self,index:int):
 		'''
 			设置当前帧索引
@@ -85,14 +84,14 @@ class XJQ_PictCarousel(QWidget):#图片轮播
 		self.update()
 	def Set_Frames(self,lst:list):
 		'''
-			设置帧列表
+			设置帧列表，数据为QPixmap
 		'''
 		self.__frames=lst
 		self.__pb.Set_Index(max=len(lst)-1)
 		self.update()
 	def Get_Frames(self):
 		'''
-			获取帧列表
+			获取帧列表，数据为QPixmap
 		'''
 		return self.__frames
 	def Opt_Play(self,flag:bool=True):

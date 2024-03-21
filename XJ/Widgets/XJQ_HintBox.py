@@ -12,7 +12,11 @@ from PyQt5.QtGui import QCursor, QFocusEvent, QShowEvent
 __all__=['XJQ_HintBox']
 class XJQ_HintBox(QWidget):
 	'''
-		置顶显示型容器，连续调用update函数的话可实现鼠标追随显示功能(牛皮癣)，
+		【特别补充】：
+		该功能和QMenu有大幅重合，如果没有特殊需求的话建议优先使用QMenu，
+		因为QMenu也是置顶显示，并且内容也可自定义，以及QMenu.popup函数可以使菜单窗口弹出在鼠标附近。
+
+		置顶显示型容器，调用update函数可以使弹窗显示在鼠标附近，
 		本质上是用来顶替只能显示纯文本的tooltip，
 		弹窗与内容物的大小总是一致的。
 		某种程度上甚至能用来替代QMenu(但没啥必要造轮子，QMenu提供的功能也足够使用的了

@@ -17,9 +17,9 @@ if True:
 			('列表1',('A','B','C')),
 			('列表2',('X','Y','Z')),]:
 		fb=XJQ_FolderBox(item[0])
-		fb.Set_Icon(QPixmap(GetRealPath("../icons/下箭头.png")),QPixmap(GetRealPath("../icons/上箭头.png")),size=QSize(24,24))
+		fb.Set_Icon(QPixmap(GetRealPath("../../Icons/Arrow/下箭头.png")),QPixmap(GetRealPath("../../Icons/Arrow/上箭头.png")),size=QSize(24,24))
 		# fbi=XJQ_FolderBox("列表",QBoxLayout.LeftToRight)
-		# fbi.Set_Icon(QPixmap(GetRealPath("../icons/右箭头.png")),QPixmap(GetRealPath("../icons/左箭头.png")),size=QSize(32,32))
+		# fbi.Set_Icon(QPixmap(GetRealPath("../../Icons/Arrow/右箭头.png")),QPixmap(GetRealPath("../../Icons/Arrow/左箭头.png")),size=QSize(32,32))
 		fb.Set_Expand(True)
 		vbox.addWidget(fb)
 		# lv.Opt_AppendWidget(fb)

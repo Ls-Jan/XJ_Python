@@ -1,7 +1,8 @@
 
-from ..XJQ_LocateBox import *
+from ..XJQ_LocateBox import XJQ_LocateBox
 
 from PyQt5.QtWidgets import QApplication,QWidget,QPushButton
+from PyQt5.QtCore import Qt
 
 if True:
 	app = QApplication([])

@@ -16,7 +16,7 @@ if True:
 
 	sb1=XJQ_SwitchBtn()
 	sb1.valueChanged.connect(lambda flag:print(flag))
-	sb2=XJQ_SwitchBtn(QPushButton(QIcon(GetRealPath('../icons/关闭.png')),'关闭'),QPushButton(QIcon(GetRealPath('../icons/打开.png')),'开启'))
+	sb2=XJQ_SwitchBtn(QPushButton(QIcon(GetRealPath('../../Icons/关闭.png')),'关闭'),QPushButton(QIcon(GetRealPath('../../Icons/打开.png')),'开启'))
 	sb2.valueChanged.connect(lambda flag:print(flag))
 	hbox=QHBoxLayout(win)
 	hbox.addWidget(sb1)

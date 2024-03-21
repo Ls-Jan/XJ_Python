@@ -2,7 +2,7 @@
 from ..XJQ_MouseTriggerBox import *
 
 from PyQt5.QtWidgets import QApplication,QPushButton,QWidget,QLabel,QListView,QHBoxLayout
-from PyQt5.QtCore import QRect
+from PyQt5.QtCore import QRectF
 from PyQt5.QtGui import QStandardItemModel,QStandardItem
 
 

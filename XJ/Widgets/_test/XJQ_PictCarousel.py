@@ -8,10 +8,10 @@ from PyQt5.QtGui import QImage,QPixmap
 if True:
 	app = QApplication([])
 
-	file='../icons/加载动画-1.gif'
+	file='../../Icons/Loading/加载动画-1.gif'
 	gm=XJ_GIFMaker()
-	gm.Opt_LoadSource(GetRealPath(file),callback=None)
-	frames=[QPixmap(QImage(f.data,*gm.size, gm.size[0]*4,QImage.Format_RGBA8888)) for f in gm.frames]
+	gm.Opt_Insert(GetRealPath(file))
+	frames=[QPixmap(QImage(f.data(),*gm.size, gm.size[0]*4,QImage.Format_RGBA8888)) for f in gm.frames]
 
 	pc=XJQ_PictCarousel()
 	# t.Set_Duration(im.info.get('duration',50))

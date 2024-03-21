@@ -10,7 +10,7 @@ if True:
 	app = QApplication(sys.argv)
 
 	lb_1=QLabel()
-	path=GetRealPath('../icons/加载动画-7.gif')
+	path=GetRealPath('../../Icons/Loading/加载动画-7.gif')
 	mv=QMovie(path)
 	mv.start()
 	mv.setScaledSize(QSize(250,250))

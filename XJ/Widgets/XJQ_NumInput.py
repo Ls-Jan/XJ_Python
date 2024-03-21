@@ -143,7 +143,7 @@ class XJQ_NumInput(QLineEdit):
 			return
 		if(tx==None):
 			tx=stx
-		tx=re.search('[+\-]?\d*\.?\d*',tx).group()
+		tx=re.search('[+\-]?\d*\.?\d*',tx).group().lstrip('0')
 		value=eval(tx) if tx else 0
 		self.Set_Value(value)
 	def setReadOnly(self,flag):

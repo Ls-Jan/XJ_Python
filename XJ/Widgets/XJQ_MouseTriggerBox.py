@@ -6,6 +6,7 @@ from typing import Union
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import pyqtSignal,QEvent,QPoint,QRect,QRectF,Qt
 
+__all__=['XJQ_MouseTriggerBox']
 class XJQ_MouseTriggerBox(QWidget):
 	'''
 		鼠标触发器容器，自身不带布局。

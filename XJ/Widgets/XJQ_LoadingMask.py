@@ -18,10 +18,10 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 		额外的，即使调用setParent更改父控件也不会影响正常使用
 	'''
 	def __init__(self,
-			  filePath:str,
 			  parent=None,
+			  filePath:str=None,
 			  text:str="加载中...",
-			  iconSize:tuple=(50,50)):
+			  iconSize:tuple=(64,64)):
 		'''
 			filePath为动图路径
 			iconSize为动图大小
@@ -78,10 +78,21 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 		if(text!=None):
 			self.__lb_tx.setText(text)
 		self.__lb_tx.setStyleSheet(style)
-	def Set_Icon(self,iconSize:Union[QSize,tuple],path:str=None):
+	def Set_Icon(self,iconSize:Union[QSize,tuple]=None,path:str=None):
 		'''
 			设置图标
 		'''
+		if(isinstance(iconSize,tuple)):
+			iconSize=QSize(*iconSize)
+		elif(iconSize==None):
+			mv=self.__lb_gif.movie()
+			pix=self.__lb_gif.pixmap()
+			if(mv):
+				iconSize=mv.scaledSize()
+			elif(pix):
+				iconSize=pix.size()
+			else:
+				iconSize=QSize(64,64)
 		if(path):
 			#貌似这玩意儿会导致内存泄漏：https://blog.csdn.net/V10_x/article/details/135514227
 			#但在PyQt中不知道有没有被优化掉(因为Python中的析构是通过引用数来控制的)
@@ -92,8 +103,6 @@ class XJQ_LoadingMask(QLabel):#加载动画蒙版
 			mv=self.__lb_gif.movie()
 			if(not mv):
 				return
-		if(isinstance(iconSize,tuple)):
-			iconSize=QSize(*iconSize)
 		if(mv.frameCount()):#动图的frame不为0
 			mv.setScaledSize(iconSize)
 			self.__lb_gif.setMovie(mv)

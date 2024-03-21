@@ -11,7 +11,7 @@ from PyQt5.QtGui import QCursor,QIcon
 if True:
 	app = QApplication(sys.argv)
 
-	path=GetRealPath('../icons/V左箭头.png')
+	path=GetRealPath('../../Icons/Arrow/V左箭头.png')
 	# icon=XJQ_PureColorIcon(QIcon())
 	icon=XJQ_PureColorIcon(path)
 	icon.Set_Color(fg=(0,0,255,192))

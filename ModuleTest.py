@@ -1,13 +1,8 @@
 
 
 
-# from XJ.Widgets._test.XJQ_PopupBox import *
-# from XJ.Widgets._test.XJQ_PlayBar import *
-# from XJ.Widgets._test.XJQ_ButtonGroup import *
-# from XJ.Widgets._test.XJQ_NumInput import *
-# from XJ.Widgets._test.XJQ_PictCarousel import *
 # from XJ.Widgets._test.XJQ_Clock import *
-# from XJ.Widgets._test.XJQ_SwitchBtn import *
+# from XJ.Widgets._test.XJQ_FolderBox import *
 # exit()
 
 
@@ -49,7 +44,7 @@ class XJ_ModTest:
 		if(0<=index<len(self.__mods)):
 			mod=self.__mods[index]
 			print(mod['pmTest'])
-			print(mod['mTime'])
+			# print(mod['mTime'])
 			pmTest=mod["pmTest"]
 			os.system(f'py -c "import {pmTest}"')
 	@staticmethod
@@ -61,15 +56,40 @@ class XJ_ModTest:
 			lst.append(f'{mod}{suffix}')
 		return seq.join(lst)
 
+
+
+from PyQt5.QtWidgets import QPushButton,QApplication
 if __name__=='__main__':
 	mt=XJ_ModTest()
 	# mods=mt.Opt_LoadMods('Functions')
-	mods=mt.Opt_LoadMods('Structs')
-	# mods=mt.Opt_LoadMods('Widgets')
+	# mods=mt.Opt_LoadMods('Structs')
+	mods=mt.Opt_LoadMods('Widgets')
 	print(len(mods))
 	for mod in mods:
 		print(mod['mTime'],mod['mod'])
 	print('\n\n')
-	mt.Opt_TestMod()
+
+
+
+	app=QApplication([])
+	btn=QPushButton('0')
+	num=0
+	def SetText(num):
+		btn.setText(f'{num}: {mods[num]["mod"]}')
+	def Test():
+		global num
+		print('\n')
+		mt.Opt_TestMod(num)
+		num=(num+1)%len(mods)
+		SetText(num)
+	SetText(num)
+	btn.show()
+	btn.resize(250,50)
+	btn.clicked.connect(Test)
+
+	exit(app.exec())
+
+
+
 
 

@@ -40,7 +40,7 @@ class XJQ_MarqueeBox(QFrame):#跑马灯容器
 			autoSize:bool=True,#大小自适应，当水平滚动时跑马灯高度随控件，竖直滚动时跑马灯宽度随控件
 	):
 		'''
-			参数特多
+			参数特多，按需选择。
 			wid：目标控件，会给wid的样式表额外追加“背景透明”的样式，以避免动画的不连贯
 			delay：鼠标悬浮一小段时间后开始动画(ms)
 			interval：动画刷新间隔(ms)
@@ -73,9 +73,9 @@ class XJQ_MarqueeBox(QFrame):#跑马灯容器
 		self.__autoSize=autoSize
 		self.setAttribute(Qt.WA_Hover,True)#设置鼠标悬浮事件：https://blog.csdn.net/chinley/article/details/95404282
 		self.installEventFilter(self)
+		self.Set_Widget(wid)
 		if(self.__autoSize):
 			self.__AdjustSize()
-		self.Set_Widget(wid)
 	def Get_Widget(self):
 		'''
 			获取内容物

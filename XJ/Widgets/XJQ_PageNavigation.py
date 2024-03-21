@@ -7,6 +7,7 @@ from .XJQ_PureColorIcon import *
 from ..Functions.GetRealPath import *
 
 import os
+from typing import Union
 from PyQt5.QtWidgets import QWidget,QHBoxLayout,QVBoxLayout,QPushButton,QLabel
 from PyQt5.QtCore import Qt,pyqtSignal,QSize
 from PyQt5.QtGui import QCursor
@@ -22,6 +23,10 @@ class XJQ_PageNavigation(QWidget):#【半成品】页导航栏
 		当前页展示数据发生变化时发出信号change(int,int)，分别对应数据的索引值和数据个数
 	'''
 	changed=pyqtSignal(int,int)#切换当前页，发送信号start,count分别对应数据的索引值和数据个数
+	icons={
+		'Left':GetRealPath('../Icons/Arrow/V左箭头.png'),
+		'Right':GetRealPath('../Icons/Arrow/V右箭头.png'),
+	}
 
 	__pCount=None#每页数据个数(XJQ_ComboBox)
 	__cPage=None#当前页码(XJQ_ComboBox)
@@ -42,18 +47,11 @@ class XJQ_PageNavigation(QWidget):#【半成品】页导航栏
 		self.__pCount=XJQ_ComboBox(self)
 		self.__countHint=QLabel()
 
-		icons={
-			'L':'V左箭头.png',
-			'R':'V右箭头.png',
-		}
-		path=GetRealPath('icons')
-		for key in icons:
-			icons[key]=XJQ_PureColorIcon(os.path.join(path,icons[key]))
-		self.Set_ArrowIcon(icons['L'],icons['R'])
-		for key in icons:
+		for key in 'LR':
 			btn=self.__aBtns[key]
 			btn.setIconSize(QSize(16,16))
 			self.__SetCursor(btn,clickable=False)
+		self.Set_ArrowIcon(self.icons['Left'],self.icons['Right'])
 		self.__pCount.indexChanged.connect(lambda index,text:self.Set_PerCount(self.__pCountLst_Val[index]))
 		self.__cPage.indexChanged.connect(lambda index,text:self.Set_CurrPage(index+1))
 		self.__cPage.Set_ShowArrow(False)
@@ -68,13 +66,17 @@ class XJQ_PageNavigation(QWidget):#【半成品】页导航栏
 		count=self.__pCountLst_Val[self.__pCount.currentIndex()]
 		page=self.__cPage.currentIndex()
 		return page*count,count
-	def Set_ArrowIcon(self,iconL:XJQ_PureColorIcon=None,iconR:XJQ_PureColorIcon=None):
+	def Set_ArrowIcon(self,iconL:Union[XJQ_PureColorIcon,str]=None,iconR:Union[XJQ_PureColorIcon,str]=None):
 		'''
 			设置箭头图标
 		'''
 		if(iconL):
+			if(isinstance(iconL,str)):
+				iconL=XJQ_PureColorIcon(iconL)
 			self.__aBtns['L'].setIcon(iconL)
 		if(iconR):
+			if(isinstance(iconR,str)):
+				iconR=XJQ_PureColorIcon(iconR)
 			self.__aBtns['R'].setIcon(iconR)
 	def Set_DataCount(self,count:int):
 		'''

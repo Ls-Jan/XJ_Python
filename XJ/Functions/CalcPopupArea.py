@@ -1,5 +1,5 @@
 
-__version__='1.1.0'
+__version__='1.1.1'
 __author__='Ls_Jan'
 
 from typing import Union
@@ -19,7 +19,7 @@ def GetNearestPoint(pos,rect,corner):
 	x,y=pos.x(),pos.y()
 	if(corner):
 		x=L if abs(x-L)<abs(x-R) else R
-		y=T if abs(x-T)<abs(x-B) else B
+		y=T if abs(y-T)<abs(y-B) else B
 	else:
 		lst=[]
 		for item in [(x,L,R),(y,T,B)]:
@@ -159,7 +159,7 @@ def CalcPopupArea(
 				else:
 					rect.setBottom(rect.top()+H-1)
 					if(excludeMargin):
-						rect.setTop(rect.top()-margin)
+						rect.setTop(rect.top()+margin)
 				rL=rect.left()+W/2
 				rR=rect.right()-W/2
 				if(rL>x):

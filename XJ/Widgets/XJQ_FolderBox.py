@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QWidget,QPushButton,QBoxLayout,QLabel,QSizePolicy
 from PyQt5.QtCore import QSize,Qt
 from PyQt5.QtGui import QPixmap
 
+#TODO: 【需要重构】
 __all__=['XJQ_FolderBox']
 class XJQ_FolderBox(QWidget):#折叠型容器
 	'''

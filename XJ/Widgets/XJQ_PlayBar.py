@@ -42,6 +42,7 @@ class XJQ_PlayBar(QFrame):#播放条
 		widSlider.sliderWheeled.connect(self.__TempPause)
 		widSlider.Set_HandleWidth(20)
 		widSlider.Set_Color(sub=QColor(32,255,32,160))
+		widSlider.setRange(0,0)
 		timerLoop.setSingleShot(True)
 		timerPause.setSingleShot(True)
 		timerPause.setInterval(self.__timerPause)
@@ -67,7 +68,6 @@ class XJQ_PlayBar(QFrame):#播放条
 		widIndex.setStyleSheet('color:#AAAAAA')
 		self.Set_Duration(50)
 		self.Set_Loop(250)
-		self.Set_Index()
 	def Get_IsActive(self):
 		'''
 			判断是否在播放
@@ -116,7 +116,10 @@ class XJQ_PlayBar(QFrame):#播放条
 		v1=slider.value()
 		slider.setValue(index)
 		v2=slider.value()
-		self.__widIndex.setText(self.indexFormat(v2,max))
+		if(max<0):
+			self.__widIndex.setText(self.indexFormat(-1,-1))
+		else:
+			self.__widIndex.setText(self.indexFormat(v2,max))
 		self.valueChanged.emit(v2,v1+1==v2)
 		return v0!=v2
 	def Opt_Play(self,flag:bool=True):

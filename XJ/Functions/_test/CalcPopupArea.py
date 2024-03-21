@@ -19,12 +19,14 @@ if True:
 	menu.addAction(action)
 	def ShowMenu():
 		pos=QCursor().pos()
-		menu.popup(pos)#QMenu有自带的弹出功能，不必用户去计算位置
-		# area=GetScreensArea(includeCursor=True)
-		# rst=CalcPopupArea(pos,menu.sizeHint(),area,0,True,True)
-		# if(rst):
-		# 	menu.setGeometry(rst[2])
-		# menu.show()
+		# menu.popup(pos)#其实QMenu有自带的弹出功能，不必用户去计算位置
+
+		area=GetScreensArea(includeCursor=True)
+		rst=CalcPopupArea(pos,menu.sizeHint(),area,0,True,True)
+		print(pos,rst)
+		if(rst):
+			menu.setGeometry(rst[2])
+		menu.show()
 	btn.clicked.connect(ShowMenu)
 
 	btn.show()

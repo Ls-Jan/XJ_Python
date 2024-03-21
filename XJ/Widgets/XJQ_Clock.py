@@ -2,17 +2,57 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
-from .XJQ_SwitchBtn import *
-from .XJQ_PureColorIconButton import *
-from .XJQ_LocateBox import *
-from .XJQ_AnimateShowHideBox import *
-from ..Functions.GetRealPath import *
+from .XJQ_SwitchBtn import XJQ_SwitchBtn
+from .XJQ_PureColorIconButton import XJQ_PureColorIconButton
+from .XJQ_LocateBox import XJQ_LocateBox
+from .XJQ_AnimateShowHideBox import XJQ_AnimateShowHideBox
+from ..Functions.GetRealPath import GetRealPath
 
-from PyQt5.QtWidgets import QLabel
-from PyQt5.QtCore import Qt,pyqtSignal,QEvent,QTimer
+from PyQt5.QtWidgets import QLabel,QWidget
+from PyQt5.QtCore import Qt,pyqtSignal,QTimer
 import time
 
 __all__=['XJQ_Clock']
+
+class OperationUI:
+	'''
+		很简单的UI，只为XJQ_Clock服务
+	'''
+	btnPlay=None
+	btnQuit=None
+	icons={
+		'pause':GetRealPath('../Icons/暂停.png'),
+		'play':GetRealPath('../Icons/播放.png'),
+		'quit':GetRealPath('../Icons/停止.png'),}
+	def __init__(self,parent):
+		btnPlay=XJQ_SwitchBtn(XJQ_PureColorIconButton(self.icons['play']),XJQ_PureColorIconButton(self.icons['pause']))
+		btnQuit=XJQ_PureColorIconButton(self.icons['quit'])
+
+		wid=QWidget()
+		lbox=XJQ_LocateBox(wid)
+		lbox.Opt_AddWidget(btnPlay,Qt.AlignCenter)
+		lbox.Opt_AddWidget(btnQuit,Qt.AlignVCenter|Qt.AlignRight,(0,0))
+		shbox=XJQ_AnimateShowHideBox(parent)
+		shbox.Set_Content(wid)
+		shbox.setStyleSheet('.XJQ_AnimateShowHideBox{background:rgba(0,0,0,128)}')
+		self.btnPlay=btnPlay
+		self.btnQuit=btnQuit
+		self.__parent=parent
+		self.__shbox=shbox
+		self.resize()
+		self.hide()
+	def resize(self):
+		size=self.__parent.size()
+		self.__shbox.resize(size)
+		size=size.boundedTo(size.transposed())#最小正方形
+		self.btnPlay.resize(size/1.2)
+		self.btnQuit.resize(size/1.6)
+	def show(self):
+		self.resize()
+		if(not (self.btnPlay.isHidden() and self.btnQuit.isHidden())):
+			self.__shbox.show()
+	def hide(self):
+		self.__shbox.hide()
 
 class XJQ_Clock(QLabel):
 	'''
@@ -21,47 +61,10 @@ class XJQ_Clock(QLabel):
 	'''
 	pause=pyqtSignal(bool)#时钟暂停和继续时触发
 	quit=pyqtSignal()#退出时钟时触发
-	icons={
-		'pause':GetRealPath('./icons/暂停.png'),
-		'play':GetRealPath('./icons/播放.png'),
-		'quit':GetRealPath('./icons/停止.png'),}
 	__timer=None
 	__txFunc=None
 	__opui=None
-	class __OpUI:
-		'''
-			很简单的UI，只为XJQ_Clock服务
-		'''
-		btnPlay=None
-		btnQuit=None
-		def __init__(self,parent):
-			btnPlay=XJQ_SwitchBtn(XJQ_PureColorIconButton(self.icons['play']),XJQ_PureColorIconButton(self.icons['pause']))
-			btnQuit=XJQ_PureColorIconButton(self.icons['quit'])
 
-			wid=QWidget()
-			lbox=XJQ_LocateBox(wid)
-			lbox.Opt_AddWidget(btnPlay,Qt.AlignCenter)
-			lbox.Opt_AddWidget(btnQuit,Qt.AlignVCenter|Qt.AlignRight,(0,0))
-			shbox=XJQ_AnimateShowHideBox(parent)
-			shbox.Set_Content(wid)
-			shbox.setStyleSheet('.XJQ_AnimateShowHideBox{background:rgba(0,0,0,128)}')
-			self.btnPlay=btnPlay
-			self.btnQuit=btnQuit
-			self.__parent=parent
-			self.__shbox=shbox
-			self.hide()
-		def resize(self):
-			size=self.__parent.size()
-			self.__shbox.resize(size)
-			size=size.boundedTo(size.transposed())#最小正方形
-			self.btnPlay.resize(size/1.2)
-			self.btnQuit.resize(size/1.5)
-		def show(self):
-			self.resize()
-			if(not (self.btnPlay.isHidden() and self.btnQuit.isHidden())):
-				self.__shbox.show()
-		def hide(self):
-			self.__shbox.hide()
 	def __init__(self,
 			  interval:int=0.1,
 			  uiPausePlay:bool=True,
@@ -79,11 +82,11 @@ class XJQ_Clock(QLabel):
 		self.setAlignment(Qt.AlignCenter)
 		# self.setAttribute(Qt.FramelessWindowHint|Qt.ToolTip)
 
-		opui=self.__OpUI(self)
+		opui=OperationUI(self)
 		opui.btnPlay.setVisible(uiPausePlay)
 		opui.btnQuit.setVisible(uiQuit)
 		opui.btnPlay.valueChanged.connect(self.Opt_Continue)
-		opui.btnQuit.clicked.connect(lambda:self.Opt_Quit())
+		opui.btnQuit.clicked.connect(self.Opt_Quit)
 		self.__timer=timer
 		self.__txFunc=lambda:time.strftime("%H:%M:%S")
 		self.__opui=opui
