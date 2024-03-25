@@ -20,10 +20,10 @@ class XJQ_PureColorIcon(QIcon):#纯色图标
 		当然，类似QPushButton在调用setIcon后，icon发生更新时QPushButton显示的图标并不会发生改变，需要再次调用setIcon才行
 	'''
 	def __init__(self,
-			  data:Union[str,np.ndarray,QIcon,QPixmap,QImage],
+			  data:Union[str,np.ndarray,QIcon,QPixmap,QImage]=None,
 			  fg:tuple=(0,255,0,255),
 			  bg:tuple=(0,0,0,0),
-			  size:tuple=(20,20),
+			  size:Union[tuple,QSize]=None,
 			  hint=None,
 			  squareSize=True):
 		'''
@@ -33,7 +33,7 @@ class XJQ_PureColorIcon(QIcon):#纯色图标
 				图标类(QIcon/XJQ_PureColorIcon)
 				图片类(QPixmap/QImage)
 				None
-			size设置图标大小，特殊场合有用(例如在调用pixmap()时如果缺省参数那么将以size为准
+			size设置图标大小，如果为空则以图片大小为准，特殊场合有用，例如在调用pixmap()时如果不传入大小值则默认为size
 			hint额外信息补充，在特殊场合下有用
 			squareSize若为真，则设置图标大小时会强制调整为正方形大小
 		'''
@@ -77,7 +77,9 @@ class XJQ_PureColorIcon(QIcon):#纯色图标
 			self.__size=QSize()
 			self.__hint=hint
 			self.__UpdatePixmap()
-			self.resize(*size)
+			if(size==None):
+				size=QSize(len(im[0]),len(im))
+			self.resize(size)
 		except:
 			raise Exception('转换失败！data数据错误！')
 	def Set_Color(self,fg:Union[QColor,tuple]=None,bg:Union[QColor,tuple]=None,wid=None):
@@ -125,13 +127,15 @@ class XJQ_PureColorIcon(QIcon):#纯色图标
 		return self.__size
 	def resize(self,*size):
 		'''
-			设置size值，特殊场合有用
-			调用方式可以是resize(32,32)或是resize(QSize(32,32))
+			设置size值，特殊场合有用。
+			调用方式可以是resize(32,32)或是resize((32,32))或是resize(QSize(32,32))
 		'''
 		if(len(size)>1):
 			size=QSize(*size)
 		else:
 			size=size[0]
+			if(isinstance(size,tuple)):
+				size=QSize(*size)
 		if(self.__squareSize):
 			size=size.boundedTo(size.transposed())#最小正方形
 		self.__size=size

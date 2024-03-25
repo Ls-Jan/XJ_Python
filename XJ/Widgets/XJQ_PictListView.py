@@ -30,7 +30,6 @@ class XJQ_PictListView(QWidget):
 		'cacheMax':200,#最大缓存数
 		'cacheRetention':60,#缓存留存时长(s)
 		'delayLoad':0.1,#延时加载(s)，列表停留不动一小段时间才开始加载图标
-		'loadingGIF':GetRealPath('../Icons/Loading/加载动画-1.gif'),#加载动画路径
 		'hintSize':(1000,600),#鼠标悬停时的图片放大预览
 		'textFormat':'$path{val}$repeat{[val]}$index{-val}',#文本格式
 	}
@@ -65,7 +64,7 @@ class XJQ_PictListView(QWidget):
 				val=patterns[key].replace('val',val) if val else ''
 				text=text.replace(f'${key}',val)
 			return text
-	def __init__(self,*args):
+	def __init__(self,*args,loadingGIF=GetRealPath('../Icons/Loading/加载动画-1.gif')):
 		super().__init__(*args)
 		lv=QListView(self)
 		lvLA=LoadingAnimation(view=lv)
@@ -82,6 +81,7 @@ class XJQ_PictListView(QWidget):
 		lv.setModel(lvModel)
 		lvSM.rowShowChanged.connect(self.__IconChanged)
 		lvSM.Set_RowExtend(0)
+		lvLA.Set_LoadingGIF(loadingGIF)
 
 		self.config=self.config.copy()
 		self.__visibleRowLst=[]
@@ -269,8 +269,6 @@ class XJQ_PictListView(QWidget):
 					lvSM.Set_RowCountMax(val)
 				elif(key=='cacheRetention'):
 					lvSM.Set_RetentionTime(val)
-				elif(key=='loadingGIF'):
-					lvLA.Set_LoadingGIF(val)
 				elif(key=='textFormat'):
 					self.__textFormat.Set_Format(val)
 					self.Opt_UpdateText()

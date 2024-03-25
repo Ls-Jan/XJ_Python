@@ -9,12 +9,12 @@ if True:
 	app = QApplication(sys.argv)
 
 	icons=[
-		XJQ_PureColorIcon(GetRealPath('../../Icons/收藏.png')),
-		XJQ_PureColorIcon(GetRealPath('../../Icons/云锁-002.png')),
-		XJQ_PureColorIcon(GetRealPath('../../Icons/对勾.png')),
-		XJQ_PureColorIcon(GetRealPath('../../Icons/文件袋.png')),
-		XJQ_PureColorIcon(GetRealPath('../../Icons/云下载.png')),
-		XJQ_PureColorIcon(GetRealPath('../../Icons/已锁.png')),]
+		XJQ_PureColorIcon(GetRealPath('../../Icons/收藏.png'),size=(20,20)),
+		XJQ_PureColorIcon(GetRealPath('../../Icons/云锁-002.png'),size=(20,20)),
+		XJQ_PureColorIcon(GetRealPath('../../Icons/对勾.png'),size=(20,20)),
+		XJQ_PureColorIcon(GetRealPath('../../Icons/文件袋.png'),size=(20,20)),
+		XJQ_PureColorIcon(GetRealPath('../../Icons/云下载.png'),size=(20,20)),
+		XJQ_PureColorIcon(GetRealPath('../../Icons/已锁.png'),size=(20,20)),]
 	icons[0].Set_Color((255,0,255,192))
 	icons[1].Set_Color((255,0,0,192))
 	icons[2].Set_Color((0,255,0,192))

@@ -2,10 +2,10 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
-from .XJQ_Tag import *
-from .XJQ_MarqueeBox import *
+from .XJQ_Tag import XJQ_Tag
+from .XJQ_MarqueeBox import XJQ_MarqueeBox
 
-from PyQt5.QtWidgets import QLabel,QVBoxLayout,QHBoxLayout,QWidget,QGridLayout
+from PyQt5.QtWidgets import QLabel,QHBoxLayout,QWidget,QGridLayout
 
 __all__=['XJQ_ListWidgetItem']
 class XJQ_ListWidgetItem(QLabel):#主要为XJQ_ListWidget服务

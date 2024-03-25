@@ -5,7 +5,8 @@ __author__='Ls_Jan'
 from .XJQ_PureColorIconButton import XJQ_PureColorIconButton
 from ..Functions.GetRealPath import GetRealPath
 
-from PyQt5.QtWidgets import QAbstractButton,QStackedLayout,QSizePolicy
+from typing import Union
+from PyQt5.QtWidgets import QAbstractButton,QStackedLayout,QSizePolicy,QPushButton
 from PyQt5.QtCore import pyqtSignal
 
 __all__=['XJQ_SwitchBtn']
@@ -15,17 +16,18 @@ class XJQ_SwitchBtn(QAbstractButton):#因为太过于常用，趁早把它组件
 		开关按钮，状态发生变化时发送valueChanged(bool)信号，发送当前开关状态
 	'''
 	valueChanged=pyqtSignal(bool)#值修改时触发，发送当前开关状态
+
 	__btns=None#依次是ON和OFF按钮
 	__stk=None#0是ON按钮，1是OFF按钮
 	def __init__(self,btnON:QAbstractButton=None,btnOFF:QAbstractButton=None):
 		'''
-			传入按钮，如果没指定那采用默认的纯色按钮
+			传入按钮，如果没指定那将采用普通的QPushButton按钮
 		'''
 		super().__init__()
 		if(btnON==None):
-			btnON=XJQ_PureColorIconButton(GetRealPath('../Icons/播放.png'))
+			btnON=QPushButton('继续')
 		if(btnOFF==None):
-			btnOFF=XJQ_PureColorIconButton(GetRealPath('../Icons/暂停.png'))
+			btnOFF=QPushButton('暂停')
 		btnON.clicked.connect(lambda:self.Opt_Switch(True,isClicked=True))
 		btnOFF.clicked.connect(lambda:self.Opt_Switch(False,isClicked=True))
 
@@ -59,12 +61,12 @@ class XJQ_SwitchBtn(QAbstractButton):#因为太过于常用，趁早把它组件
 		'''
 			获取按钮ON
 		'''
-		return self.__on
+		return self.__btns[0]
 	def Get_BtnOFF(self):
 		'''
 			获取按钮OFF
 		'''
-		return self.__off
+		return self.__btns[1]
 	def Set_BtnON(self,btn:QAbstractButton):
 		'''
 			设置按钮ON

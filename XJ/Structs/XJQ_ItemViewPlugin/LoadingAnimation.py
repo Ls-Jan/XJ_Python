@@ -1,10 +1,9 @@
 
-__version__='1.0.1'
+__version__='1.0.2'
 __author__='Ls_Jan'
 
-from PIL import Image
-from PyQt5.QtCore import QModelIndex,Qt,QTimer,QSize
-from PyQt5.QtGui import QPainter,QIcon
+from PyQt5.QtCore import QModelIndex,Qt,QSize
+from PyQt5.QtGui import QPainter,QIcon,QMovie
 from PyQt5.QtWidgets import QStyledItemDelegate,QStyleOptionViewItem,QApplication,QStyle,QAbstractItemView
 
 __all__=['LoadingAnimation']
@@ -15,10 +14,7 @@ class LoadingAnimation(QStyledItemDelegate):
 		其中loadingRole为初始化时指定的值，默认为Qt.UserRole+16
 	'''
 	__loadingRole=None
-	__timer=None
-	__icon=None
-	__iconLst=None
-	__iconIndex=None
+	__mv=None
 	__views=None
 	__iconSizeFixed=True
 	def __init__(self,gifPath:str=None,*,view:QAbstractItemView=None,loadingRole:Qt.ItemDataRole=Qt.UserRole+16):
@@ -33,15 +29,11 @@ class LoadingAnimation(QStyledItemDelegate):
 		'''
 		super().__init__()
 		self.__loadingRole=loadingRole
-		timer=QTimer(self)
-		timer.timeout.connect(self.__Update)
 		if(view):
 			view.setItemDelegate(self)
-		self.__timer=timer
+		self.__mv=QMovie()
 		self.__animation=True
-		self.__iconLst=[]
 		self.__views=set()
-		self.__iconIndex=0
 		self.Set_LoadingGIF(gifPath)
 		QApplication.instance().aboutToQuit.connect(self.Opt_StopGIF)
 	@property
@@ -55,8 +47,8 @@ class LoadingAnimation(QStyledItemDelegate):
 			停止动画。
 			该操作已经与QApplication对象的AboutToQuit信号关联，在程序退出时会自动调用。
 		'''
+		self.__mv.stop()
 		self.__animation=False
-		self.__timer.stop()
 	def Opt_StartGIF(self):
 		'''
 			与Opt_StopGIF相对应，启动动画
@@ -77,18 +69,13 @@ class LoadingAnimation(QStyledItemDelegate):
 			设置加载动画以及动画刷新间隔(ms)
 		'''
 		if(path):
-			im = Image.open(path)
-			im.load()#调用该函数后info中的信息才会有效(这是试出来的)
-			if(msec==None):
-				msec=im.info.get('duration',0)
-			self.__iconLst.clear()
-			for i in range(im.n_frames):
-				im.seek(i)#设置当前所在帧
-				self.__iconLst.append(QIcon(im.convert("RGBA").toqpixmap()))#gif的第0帧是P模式(调色板)
-			self.__iconIndex=0
-			self.__icon=self.__iconLst[0]
-		if(msec):
-			self.__timer.setInterval(msec)
+			mv=QMovie(path)
+			mv.frameChanged.connect(self.__Update)
+			self.__mv.stop()
+			self.__mv=mv
+			self.__mv.start()
+		if(msec and self.__mv):
+			self.__mv.setSpeed(msec)
 	def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex):
 		option=QStyleOptionViewItem(option)
 		wid=option.widget
@@ -97,11 +84,10 @@ class LoadingAnimation(QStyledItemDelegate):
 		stat=index.model().data(index,self.__loadingRole)#获取加载状态
 		if(stat):
 			self.__views.add(wid)
-			if(not self.__timer.isActive() and self.__animation):
-				self.__timer.start()
-			if(self.__icon):
-				option.icon=self.__icon
-				option.features|=QStyleOptionViewItem.HasDecoration#该标志决定icon的绘制
+			if(self.__mv.state()!=QMovie.MovieState.Running and self.__animation):
+				self.__mv.start()
+			option.icon=QIcon(self.__mv.currentPixmap())
+			option.features|=QStyleOptionViewItem.HasDecoration#该标志决定icon的绘制
 		style.drawControl(QStyle.CE_ItemViewItem,option,painter,wid)
 	def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex):
 		option=QStyleOptionViewItem(option)
@@ -109,7 +95,7 @@ class LoadingAnimation(QStyledItemDelegate):
 		stat=index.model().data(index,self.__loadingRole)#获取加载状态
 		wid=option.widget
 		style=wid.style() if wid else QApplication.style()
-		if(stat and self.__icon):
+		if(stat):
 			option.features|=QStyleOptionViewItem.HasDecoration#该标志决定是否绘制icon
 		if(self.__iconSizeFixed):
 			option.features|=QStyleOptionViewItem.HasDecoration
@@ -121,19 +107,10 @@ class LoadingAnimation(QStyledItemDelegate):
 			刷新动画(下一帧)。
 			该函数与计时器绑定，用于自动获取动图下一帧。
 		'''
-		icon=None
-		if(self.__views):#仅在view不为空的情况下才考虑加载下一帧
-			if(len(self.__iconLst)):
-				index=self.__iconIndex+1
-				if(index>=len(self.__iconLst)):
-					index=0
-				self.__iconIndex=index
-				icon=self.__iconLst[index]
-		if(icon==None):#由于种种原因不需要下一帧的情况下，直接关掉计时器
-			self.__timer.stop()
-		else:
-			self.__icon=icon
+		if(self.__views):
 			for view in self.__views:
 				view.viewport().update()
-			self.__views.clear()
+		else:
+			self.__mv.setPaused(True)#在不需要的时候关停动画。使用stop的话会将当前帧设置为0，故不使用
+		self.__views.clear()
 

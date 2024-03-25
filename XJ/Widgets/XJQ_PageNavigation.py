@@ -23,10 +23,6 @@ class XJQ_PageNavigation(QWidget):#【半成品】页导航栏
 		当前页展示数据发生变化时发出信号change(int,int)，分别对应数据的索引值和数据个数
 	'''
 	changed=pyqtSignal(int,int)#切换当前页，发送信号start,count分别对应数据的索引值和数据个数
-	icons={
-		'Left':GetRealPath('../Icons/Arrow/V左箭头.png'),
-		'Right':GetRealPath('../Icons/Arrow/V右箭头.png'),
-	}
 
 	__pCount=None#每页数据个数(XJQ_ComboBox)
 	__cPage=None#当前页码(XJQ_ComboBox)
@@ -39,7 +35,7 @@ class XJQ_PageNavigation(QWidget):#【半成品】页导航栏
 	__pCountLst_Tx=None#pCount文本列表
 	__pCountLst_Val=None#pCount数值列表
 	__dIndex=0#当前页首个数据对应的索引值
-	def __init__(self,*args):
+	def __init__(self,*args,iconLeft:str=GetRealPath('../Icons/Arrow/V左箭头.png'),iconRight:str=GetRealPath('../Icons/Arrow/V右箭头.png')):
 		super().__init__(*args)
 		self.__count=100
 		self.__aBtns={'L':QPushButton(),'R':QPushButton()}
@@ -51,7 +47,7 @@ class XJQ_PageNavigation(QWidget):#【半成品】页导航栏
 			btn=self.__aBtns[key]
 			btn.setIconSize(QSize(16,16))
 			self.__SetCursor(btn,clickable=False)
-		self.Set_ArrowIcon(self.icons['Left'],self.icons['Right'])
+		self.Set_ArrowIcon(iconLeft,iconRight)
 		self.__pCount.indexChanged.connect(lambda index,text:self.Set_PerCount(self.__pCountLst_Val[index]))
 		self.__cPage.indexChanged.connect(lambda index,text:self.Set_CurrPage(index+1))
 		self.__cPage.Set_ShowArrow(False)

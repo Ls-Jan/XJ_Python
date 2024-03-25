@@ -2,9 +2,12 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
-from .XJQ_AnimateShowHideBox import *
-from .XJQ_PlayBar import *
+from .XJQ_AnimateShowHideBox import XJQ_AnimateShowHideBox
+from .XJQ_PureColorIcon import XJQ_PureColorIcon
+from .XJQ_PlayBar import XJQ_PlayBar
+from ..Functions.GetRealPath import GetRealPath
 
+from typing import Union
 from PyQt5.QtWidgets import QVBoxLayout,QWidget,QLabel
 from PyQt5.QtGui import QPainter
 
@@ -22,9 +25,9 @@ class XJQ_PictCarousel(QWidget):#图片轮播
 	__pict=None
 	__scale=1
 	__hint=None
-	def __init__(self,*args):
+	def __init__(self,*args,iconPlay:Union[XJQ_PureColorIcon,str]=GetRealPath('../Icons/播放.png'),iconPause:Union[XJQ_PureColorIcon,str]=GetRealPath('../Icons/暂停.png')):
 		super().__init__(*args)
-		pb=XJQ_PlayBar()
+		pb=XJQ_PlayBar(True,iconPlay,iconPause)
 		pb.valueChanged.connect(self.__Update)
 		pb.Set_SliderStep(1)
 		hint=QLabel('x1.0')
@@ -43,6 +46,11 @@ class XJQ_PictCarousel(QWidget):#图片轮播
 		vbox=QVBoxLayout(self)
 		vbox.addStretch(1)
 		vbox.addWidget(shBox_pb)
+	def Set_Icon(self,iconPlay:Union[XJQ_PureColorIcon,str]=None,iconPause:Union[XJQ_PureColorIcon,str]=None):
+		'''
+			设置播放停止按钮
+		'''
+		self.__pb.Set_Icon(iconPlay,iconPause)
 	def Get_IsActive(self):
 		'''
 			判断是否播放中
@@ -87,6 +95,7 @@ class XJQ_PictCarousel(QWidget):#图片轮播
 			设置帧列表，数据为QPixmap
 		'''
 		self.__frames=lst
+		self.__pict=None
 		self.__pb.Set_Index(max=len(lst)-1)
 		self.update()
 	def Get_Frames(self):

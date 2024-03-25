@@ -1,9 +1,11 @@
 
 
 
+# from XJ.Widgets._test.XJQ_PlayBar import *
+from XJ.Widgets._test.XJQ_PictListView import *
 # from XJ.Widgets._test.XJQ_Clock import *
 # from XJ.Widgets._test.XJQ_FolderBox import *
-# exit()
+exit()
 
 
 import os

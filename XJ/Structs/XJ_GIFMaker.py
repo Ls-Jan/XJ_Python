@@ -7,7 +7,7 @@ from .XJ_Frame import *
 
 import ctypes
 from PIL import Image#动图类型的，cv2处理不了(或者是我没找到方法?)，只能借助PIL.Image
-from threading import Thread
+from threading import Thread,Lock
 from io import BytesIO,IOBase
 # import imageio
 #不用imageio这个粪，简单的gif都能给我生成好几倍的大小
@@ -27,6 +27,7 @@ class XJ_GIFMaker:
 	__fp=None#BytesIO对象
 	__gifSize=None#上一次保存GIF的大小
 	__memSize=None#上一次保存GIF时图片的总大小
+	__safeLock=None#安全锁。因为发现Image.fromarray线程不安全，如果在它执行的时候强制打断工作线程那么它就会坏掉
 	frames=None
 	duration=None
 	size=None
@@ -35,6 +36,7 @@ class XJ_GIFMaker:
 		self.size=[0,0]
 		self.duration=0
 		self.__fp=None
+		self.__safeLock=Lock()
 		self.__gifSize=0
 	def __del__(self):
 		self.Opt_ClearCache()
@@ -110,6 +112,7 @@ class XJ_GIFMaker:
 					self.__gifSize=len(data)
 					self.__th=None
 					self.__fp.close()
+					self.__fp=None
 					callback(data)
 			self.__gifSize=0
 			fp=open(path,'wb') if path else BytesIO()
@@ -135,7 +138,9 @@ class XJ_GIFMaker:
 		return self.__th!=None
 	def Get_MemorySize(self):
 		'''
-			获取最近一次保存时占用内存的最大大小
+			获取最近一次保存时占用内存的最大大小。
+			因为水平有限，无法准确获取PIL.Image对象的内存占用大小，
+			返回的数据往往比实际内存占用大小要大上三两倍，因此该函数的并不具备参考价值
 		'''
 		return self.__memSize
 	def Get_SavingSize(self):
@@ -153,7 +158,15 @@ class XJ_GIFMaker:
 			强制中断当前操作
 		'''
 		if(self.__th):
+			self.__safeLock.acquire()#防暴毙
 			self.Func_ThreadForceStop(self.__th)
+			self.__th.join()
+			self.__safeLock.release()
+			try:
+				self.__fp.close()
+				self.__fp=None
+			except:
+				pass
 			self.__th=None
 	def Opt_Clear(self):
 		'''
@@ -173,7 +186,13 @@ class XJ_GIFMaker:
 		callback=args[6]
 		resolution=args[3]
 		self.__memSize=0
+		interrupt=False
+		if(callback):
+			self.__fp=fp
 		for i in range(len(frames)):
+			if(self.__safeLock.acquire(timeout=0.1)==False):#防暴毙，timeout防死锁
+				interrupt=True
+				break
 			frame=frames[i]
 			if(isinstance(frame,np.ndarray)):
 				frame=Image.fromarray(frame)
@@ -183,11 +202,13 @@ class XJ_GIFMaker:
 				frame=frame
 			else:
 				pass
-			size=len(frame.tobytes())#简单测试了下，它的损耗忽略不计，应该就是内存数据
+			frames[i]=frame
+			#简单测试了下frame.tobytes，它的损耗忽略不计，但它和任务管理器中显示的内存占用完全不一致，
+			#毕竟这返回的是“宽*高*通道数”，而不是真正的内存占用，所以只能作为完全不准确的参考
+			size=len(frame.tobytes())
 			self.__memSize+=size
-		if(callback):
-			self.__fp=fp
-		return self.Func_SaveGIF(*args)
+			self.__safeLock.release()
+		return None if interrupt else self.Func_SaveGIF(*args)
 	@classmethod
 	def Opt_ClearCache(self):
 		XJ_Frame.Opt_ClearCache()

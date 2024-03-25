@@ -6,7 +6,9 @@ if True:
 	app = QApplication([])
 
 	pb=XJQ_PlayBar()
-	lst=[99,1,0,-1]#测试值
+	lst=[99,5,1,0,-1]#测试值
+	# pb.Set_Index(0,lst[-1])
+	# pb.Set_Index(0,lst[1])
 	pb.Set_Index(0,lst[0])
 
 	win=QWidget()

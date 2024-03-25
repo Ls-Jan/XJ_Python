@@ -3,9 +3,13 @@ __version__='1.0.0'
 __author__='Ls_Jan'
 
 
-from .XJQ_SwitchBtn import *
-from .XJQ_Slider import *
+from .XJQ_SwitchBtn import XJQ_SwitchBtn
+from .XJQ_PureColorIconButton import XJQ_PureColorIconButton
+from .XJQ_PureColorIcon import XJQ_PureColorIcon
+from .XJQ_Slider import XJQ_Slider
+from ..Functions.GetRealPath import GetRealPath
 
+from typing import Union
 from PyQt5.QtWidgets import QHBoxLayout,QFrame,QLabel
 from PyQt5.QtCore import Qt,QTimer,pyqtSignal
 from PyQt5.QtGui import QColor
@@ -28,9 +32,9 @@ class XJQ_PlayBar(QFrame):#播放条
 	__timerLoop=None
 	__timerPause=500#操作滚动条时短暂暂停(贤者时间
 	__loop=None
-	def __init__(self,loop=True):
+	def __init__(self,loop=True,iconPlay:Union[XJQ_PureColorIcon,str]=GetRealPath('../Icons/播放.png'),iconPause:Union[XJQ_PureColorIcon,str]=GetRealPath('../Icons/暂停.png')):
 		super().__init__()
-		widPlay=XJQ_SwitchBtn()
+		widPlay=XJQ_SwitchBtn(XJQ_PureColorIconButton(),XJQ_PureColorIconButton())
 		widIndex=QLabel("0/0")
 		widSlider=XJQ_Slider(Qt.Horizontal)
 		timerPlay=QTimer()
@@ -66,6 +70,7 @@ class XJQ_PlayBar(QFrame):#播放条
 		self.__loop=loop
 		self.setStyleSheet('.XJQ_PlayBar{background:rgba(0,0,0,160)}')
 		widIndex.setStyleSheet('color:#AAAAAA')
+		self.Set_Icon(iconPlay,iconPause)
 		self.Set_Duration(50)
 		self.Set_Loop(250)
 	def Get_IsActive(self):
@@ -73,15 +78,21 @@ class XJQ_PlayBar(QFrame):#播放条
 			判断是否在播放
 		'''
 		return self.__widPlay.Get_IsON()
+	def Set_Icon(self,iconPlay:Union[XJQ_PureColorIcon,str]=None,iconPause:Union[XJQ_PureColorIcon,str]=None):
+		'''
+			设置播放停止按钮
+		'''
+		for item in [(self.__widPlay.Get_BtnON(),iconPlay),(self.__widPlay.Get_BtnOFF(),iconPause)]:
+			if(iconPlay):
+				try:
+					item[0].Set_Icon(item[1])
+				except:
+					pass
 	def Set_Duration(self,duration:int):
 		'''
 			设置每帧的持续时间(ms)
 		'''
-		isActive=self.__timerPlay.isActive()
-		self.__timerPlay.stop()
 		self.__timerPlay.setInterval(duration)
-		if(isActive):
-			self.__timerPlay.start()
 	def Set_Loop(self,interval:int=None,flag:bool=None):
 		'''
 			设置循环播放，
@@ -111,6 +122,7 @@ class XJQ_PlayBar(QFrame):#播放条
 			max=slider.maximum()
 		if(index==None):
 			index=slider.value()
+		slider.setMinimum(0 if max>=0 else -1)
 		v0=slider.value()
 		slider.setMaximum(max)
 		v1=slider.value()
@@ -129,10 +141,11 @@ class XJQ_PlayBar(QFrame):#播放条
 		self.__timerLoop.stop()
 		self.__timerPause.stop()
 		if(flag):
-			if(self.__widSlider.value()==self.__widSlider.maximum()):
-				self.__NextLoop()
-			else:
-				self.__timerPlay.start()
+			if(self.__widSlider.maximum()>=0):
+				if(self.__widSlider.value()==self.__widSlider.maximum()):
+					self.__NextLoop()
+				else:
+					self.__timerPlay.start()
 		else:
 			self.__timerPlay.stop()
 		self.__widPlay.Opt_Switch(flag)
@@ -140,7 +153,7 @@ class XJQ_PlayBar(QFrame):#播放条
 	def __NextFrame(self):
 		if(self.Set_Index(self.__widSlider.value()+1)):
 			self.update()
-		else:
+		if(self.__widSlider.value()==self.__widSlider.maximum()):
 			self.valueEnd.emit()
 			self.__timerPlay.stop()
 			if(self.__loop):

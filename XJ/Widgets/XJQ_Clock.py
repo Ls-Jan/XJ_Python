@@ -20,13 +20,9 @@ class OperationUI:
 	'''
 	btnPlay=None
 	btnQuit=None
-	icons={
-		'pause':GetRealPath('../Icons/暂停.png'),
-		'play':GetRealPath('../Icons/播放.png'),
-		'quit':GetRealPath('../Icons/停止.png'),}
-	def __init__(self,parent):
-		btnPlay=XJQ_SwitchBtn(XJQ_PureColorIconButton(self.icons['play']),XJQ_PureColorIconButton(self.icons['pause']))
-		btnQuit=XJQ_PureColorIconButton(self.icons['quit'])
+	def __init__(self,parent,iconPause:str=GetRealPath('../Icons/暂停.png'),iconPlay:str=GetRealPath('../Icons/播放.png'),iconQuit:str=GetRealPath('../Icons/停止.png')):
+		btnPlay=XJQ_SwitchBtn(XJQ_PureColorIconButton(iconPlay),XJQ_PureColorIconButton(iconPause))
+		btnQuit=XJQ_PureColorIconButton(iconQuit)
 
 		wid=QWidget()
 		lbox=XJQ_LocateBox(wid)
