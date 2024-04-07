@@ -1,11 +1,12 @@
 
 
-__version__='1.0.0'
+__version__='1.0.1'
 __author__='Ls_Jan'
 
 from ..Functions.CV2ToQPixmap import CV2ToQPixmap
 from ..Functions.CV2FromQPixmap import CV2FromQPixmap
 from ..Functions.CV2LoadPict import CV2LoadPict
+from ..Functions.CV2PictExpand import CV2PictExpand
 
 import cv2
 import numpy as np
@@ -62,6 +63,8 @@ class XJQ_PureColorIcon(QIcon):#纯色图标
 			raise Exception('data参数错误，类型仅能为np.ndarray(图片数据)或是str(图片路径)或是QIcon/XJQ_PureColorIcon或是QPixmap或是None')
 
 		try:
+			if(squareSize):
+				im=CV2PictExpand(im)
 			if(len(fg)==3):
 				fg=(*fg,255)
 			if(len(bg)==3):

@@ -17,8 +17,8 @@ class XJQ_ListWidgetItem(QLabel):#主要为XJQ_ListWidget服务
 	'''
 	def __init__(self,
 			  title:str,
-			  tags:list,
-			  itemColor:str,
+			  tags:list=None,
+			  itemColor:str=None,
 			  extraIcons:list=None):
 		'''
 			title：标题
@@ -54,9 +54,9 @@ class XJQ_ListWidgetItem(QLabel):#主要为XJQ_ListWidget服务
 		self.__iconsBox=hbox_icons
 		self.Opt_Change(title,tags,itemColor,extraIcons)
 	def Opt_Change(self,
-				title:str,
-				tags:list,
-				itemColor:str,
+				title:str=None,
+				tags:list=None,
+				itemColor:str=None,
 				extraIcons:list=None):
 		'''
 			title：标题
@@ -90,7 +90,7 @@ class XJQ_ListWidgetItem(QLabel):#主要为XJQ_ListWidget服务
 				lb.setPixmap(icon.pixmap())
 				self.__iconsBox.insertWidget(len(self.__icons),lb)
 				self.__icons.append(lb)
-	def __SetMarkColor(self,itemColor):
+	def __SetMarkColor(self,itemColor:tuple):
 		styleSheet='''
 				.XJQ_ListWidgetItem{
 					background:qlineargradient(x1:0, y1:0, x2:1, y2:0,

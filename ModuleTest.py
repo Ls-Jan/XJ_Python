@@ -2,9 +2,14 @@
 
 
 # from XJ.Widgets._test.XJQ_PlayBar import *
-from XJ.Widgets._test.XJQ_PictListView import *
+# from XJ.Widgets._test.XJQ_NumInput import *
+# from XJ.Widgets._test.XJQ_PictListView import *
 # from XJ.Widgets._test.XJQ_Clock import *
 # from XJ.Widgets._test.XJQ_FolderBox import *
+# from XJ.Widgets._test.XJQ_ListWidgetItem import *
+# from XJ.Functions._test.CV2PictExpand import *
+from XJ.Structs._test.XJ_SQLite import *
+
 exit()
 
 

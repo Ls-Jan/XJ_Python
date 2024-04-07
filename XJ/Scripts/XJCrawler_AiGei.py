@@ -129,6 +129,7 @@ if __name__=='__main__':
 		'https://www.aigei.com/view/110659.html',
 		'https://www.aigei.com/view/96789.html',
 		'https://www.aigei.com/view/113515.html',
+		'https://www.aigei.com/view/95783.html',
 	]
 	url=urls[-1]
 	craw=XJCrawler_AiGei(url,os.path.join('#爱给网素材#',os.path.splitext(os.path.split(url)[1])[0]))
