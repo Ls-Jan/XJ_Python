@@ -1,11 +1,11 @@
 
-__version__='1.0.0'
+__version__='1.0.1'
 __author__='Ls_Jan'
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtCore import QPoint,Qt,QObject
 from PyQt5.QtGui import QMouseEvent
-
+from enum import Enum
 
 __all__=['XJ_MouseStatus']
 
@@ -20,7 +20,7 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 	'''
 	longClick=pyqtSignal()#鼠标原地不动长按时触发
 
-	__antiJitter=5#防抖，当鼠标点击位置与鼠标当前位置的曼哈顿距离不超过该值时仍将鼠标视为不动状态
+	__antiJitter=500#防抖，当鼠标点击位置与鼠标当前位置的曼哈顿距离不超过该值时仍将鼠标视为不动状态
 	__doubleClickInterval=500#双击间隔(ms)
 	__longPressInterval=500#长按间隔(ms)
 	__record={
@@ -28,7 +28,11 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 		'lastMouse':None,#上一次的鼠标信息
 		'currMouse':None,#当前鼠标信息
 		}
-	__press=[QMouseEvent.MouseButtonRelease,QMouseEvent.MouseButtonPress,QMouseEvent.MouseButtonDblClick]#偷懒用的
+	__pressStatus={
+		'Release':QMouseEvent.MouseButtonRelease,
+		'SPress':QMouseEvent.MouseButtonPress,
+		'DPress':QMouseEvent.MouseButtonDblClick,
+	}
 	__move=False#用于判断是否长按
 	__timerID=0#鼠标按下时对应的定时器
 	class __Data:
@@ -39,7 +43,8 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 		def __init__(self,event):
 			self.pos=event.globalPos()
 			self.btn=event.button()
-			self.pressStatus=event.MouseButtonRelease
+			self.pressStatus=event.type()
+			# self.pressStatus=event.MouseButtonRelease
 			self.timeStamp=event.timestamp()
 
 	def __init__(self,*arg):
@@ -54,12 +59,11 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 		self.__record=record
 	def timerEvent(self,event):
 		record=self.__record
-		press=self.__press
 		tId=event.timerId()
 		cId=self.__timerID
 		self.killTimer(event.timerId())
 		if(cId==tId):#当前定时器
-			if(not self.__move and record['currMouse'].pressStatus!=press[0]):#未发生移动，未抬起鼠标，触发长按信号
+			if(not self.__move and record['currMouse'].pressStatus!=self.__pressStatus['Release']):#未发生移动，未抬起鼠标，触发长按信号
 				self.longClick.emit()
 
 	def Get_Position(self):
@@ -74,12 +78,13 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 		return self.__record['currMouse'].btn,self.__record['currMouse'].pressStatus
 	def Get_MoveDelta(self,total:bool=True,strict:bool=True):
 		'''
-			返回鼠标移动量(仅鼠标按下时有效)，为QPoint对象
+			返回鼠标移动量(仅鼠标按下时有效)，为QPoint对象。
+			total为真时计算自按下鼠标起的鼠标移动量，否则计算与上一次鼠标事件间的鼠标移动量；
+			strict为真时仅在触发“移动”时计算移动量，即微小的偏移会被视为“抖动”而将偏移量视为0；
 		'''
-		press=self.__press
 		record=self.__record
 		data_curr=record['currMouse']
-		if(data_curr.pressStatus!=press[0]):#说明鼠标按下
+		if(data_curr.pressStatus!=self.__pressStatus['Release']):#说明鼠标按下
 			if(not strict or self.__move):#严格模式下，仅判定发生移动时计算移动量
 				p1=record['currMouse'].pos
 				if(total):
@@ -112,17 +117,16 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 		'''
 			更新状态，传入鼠标事件
 		'''
-		press=self.__press
 		record=self.__record
 		data_curr=self.__Data(event)
-		if(event.type()==press[1] or event.type()==press[2]):#单/双击
+		if(event.type()==self.__pressStatus['SPress'] or event.type()==self.__pressStatus['DPress']):#单/双击
 			self.__move=False
 			data_old=record['lastPress']
-			data_curr.pressStatus=press[1]
+			data_curr.pressStatus=self.__pressStatus['SPress']
 			if(data_old.btn==data_curr.btn):#同键位按下
 				if(data_curr.timeStamp-data_old.timeStamp<self.__doubleClickInterval):#在时间间隔内
-					if(data_old.pressStatus!=press[2]):#没有双击过
-						data_curr.pressStatus=press[2]#双击
+					if(data_old.pressStatus!=self.__pressStatus['DPress']):#没有双击过
+						data_curr.pressStatus=self.__pressStatus['DPress']#双击
 			record['lastPress']=data_curr
 			record['lastMouse']=data_curr
 			record['currMouse']=data_curr
@@ -130,20 +134,17 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 		else:#移动/抬起
 			data_curr.btn=event.buttons()
 			data_curr.pressStatus=record['lastMouse'].pressStatus
-			if(event.type()==press[0]):#抬起
+			if(event.type()==self.__pressStatus['Release']):#抬起
 				if(data_curr.btn==Qt.NoButton):#确保无按键按下时设置为Release
-					data_curr.pressStatus=press[0]
+					data_curr.pressStatus=self.__pressStatus['Release']
 					data_curr.btn=event.button()
-			else:#移动(QMouseEvent.MouseMove)
-				if(data_curr.pressStatus!=press[0] and not self.__move):#判断有无发生拖拽
-					delta=self.Get_MoveDelta(strict=False)
-					if(abs(delta.x())+abs(delta.y())>self.__antiJitter):
-						self.__move=True
-						record['currMouse'].pos=record['lastPress'].pos
+			if(data_curr.pressStatus!=self.__pressStatus['Release'] and not self.__move):#判断有无发生拖拽
+				delta=self.Get_MoveDelta(strict=False)
+				if(abs(delta.x())+abs(delta.y())>self.__antiJitter):
+					self.__move=True
+					record['currMouse'].pos=record['lastPress'].pos
 			record['lastMouse']=record['currMouse']
 			record['currMouse']=data_curr
-
-
 
 
 

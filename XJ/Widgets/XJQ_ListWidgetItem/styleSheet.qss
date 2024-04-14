@@ -1,0 +1,19 @@
+Main{
+
+}
+
+Title{
+	color:rgba(128,192,192,240);
+	background:transparent;
+	font-size:25px;
+	font-weight:bold;
+}
+
+ItemColor{
+	.XJQ_ListWidgetItem{
+		background:qlineargradient(x1:0, y1:0, x2:1, y2:0,
+		stop:0 --col, 
+		stop:0.04 rgba(0,0,0,0), 
+		stop:1 rgba(0,0,0,0));
+	}
+}

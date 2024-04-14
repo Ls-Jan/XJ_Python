@@ -1,0 +1,1 @@
+from .XJQ_PureColorIcon import XJQ_PureColorIcon

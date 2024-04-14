@@ -1,0 +1,34 @@
+QSlider {
+	background: transparent;
+	--dire: --width px
+}
+
+QSlider::groove {
+	background: transparent;
+}
+
+QSlider::handle {
+	width: --width px;
+	height: --width px;
+	background: qradialgradient(spread:pad,
+			cx:0.5, cy:0.5, radius:0.5,
+			fx:0.5, fy:0.5,
+			stop:0.8 --colHandle_N,
+			stop:0.81 transparent);
+}
+
+QSlider::handle:hover {
+	background: qradialgradient(spread:pad,
+			cx:0.5, cy:0.5, radius:0.5,
+			fx:0.5, fy:0.5,
+			stop:0.8 --colHandle_H,
+			stop:0.81 transparent);
+}
+
+QSlider::handle:pressed {
+	background: qradialgradient(spread:pad,
+			cx:0.5, cy:0.5, radius:0.5,
+			fx:0.5, fy:0.5,
+			stop:0.8 --colHandle_P,
+			stop:0.81 transparent);
+}

@@ -1,0 +1,9 @@
+Main{
+	.XJQ_PlayBar{
+		background:rgba(0,0,0,160);
+	}
+}
+
+Index{
+	color:rgba(224,224,224,255);
+}

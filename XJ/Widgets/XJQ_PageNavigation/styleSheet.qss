@@ -1,0 +1,74 @@
+Main{
+	color:#DDEEEEEE;
+	background:#222222;
+	margin:0;
+}
+
+CurrentPage {
+	QComboBox {
+		font-size: 20px;
+		width: 10px;
+		background: rgba(0, 0, 0, 0);
+	}
+
+	QComboBox QAbstractItemView {
+		font-size: 20px;
+		background-color: rgb(24, 24, 24);
+	}
+
+	QComboBox QAbstractItemView::item {
+		height: 30px;
+	}
+
+	QComboBox QScrollBar {
+		background: rgba(255, 255, 255, 5%);
+		width: 5px;
+	}
+
+	QComboBox QScrollBar::add-line {
+		width: 0;
+		height: 0;
+	}
+
+	QComboBox QScrollBar::sub-line {
+		width: 0;
+		height: 0;
+	}
+
+	QComboBox QScrollBar::handle {
+		background: rgba(64, 64, 64, 75%);
+	}
+
+	QComboBox QScrollBar::sub-page {
+		background: rgba(0, 0, 0, 30%);
+	}
+
+	QComboBox QScrollBar::add-page {
+		background: rgba(0, 0, 0, 30%);
+	}
+}
+
+PageCount {
+	QComboBox {
+		font-size: 17px;
+		height: 25px;
+		background: rgba(0, 0, 0, 30%);
+	}
+
+	QComboBox QAbstractItemView {
+		font-size: 15px;
+		background-color: rgb(24, 24, 24);
+	}
+
+	QComboBox QAbstractItemView::item {
+		height: 30px;
+	}
+}
+
+ArrowLeft {
+	background: rgba(0, 0, 0, 0);
+}
+
+ArrowRight {
+	background: rgba(0, 0, 0, 0);
+}

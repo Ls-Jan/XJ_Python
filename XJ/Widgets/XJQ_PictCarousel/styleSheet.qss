@@ -1,0 +1,15 @@
+
+Main{
+
+}
+
+ScaleHint{
+	font-size:30px;
+	color:#000000;
+	background:#88FFFFFF;
+}
+
+
+PlayBar{
+	
+}

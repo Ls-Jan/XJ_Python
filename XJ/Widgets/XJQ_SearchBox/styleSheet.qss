@@ -1,0 +1,53 @@
+Main {
+	.XJQ_SearchBox {
+		background: rgba(136, 136, 255, 65%);
+		border-radius: 12px;
+	}
+}
+
+/* 搜索框样式，默认透明无边框，效果最好，不建议修改 */
+Input {
+	background: transparent;
+	border-width: 0;
+	border-style: outset
+}
+
+/* 这个是QCompleter的样式：https://blog.csdn.net/hellokandy/article/details/128844511 */
+StandbyLst {
+	QListView {
+		background-color: #FFFFFF;
+		color: #353637;
+		selection-background-color: #3A72D8;
+		selection-color: white;
+		show-decoration-selected: 1;
+		font-size: 14pt;
+		font-family: microsoft yahei;
+	}
+
+	QScrollBar {
+		background: rgba(255, 255, 255, 5%);
+		width: 6px;
+	}
+
+	QScrollBar::add-line {
+		width: 0;
+		height: 0;
+	}
+
+	QScrollBar::sub-line {
+		width: 0;
+		height: 0;
+	}
+
+	QScrollBar::handle {
+		background: rgba(64, 64, 64, 75%);
+	}
+
+	QScrollBar::sub-page {
+		background: rgba(0, 0, 0, 30%);
+	}
+
+	QScrollBar::add-page {
+		background: rgba(0, 0, 0, 30%);
+	}
+}

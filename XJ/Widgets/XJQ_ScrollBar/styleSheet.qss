@@ -1,0 +1,32 @@
+/* 其中出现的css变量会通过字符串替换的方式给替换掉 */
+
+QScrollBar {
+	background: transparent;
+	min-height: 30px;
+	/* 很可笑的一点，倒角必须指定有效宽高才能生效 */
+	min-width: 30px;
+}
+
+QScrollBar::handle {
+	background: --colHandle_N;
+	border-radius: --radiusHandle;
+}
+
+QScrollBar::handle:hover {
+	background: --colHandle_H;
+}
+
+QScrollBar::handle:pressed {
+	background: --colHandle_P;
+}
+
+::add-page,
+::sub-page {
+	background: transparent;
+}
+
+::add-line,
+::sub-line {
+	/*隐藏无谓的箭头*/
+	width: 0;
+}

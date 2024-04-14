@@ -1,17 +1,53 @@
 
+# from XJ.Widgets.XJQ_SepLine.Test import Test
+# from XJ.Widgets.XJQ_FlowLayout.Test import Test
+# from XJ.Widgets.XJQ_Tag.Test import Test
+# from XJ.Widgets.XJQ_Slider.Test import Test
+# from XJ.Widgets.XJQ_ScrollBar.Test import Test
+# from XJ.Widgets.XJQ_SearchBox.Test import Test
+# from XJ.Widgets.XJQ_PlayBar.Test import Test
+# from XJ.Widgets.XJQ_PopupBox.Test import Test
+# from XJ.Widgets.XJQ_PureColorIcon.Test import Test
+# from XJ.Widgets.XJQ_PureColorIconButton.Test import Test
+# from XJ.Widgets.XJQ_SwitchBtn.Test import Test
+# from XJ.Widgets.XJQ_TagSelector.Test import Test
+# from XJ.Widgets.XJQ_AnimateShowHideBox.Test import Test
+# from XJ.Widgets.XJQ_ButtonGroup.Test import Test
+# from XJ.Widgets.XJQ_CanvasBox.Test import Test
+# from XJ.Widgets.XJQ_ComboBox.Test import Test
+# from XJ.Widgets.XJQ_ColorChoose.Test import Test
+# from XJ.Widgets.XJQ_FlowLayout.Test import Test
+# from XJ.Widgets.XJQ_HintBox.Test import Test
+# from XJ.Widgets.XJQ_MarqueeBox.Test import Test
+# from XJ.Widgets.XJQ_LocateBox.Test import Test
+# from XJ.Widgets.XJQ_NumInput.Test import Test
+# from XJ.Widgets.XJQ_MouseTriggerBox.Test import Test
+# from XJ.Widgets.XJQ_LoadingAnimate.Test import Test
+# from XJ.Widgets.XJQ_Mask.Test import Test
+# from XJ.Widgets.XJQ_PictCarousel.Test import Test
+# from XJ.Widgets.XJQ_PictListView.Test import Test
+from XJ.Widgets.XJQ_PageNavigation.Test import Test
+# from XJ.Widgets.XJQ_ListWidgetItem.Test import Test
+# from XJ.Widgets.XJQ_ListWidget.Test import Test
+# from XJ.Widgets.XJQ_FolderBox.Test import Test
+# from XJ.Widgets.XJQ_Clock.Test import Test
 
 
-# from XJ.Widgets._test.XJQ_PlayBar import *
-# from XJ.Widgets._test.XJQ_NumInput import *
-# from XJ.Widgets._test.XJQ_PictListView import *
-# from XJ.Widgets._test.XJQ_Clock import *
-# from XJ.Widgets._test.XJQ_FolderBox import *
-# from XJ.Widgets._test.XJQ_ListWidgetItem import *
-# from XJ.Functions._test.CV2PictExpand import *
-# from XJ.Structs._test.XJ_SQLite import *
+t=Test()
+t.Opt_Run()
 
-# exit()
+exit()
 
+
+
+
+
+
+
+
+
+
+# 下面代码已过时，无法使用
 
 import os
 import time
@@ -27,20 +63,28 @@ class XJ_ModTest:
 			raise Exception(f'模块{part}不存在')
 		mods=[]
 		exclude={'__init__.py'}
-		for file in next(os.walk(self.GetPath(part)))[2]:
-			if(file not in exclude):
-				mod=file[:-3]
-				pmod=self.GetPath(part,mod)
-				ptmod=self.GetPath(part,mod,test=False)
-				mTime=[os.path.getmtime(pmod)]
-				if(os.path.exists(ptmod)):
-					mTime.append(os.path.getmtime(ptmod))
-				mTime=max(mTime)
-				mods.append({
+		for root,folder,file in next(os.walk(self.GetPath(part))):
+			zos.path.join(root,folder)
+			mod=folder[:-3]
+			mods.append({
 					'mod':mod,
 					'mTime':mTime,
 					'pTest':ptmod,
 					'pmTest':self.GetPath(part,mod,seq='.',suffix='')})
+			# for root,folder,file in next(os.walk(self.GetPath(part))):
+			# if(file not in exclude):
+			# 	mod=file[:-3]
+			# 	pmod=self.GetPath(part,mod)
+			# 	ptmod=self.GetPath(part,mod,test=False)
+			# 	mTime=[os.path.getmtime(pmod)]
+			# 	if(os.path.exists(ptmod)):
+			# 		mTime.append(os.path.getmtime(ptmod))
+			# 	mTime=max(mTime)
+			# 	mods.append({
+			# 		'mod':mod,
+			# 		'mTime':mTime,
+			# 		'pTest':ptmod,
+			# 		'pmTest':self.GetPath(part,mod,seq='.',suffix='')})
 		mods.sort(key=lambda item:-item['mTime'])#升序排序
 		for item in mods:
 			mTime=item['mTime']

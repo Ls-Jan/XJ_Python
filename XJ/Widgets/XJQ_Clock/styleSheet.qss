@@ -1,0 +1,10 @@
+
+Main{
+	font-size:40px;
+}
+
+OperationUI{
+	.QFrame{
+		background:rgba(0,0,0,128);
+	}
+}

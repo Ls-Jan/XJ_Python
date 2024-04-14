@@ -1,0 +1,56 @@
+ScrollBar {
+	QScrollBar {
+		background: rgba(255, 255, 255, 5%);
+		width: 6px;
+	}
+
+	QScrollBar::add-line {
+		width: 0;
+		height: 0;
+	}
+
+	QScrollBar::sub-line {
+		width: 0;
+		height: 0;
+	}
+
+	QScrollBar::handle {
+		background: rgba(64, 64, 64, 75%);
+	}
+
+	QScrollBar::sub-page {
+		background: rgba(0, 0, 0, 30%);
+	}
+
+	QScrollBar::add-page {
+		background: rgba(0, 0, 0, 30%);
+	}
+}
+
+ScrollArea {
+	QScrollArea {
+		background-color: transparent;
+	}
+}
+
+TagsBox {
+	.QFrame {
+		background: transparent
+	}
+}
+
+SearchBox {
+	Main {
+		.XJQ_SearchBox {
+			background: rgba(128, 128, 128, 15%);
+			border-radius: 12px;
+		}
+	}
+
+	Input {
+		color: rgba(0, 145, 255, 85%);
+		background: transparent;
+		border-width: 0;
+		border-style: outset
+	}
+}

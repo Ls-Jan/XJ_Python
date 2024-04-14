@@ -1,6 +1,6 @@
 # 不必要的文件
 tempCodeRunnerFile.py
-Test*.py
+/Test*.py
 
 # 不必要的媒体数据
 \#*#
