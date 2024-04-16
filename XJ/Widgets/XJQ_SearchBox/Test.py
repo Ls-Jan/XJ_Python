@@ -14,8 +14,8 @@ class Test(XJQ_Test):
 		super().__init__()
 
 		sb=XJQ_SearchBox()
-		wid=QWidget()
-		self.__wid=wid
+		win=QWidget()
+		self.__win=win
 		self.__sb=sb
 
 		sb.Set_StandbyList([f'{i}' for i in range(1000)],Qt.MatchFlag.MatchStartsWith)
@@ -25,12 +25,13 @@ class Test(XJQ_Test):
 		# sb.updated.connect(lambda tx:sb.Set_StandbyList(['aaa','aab']))
 		# sb.show()
 
-		hbox=QHBoxLayout(wid)
+		hbox=QHBoxLayout(win)
 		hbox.addWidget(sb)
 	def Opt_Run(self):
-		self.__wid.show()
+		self.__win.show()
 		self.__sb.Set_Focus()
-		return super().Opt_Run()
+		super().Opt_Run()
+		return self.__win
 
 
 

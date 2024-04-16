@@ -20,7 +20,8 @@ class Test(XJQ_Test):
 		self.__ni=ni
 	def Opt_Run(self):
 		self.__ni.show()
-		return super().Opt_Run()
+		super().Opt_Run()
+		# return self.__ni
 
 
 

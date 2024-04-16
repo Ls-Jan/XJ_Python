@@ -12,15 +12,7 @@ class Test(XJQ_Test):
 	def __init__(self):
 		super().__init__()
 
-		file=GetRealPath('./加载动画-7.gif')
-		gif=GetRealPath('./加载动画-8.gif')
-		gm=XJ_GIFMaker()
-		gm.Opt_Insert(file)
-
 		lvPict=XJQ_PictListView()
-		lvPict.Opt_Insert(gm.frames,-1,file,groupName="AAA")
-		lvPict.Opt_Insert(gm.frames,3,file,groupName="BBB")
-		lvPict.Set_LoadingGIF(gif)
 		# lvPict.Opt_Insert(gm.frames,hash(file),"AAA")
 		# lvPict.Opt_Insert(gm.frames,hash(file),"BBB",10)
 		# lvPict.Set_VisibleGroup((hash(file),0),showAll=True)
@@ -29,5 +21,16 @@ class Test(XJQ_Test):
 	def Opt_Run(self):
 		self.__lvPict.show()
 		self.__lvPict.resize(800,400)
-		return super().Opt_Run()
+
+		print('请选择一个图片/视频进行加载')
+		file=self.Get_File(GetRealPath('../../Icons/Loading/加载动画-7.gif'),'请选择一个图片/视频进行加载')
+		if(file):
+			print('鼠标悬停在列表中时可预览对应项的图片')
+			gm=XJ_GIFMaker()
+			gm.Opt_Insert(file)
+			self.__lvPict.Opt_Insert(gm.frames,-1,file,groupName="AAA")
+			# self.__lvPict.Opt_Insert(gm.frames,3,file,groupName="BBB")
+
+		super().Opt_Run()
+		return self.__lvPict
 

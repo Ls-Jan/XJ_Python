@@ -2,7 +2,7 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
-from .XJQ_GettingPixmapTask import *
+from .XJQ_GettingPixmapTask import XJQ_GettingPixmapTask
 
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QPixmap

@@ -17,12 +17,6 @@ class Test(XJQ_Test):
 		super().__init__()
 
 		lb_1=QLabel()
-		path=GetRealPath('./加载动画-7.gif')
-		mv=QMovie(path)
-		mv.setScaledSize(QSize(250,250))
-		mv.start()
-		lb_1.setMovie(mv)
-
 		lb_2=QLabel('ABCDEFG\nABCDEFG\nABCDEFG\nABCDEFG')
 		lb_2.setStyleSheet('''
 			font-size:80px;
@@ -43,10 +37,23 @@ class Test(XJQ_Test):
 		''')
 
 		self.__wid=wid
+		self.__lb_1=lb_1
 	def Opt_Run(self):
 		self.__wid.show()
 		self.__wid.resize(500,300)
-		return super().Opt_Run()
+		print('请选择一张图片')
+		path=self.Get_File(GetRealPath('../../Icons/Loading/加载动画-7.gif'),'选择一张图片',"*.png;*.jgp;*.gif;*.webp")
+		if(path):
+			size=QSize(250,250)
+			mv=QMovie(path)
+			mv.setScaledSize(size)
+			mv.start()
+			self.__lb_1.setMovie(mv)
+			self.__lb_1.update()
+			self.__lb_1.resize(size)
+			print(mv.scaledSize(),self.__lb_1.size(),mv.isValid())
+		super().Opt_Run()
+		# return self.__wid
 
 
 

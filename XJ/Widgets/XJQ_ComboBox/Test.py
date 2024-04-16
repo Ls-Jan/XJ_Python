@@ -89,6 +89,7 @@ class Test(XJQ_Test):
 				}
 			'''
 		# self.__cb.setStyleSheet(style)
-		return super().Opt_Run()
+		super().Opt_Run()
+		# return self.__wid
 
 

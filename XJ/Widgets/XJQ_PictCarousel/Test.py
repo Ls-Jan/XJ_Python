@@ -15,26 +15,26 @@ __all__=['Test']
 class Test(XJQ_Test):
 	def __init__(self):
 		super().__init__()
-
-		file='./加载动画-4.gif'
-		gm=XJ_GIFMaker()
-		gm.Opt_Insert(GetRealPath(file))
-		frames=[QPixmap(QImage(f.data(),*gm.size, gm.size[0]*4,QImage.Format_RGBA8888)) for f in gm.frames]
-
 		pc=XJQ_PictCarousel()
-		# t.Set_Duration(im.info.get('duration',50))
-		pc.Set_Frames(frames)
-		pc.Set_Duration(gm.duration)
-		pc.Set_Loop(50)
-
 		pc.setStyleSheet('.XJQ_PictCarousel{background:#333333;}')
 		# pc.setStyleSheet('.XJQ_PictCarousel{background:#222222;};QLabel{color:#FFFFFF;background:#FF0000;}')
 		self.__pc=pc
 	def Opt_Run(self):
-		self.__pc.Opt_Play(True)
+		print('请选择一个动图(不选择视频是因为该操作会将所有的帧数据加载进内存，只要视频稍微大一点就容易爆内存)')
 		self.__pc.show()
 		self.__pc.resize(1200,700)
-		return super().Opt_Run()
+		file=self.Get_File(GetRealPath('../../Icons/Loading/加载动画-4.gif'),'选择一个动图',"*.png;*.jgp;*.gif;*.webp")
+		if(file):
+			gm=XJ_GIFMaker()
+			gm.Opt_Insert(GetRealPath(file))
+			frames=[QPixmap(QImage(f.data(),*gm.size, gm.size[0]*4,QImage.Format_RGBA8888)) for f in gm.frames]
+			# t.Set_Duration(im.info.get('duration',50))
+			self.__pc.Set_Frames(frames)
+			self.__pc.Set_Duration(gm.duration)
+			self.__pc.Set_Loop(50)
+			self.__pc.Opt_Play(True)
+		super().Opt_Run()
+		return self.__pc
 
 
 

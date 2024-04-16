@@ -1,0 +1,1 @@
+from .CV2FromQPixmap import CV2FromQPixmap

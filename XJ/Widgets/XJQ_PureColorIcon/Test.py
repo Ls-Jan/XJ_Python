@@ -33,7 +33,8 @@ class Test(XJQ_Test):
 		icon.Set_Color(wid=self.__btn)#根据控件设置icon颜色(在控件显示后控件样式表才会应用生效于调色板中)。通过该方法设置图标颜色的效果有时不理想
 		self.__btn.setIcon(icon)#发生变化的icon需要重新调用wid.setIcon(icon)才能生效
 
-		return super().Opt_Run()
+		super().Opt_Run()
+		return self.__btn
 
 
 

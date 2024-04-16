@@ -27,7 +27,8 @@ class Test(XJQ_Test):
 		self.__ts.show()
 		self.__ts.resize(800,400)
 		print('标签数量过多时，有时候会出现卡顿问题(暂未找到优化方案)')
-		return super().Opt_Run()
+		super().Opt_Run()
+		return self.__ts
 
 
 

@@ -37,7 +37,8 @@ class Test(XJQ_Test):
 
 		# win.resize(900,700)
 		self.__win.show()
-		return super().Opt_Run()
+		super().Opt_Run()
+		# return self.__win
 
 
 

@@ -2,7 +2,7 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
-from ...Functions.GetQItemViewShowingIndices import *
+from ...Functions.GetQItemViewShowingIndices import GetQItemViewShowingIndices
 
 from time import time
 from PyQt5.QtWidgets import QAbstractItemView,QApplication

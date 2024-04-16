@@ -22,7 +22,7 @@ class XJQ_Mask(QLabel):#加载动画蒙版
 	'''
 		- 遮蔽控件的不二之选，可以调用mask.hide()将遮罩暂时隐藏；
 		- 纯色遮罩，虽然是可以实现渐变色遮罩但实际上这种需求一次都没出现过，于是舍弃渐变色效果；
-		- 可调用Set_CenterWidget指定一个XJQ_LoadingAnimate对象以实现遮罩加载动画效果；
+		- 可调用Set_CenterWidget指定一个XJQ_LoadingAnimation对象以实现遮罩加载动画效果；
 		- 调用setParent更改父控件以达到单控件复用效果(虽然没必要)，在遮罩不使用时可通过mask.setParent(None)弃用；
 		- 提供clicked信号以满足特殊场合(例如实现“点击空白位置以取消”的操作)；
 		- 提供点击穿透以满足特殊场合；
@@ -53,7 +53,7 @@ class XJQ_Mask(QLabel):#加载动画蒙版
 		self.Set_CenterWidget(centerWidget)
 	def Set_CenterWidget(self,wid:QWidget):
 		'''
-			设置处于遮罩中心位置的控件，通常设置XJQ_LoadingAnimate对象
+			设置处于遮罩中心位置的控件，通常设置XJQ_LoadingAnimation对象
 		'''
 		hbox=self.layout()
 		if(self.__centerWidget):

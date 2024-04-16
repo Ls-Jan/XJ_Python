@@ -23,13 +23,13 @@ class XJQ_ListWidgetItem(QLabel):#主要为XJQ_ListWidget服务
 	def __init__(self,
 			  title:str,
 			  tags:list=None,
-			  itemColor:str=None,
+			  itemColor:QColor=None,
 			  extraIcons:list=None):
 		'''
-			title：标题
-			tags：标签
-			itemColor：单元色(该值将插入样式表中)
-			extraIcons：额外图标
+			title：标题；
+			tags：标签；
+			itemColor：单元色；
+			extraIcons：额外图标；
 		'''
 		super().__init__()
 		if(self.__qssManager==None):

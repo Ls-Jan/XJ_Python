@@ -4,7 +4,7 @@ __author__='Ls_Jan'
 
 from PyQt5.QtWidgets import QComboBox,QListView
 from PyQt5.QtWidgets import QStyle,QStylePainter,QStyleOptionComboBox,QStyleOptionButton
-from PyQt5.QtGui import QPalette,QPainter,QFontMetrics
+from PyQt5.QtGui import QPalette,QPainter,QFontMetrics, QWheelEvent
 from PyQt5.QtCore import Qt,pyqtSignal,QPoint
 
 __all__=['XJQ_ComboBox']
@@ -19,6 +19,7 @@ class XJQ_ComboBox(QComboBox):
 	__timerId=None
 	__delay=150#延迟发送
 	__showArrow=True
+	__wheelable=True
 	def __init__(self,*args):
 		super().__init__(*args)
 		self.setCursor(Qt.PointingHandCursor)
@@ -26,6 +27,11 @@ class XJQ_ComboBox(QComboBox):
 		self.setView(QListView())
 		self.setFocusPolicy(Qt.NoFocus)
 		self.currentIndexChanged.connect(self.__indexChanged)
+	def Set_Wheelable(self,flag:bool):
+		'''
+			设置是否屏蔽滚轮事件
+		'''
+		self.__wheelable=flag
 	def Opt_SetDelay(self,delay:int):
 		'''
 			设置延迟时长(ms)
@@ -48,8 +54,6 @@ class XJQ_ComboBox(QComboBox):
 		for tx in lst:
 			self.setItemText(i,str(tx))
 			i+=1
-	def __indexChanged(self,index):
-		self.__timerId=self.startTimer(self.__delay)
 	def paintEvent(self,event):
 		#组合框文字居中：https://blog.csdn.net/eiilpux17/article/details/109501871
 		painter=QStylePainter(self)
@@ -83,7 +87,12 @@ class XJQ_ComboBox(QComboBox):
 		if(self.__timerId==timerId):
 			self.indexChanged.emit(self.currentIndex(),self.currentText())
 		self.killTimer(timerId)
+	def wheelEvent(self, e: QWheelEvent) -> None:
+		if(self.__wheelable):
+			return super().wheelEvent(e)
 
+	def __indexChanged(self,index):
+		self.__timerId=self.startTimer(self.__delay)
 	def __adjustListWidth(self):
 		ft=self.font()
 		ft.setPixelSize(30)

@@ -1,1 +1,0 @@
-from .XJQ_LoadingAnimate import XJQ_LoadingAnimate

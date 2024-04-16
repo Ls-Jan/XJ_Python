@@ -64,7 +64,7 @@ class XJQ_PictListView(QWidget):
 				val=patterns[key].replace('val',val) if val else ''
 				text=text.replace(f'${key}',val)
 			return text
-	def __init__(self,*args,loadingGIF=GetRealPath('../Icons/Loading/加载动画-1.gif')):
+	def __init__(self,*args,loadingGIF=GetRealPath('./加载动画-1.gif')):
 		super().__init__(*args)
 		lv=QListView(self)
 		lvLA=LoadingAnimation(view=lv)

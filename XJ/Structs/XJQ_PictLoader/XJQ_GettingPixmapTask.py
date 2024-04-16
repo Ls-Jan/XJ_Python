@@ -2,9 +2,9 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 
-from ..XJQ_BaseTask import *
-from ..XJ_Frame import *
-from ...Functions.CV2ToQPixmap import *
+from ..XJQ_BaseTask import XJQ_BaseTask
+from ..XJ_Frame import XJ_Frame
+from ...Functions.CV2ToQPixmap import CV2ToQPixmap
 
 __all__=['XJQ_GettingPixmapTask']
 class XJQ_GettingPixmapTask(XJQ_BaseTask):

@@ -1,0 +1,2 @@
+from .GetShrunkSize import GetShrunkSize
+

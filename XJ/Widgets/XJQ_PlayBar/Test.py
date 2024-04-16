@@ -26,7 +26,8 @@ class Test(XJQ_Test):
 	def Opt_Run(self):
 		self.__win.resize(600,75)
 		self.__win.show()
-		return super().Opt_Run()
+		super().Opt_Run()
+		return self.__win
 
 
 

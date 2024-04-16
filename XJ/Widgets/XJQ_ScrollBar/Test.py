@@ -3,7 +3,7 @@ __version__='1.1.0'
 __author__='Ls_Jan'
 
 from ...ModuleTest import XJQ_Test
-from .XJQ_ScrollBar import *
+from .XJQ_ScrollBar import XJQ_ScrollBar
 
 from PyQt5.QtWidgets import QVBoxLayout,QWidget
 
@@ -31,7 +31,8 @@ class Test(XJQ_Test):
 	def Opt_Run(self):
 		self.__win.resize(700,400)
 		self.__win.show()
-		return super().Opt_Run()
+		super().Opt_Run()
+		return self.__win
 
 
 

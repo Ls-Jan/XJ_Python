@@ -25,7 +25,8 @@ class Test(XJQ_Test):
 		self.__win=win
 	def Opt_Run(self):
 		self.__win.show()
-		return super().Opt_Run()
+		super().Opt_Run()
+		return self.__win
 
 
 
