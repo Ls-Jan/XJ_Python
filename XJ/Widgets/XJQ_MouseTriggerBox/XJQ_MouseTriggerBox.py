@@ -14,11 +14,11 @@ class XJQ_MouseTriggerBox(QWidget):
 			离开时触发enter信号并且第三参数为False，
 		2.鼠标在指定区域停留一定时长时将发出信号hover(str,QPoint,bool)并且第三参数为True，
 			触发hover信号后移动鼠标时将再次触发hover并且第三参数为False
-		3.当设置父控件后该触发器总会自动调整位置大小使其完全恰好覆盖父控件(牛皮癣效果)(功能可禁用)。
+		3.当设置父控件后该触发器总会自动调整位置大小使其完全恰好覆盖父控件(牛皮癣效果)(功能可禁用)(在调用setParent时第二参数autoResize决定是否启用功能)。
 	'''
 	enter=pyqtSignal(str,bool)
 	hover=pyqtSignal(str,bool)
-	def __init__(self,parent:QWidget=None):
+	def __init__(self,parent:QWidget=None,autoResize:bool=False):
 		super().__init__()
 		self.__area={}
 		self.__cache={}
@@ -27,7 +27,7 @@ class XJQ_MouseTriggerBox(QWidget):
 		self.__autoResize=False
 		self.installEventFilter(self)
 		self.setAttribute(Qt.WA_Hover,True)
-		self.setParent(parent)
+		self.setParent(parent,autoResize)
 		self.lower()
 	def eventFilter(self,obj,event):
 		eType=event.type()
@@ -90,6 +90,7 @@ class XJQ_MouseTriggerBox(QWidget):
 				rect.moveTo(p2)
 				area=rect
 			else:
+				area=QRectF(area)
 				attrs=['left','top','right','bottom']
 				size=[self.width(),self.height()]
 				for i in range(len(attrs)):

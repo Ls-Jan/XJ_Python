@@ -39,8 +39,6 @@ class Test(XJQ_Test):
 		self.__wid=wid
 		self.__lb_1=lb_1
 	def Opt_Run(self):
-		self.__wid.show()
-		self.__wid.resize(500,300)
 		print('请选择一张图片')
 		path=self.Get_File(GetRealPath('../../Icons/Loading/加载动画-7.gif'),'选择一张图片',"*.png;*.jgp;*.gif;*.webp")
 		if(path):
@@ -52,6 +50,8 @@ class Test(XJQ_Test):
 			self.__lb_1.update()
 			self.__lb_1.resize(size)
 			print(mv.scaledSize(),self.__lb_1.size(),mv.isValid())
+		self.__wid.show()
+		self.__wid.resize(500,300)
 		super().Opt_Run()
 		# return self.__wid
 

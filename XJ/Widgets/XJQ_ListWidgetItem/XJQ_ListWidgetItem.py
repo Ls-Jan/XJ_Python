@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QLabel,QHBoxLayout,QWidget,QGridLayout
 from PyQt5.QtGui import QColor
 
 __all__=['XJQ_ListWidgetItem']
+#TODO：将来有一天必将它和XJQ_ListWidget抓去一起重构，核心为样式表的列表组件真不行，打算改用QItemDelegate，这个玩意儿才好使
 class XJQ_ListWidgetItem(QLabel):#主要为XJQ_ListWidget服务
 	'''
 		主要为XJQ_ListWidget服务，是字串型列表单元内容的扩充
