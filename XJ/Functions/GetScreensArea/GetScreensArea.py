@@ -12,7 +12,8 @@ def GetScreensArea(*,joint:bool=False,includeCursor=False):
 		如果joint为真，则直接返回合并后的坐标(QRect)
 		如果includeCursor为真那么将返回鼠标所在屏幕的坐标(QRect)
 
-		考虑到跨平台问题，没用到与Windows直接相关的东西(像是win32gui啥的)
+		考虑到跨平台问题，没用到与Windows直接相关的东西(像是win32gui啥的)。
+		该函数需提前创建QApplication对象才能正常使用。
 	'''
 	screens=QGuiApplication.screens()
 	if(joint):

@@ -20,15 +20,15 @@ class XJCrawler_AiGei:
 		'>':'%',
 	}
 	def __init__(self,url,savePath=None):
-		url=url.split('?')[0]
 		if(not savePath):
-			savePath=os.path.splitext(os.path.split(url)[1])[0]
+			savePath=os.path.splitext(os.path.split(url.split('?')[0])[1])[0]
 		if(not os.path.exists(savePath)):
 			os.makedirs(savePath)
 		if(not os.path.exists(savePath)):
 			raise Exception(f'目录【{savePath}】创建失败！')
 
-		self.__url=f'{url}?page=$page'
+		link='&' if '?' in url else '?'
+		self.__url=f'{url}{link}page=$page'
 		self.__tPage=1
 		self.__savePath=savePath
 	def Opt_Start(self):
@@ -80,6 +80,8 @@ class XJCrawler_AiGei:
 						name=divName.text.strip()
 
 				divImg=div.find('img')
+				if(not divImg):
+					continue
 				if(divImg.has_attr('data-original')):
 					data=divImg['data-original'][len('aigei-image-encode-'):]
 					url=base64.b64decode(data).decode()
@@ -130,8 +132,14 @@ if __name__=='__main__':
 		'https://www.aigei.com/view/96789.html',
 		'https://www.aigei.com/view/113515.html',
 		'https://www.aigei.com/view/95783.html',
+		('https://www.aigei.com/s?q=剪切板&type=icon_7&range=resc_97304','剪切板图标'),
 	]
-	url=urls[-1]
-	craw=XJCrawler_AiGei(url,os.path.join('#爱给网素材#',os.path.splitext(os.path.split(url)[1])[0]))
+	info=urls[-1]
+	if(isinstance(info,tuple)):
+		url,folder=info
+	else:
+		url=info
+		folder=os.path.splitext(os.path.split(url)[1])[0]
+	craw=XJCrawler_AiGei(url,os.path.join('#爱给网素材#',folder))
 	craw.Opt_Start()
 

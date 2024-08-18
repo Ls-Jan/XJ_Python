@@ -1,5 +1,5 @@
 
-__version__='1.0.1'
+__version__='1.0.2'
 __author__='Ls_Jan'
 
 from PyQt5.QtCore import pyqtSignal
@@ -34,6 +34,7 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 		'DPress':QMouseEvent.MouseButtonDblClick,
 	}
 	__move=False#用于判断是否长按
+	__triggerMove=False#用于判断Get_HasMoved(True)是否已经返回过一次True
 	__timerID=0#鼠标按下时对应的定时器
 	class __Data:
 		pos=None#鼠标位置
@@ -47,8 +48,8 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 			# self.pressStatus=event.MouseButtonRelease
 			self.timeStamp=event.timestamp()
 
-	def __init__(self,*arg):
-		super().__init__(*arg)
+	def __init__(self,parent:QObject=None):
+		super().__init__(parent)
 		record=self.__record.copy()
 		fakeEvent=QMouseEvent(QMouseEvent.MouseButtonRelease,QPoint(0,0),Qt.NoButton,Qt.NoButton,Qt.NoModifier)
 		data=self.__Data(fakeEvent)
@@ -73,7 +74,9 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 		return self.__record['currMouse'].pos
 	def Get_PressButtonStatus(self):
 		'''
-			返回当前鼠标的键(左中右)以及按下状态(单击/双击/抬起)
+			返回两份数据：
+				- 当前鼠标的键(左中右)：形如Qt.MouseButton.XXXButton的枚举值；
+				- 按下状态(单击/双击/抬起)：形如QMouseEvent.MouseButtonXXX的枚举值；
 		'''
 		return self.__record['currMouse'].btn,self.__record['currMouse'].pressStatus
 	def Get_MoveDelta(self,total:bool=True,strict:bool=True):
@@ -93,11 +96,17 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 					p2=record['lastMouse'].pos
 				return QPoint(p1.x()-p2.x(),p1.y()-p2.y())
 		return QPoint(0,0)
-	def Get_HasMoved(self):
+	def Get_HasMoved(self,trigger:bool=False):
 		'''
-			判断是否发生移动(毕竟用Get_MoveDelta来判断移动的发生是有点麻烦，还不如多一个函数
+			判断是否发生移动(毕竟用Get_MoveDelta来判断移动的发生是有点麻烦，还不如多一个函数)。
+			如果trigger为真，则移动后初次调用时会返回真，但后续的调用均返回假，使用该参数可有效避免重复返回True。
 		'''
-		return self.__move
+		if(not trigger):
+			return self.__move
+		if(not self.__triggerMove and self.__move):
+			self.__triggerMove=True
+			return True
+		return False
 	def Set_DoubleClickInterval(self,interval:int):
 		'''
 			设置双击时间间隔(ms)
@@ -121,6 +130,7 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 		data_curr=self.__Data(event)
 		if(event.type()==self.__pressStatus['SPress'] or event.type()==self.__pressStatus['DPress']):#单/双击
 			self.__move=False
+			self.__triggerMove=False
 			data_old=record['lastPress']
 			data_curr.pressStatus=self.__pressStatus['SPress']
 			if(data_old.btn==data_curr.btn):#同键位按下

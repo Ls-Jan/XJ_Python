@@ -81,7 +81,8 @@ class LoadingAnimation(QStyledItemDelegate):
 		wid=option.widget
 		style=wid.style() if wid else QApplication.style()
 		self.initStyleOption(option,index)
-		stat=index.model().data(index,self.__loadingRole)#获取加载状态
+		# stat=index.model().data(index,self.__loadingRole)#获取加载状态
+		stat=index.data(self.__loadingRole)#获取加载状态
 		if(stat):
 			self.__views.add(wid)
 			if(self.__mv.state()!=QMovie.MovieState.Running and self.__animation):
@@ -92,7 +93,8 @@ class LoadingAnimation(QStyledItemDelegate):
 	def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex):
 		option=QStyleOptionViewItem(option)
 		self.initStyleOption(option,index)
-		stat=index.model().data(index,self.__loadingRole)#获取加载状态
+		# stat=index.model().data(index,self.__loadingRole)#获取加载状态
+		stat=index.data(self.__loadingRole)#获取加载状态
 		wid=option.widget
 		style=wid.style() if wid else QApplication.style()
 		if(stat):

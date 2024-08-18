@@ -5,16 +5,9 @@ __author__='Ls_Jan'
 from ...Functions.QColorToRGBA import QColorToRGBA
 from ...Structs.XJ_MouseStatus import XJ_MouseStatus
 
-import numpy as np
-import cv2
-from PyQt5.QtCore import Qt,QPoint,QRect,pyqtSignal
-from PyQt5.QtWidgets import QWidget,QLabel
-from PyQt5.QtGui import QMouseEvent, QPainter,QBitmap,QImage,QPixmap
-
-from typing import Union
-from PyQt5.QtWidgets import QHBoxLayout,QVBoxLayout,QLabel
-from PyQt5.QtGui import QMovie,QPixmap,QColor
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import Qt,pyqtSignal
+from PyQt5.QtWidgets import QWidget,QLabel,QHBoxLayout
+from PyQt5.QtGui import QColor
 
 __all__=['XJQ_Mask']
 

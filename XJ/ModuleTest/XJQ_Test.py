@@ -16,9 +16,9 @@ class XJQ_Test(XJ_Test):
 	def __init__(self):
 		super().__init__()
 		app=QApplication.instance()
-		self.__app=None
 		if(app==None):
-			self.__app=QApplication([])
+			app=QApplication([])
+		self.__app=app
 	def Opt_Run(self):
 		'''
 			可以根据实际需要，返回主控件对象

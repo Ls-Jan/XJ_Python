@@ -12,6 +12,8 @@ class XJQ_BaseTask(QRunnable):
 
 		该类不能实例化，必须继承并重写doTask()以实现相关业务逻辑。
 		(原本是想将本类使用ABCMeta强制抽象化，奈何总是报错，懒得深究
+
+		不使用信号而是采用回调函数的一个原因是怕过多的信号会对系统造成负担(没实测，仅猜想)
 	'''
 	def __init__(self,id,callback):
 		super().__init__()
