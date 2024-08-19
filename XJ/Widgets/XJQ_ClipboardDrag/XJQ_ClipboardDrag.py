@@ -7,19 +7,37 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from XJ.Structs.XJ_MouseStatus import XJ_MouseStatus
 from XJ.Functions.GetRealPath import GetRealPath
-
+from typing import Union
+# XJQ_AutoSizeLabel
 
 class XJQ_ClipboardDrag(QLabel):
 	'''
 		一个剪切板控件，
 		拖拽本控件相当于拖拽剪切板的数据。
-		图标自己设置，这里不负责。
 	'''
-	def __init__(self,emptyImage):
+	def __init__(self,icon:Union[QPixmap,str]=None):
+		'''
+			接受一个剪切板图标，可传入文件路径或是QPixmap对象，如果传入空则使用默认图标。
+			图标可以通过setPixmap进行替换
+		'''
 		super().__init__()
 		self.__ms=XJ_MouseStatus()
 		self.setAcceptDrops(True)
-	# def Set_Pixmap(self,emptyFile:QPixmap,):
+		if(icon==None):
+			icon=GetRealPath('./图标-剪切板.png')
+		if(isinstance(icon,str)):
+			icon=QPixmap(icon)
+		# self.__sz=()
+		self.setAlignment()
+	def Set_DragPreviewDefaultPixmap(self,defaultPixmap:QPixmap):
+		'''
+			设置拖拽时预览图的图片显示，传入空则使用纯色淡蓝
+		'''
+		self
+	def Set_DragPreviewSize(self,):
+		'''
+			设置拖拽时预览图大小
+		'''
 
 	def mousePressEvent(self,event):
 		self.__ms.Opt_Update(event)

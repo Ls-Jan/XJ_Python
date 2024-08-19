@@ -5,17 +5,26 @@ __all__=['XJQ_GarbageBin']
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-
+from XJ.Functions.GetRealPath import GetRealPath
+from typing import Union
 
 class XJQ_GarbageBin(QLabel):
 	'''
 		一个垃圾桶控件，
 		作用就是鼠标拖拽到本控件上释放时会触发deleted信号。
-		图标自己设置，这里不负责。
+		图标可以通过setPixmap进行替换
 	'''
 	deleted=pyqtSignal(QMimeData)
-	def __init__(self):
+	def __init__(self,icon:Union[QPixmap,str]=None):
+		'''
+			接受一个垃圾桶图标，可传入文件路径或是QPixmap对象，如果传入空则使用默认图标。
+		'''
 		super().__init__()
+		if(icon==None):
+			icon=GetRealPath('./图标-垃圾桶.ico')
+		if(isinstance(icon,str)):
+			icon=QPixmap(icon)
+		self.setPixmap(icon)
 		self.__mData=QMimeData()
 		self.setAcceptDrops(True)
 	def __del__(self):
@@ -26,10 +35,10 @@ class XJQ_GarbageBin(QLabel):
 		# mDataSrc=cb.mimeData()
 		mData=self.__mData
 		mData.clear()
-		for fmt in mDataSrc.formats():
-			print(fmt)
-			print(mDataSrc.data(fmt))
-			print()
+		# for fmt in mDataSrc.formats():
+		# 	print(fmt)
+		# 	print(mDataSrc.data(fmt))
+		# 	print()
 
 		for fmt in mDataSrc.formats():#无脑全复制
 			mData.setData(fmt,mDataSrc.data(fmt))
@@ -46,6 +55,27 @@ class XJQ_GarbageBin(QLabel):
 		# 	print()
 
 
+
+	
+
+
+
+
+
+# print(Test)
+exit()
+
+
+@Func
+class Test_Class:
+	pass
+print(Test_Class)
+
+
+
+exit()
+
+
 if True:
 	app=QApplication([])
 	gb=XJQ_GarbageBin()
@@ -53,6 +83,8 @@ if True:
 
 
 	gb.show()
+	# gb.resize(240,240)
+	gb.setAlignment(Qt.AlignmentFlag.AlignCenter)
 	gb.resize(640,480)
 	app.exec()
 
