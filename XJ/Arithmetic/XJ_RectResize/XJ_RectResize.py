@@ -3,7 +3,6 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 __all__=['XJ_RectResize']
-#TODO：2024/8/18
 
 from XJ.Structs.XJ_Section import XJ_Section
 from XJ_LimitSection.Op import Op_Move

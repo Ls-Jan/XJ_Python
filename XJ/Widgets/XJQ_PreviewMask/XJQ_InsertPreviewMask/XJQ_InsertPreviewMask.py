@@ -1,15 +1,16 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 __all__=['XJQ_InsertPreviewMask']
-#TODO：2024/8/18
+
 from PyQt5.QtWidgets import QWidget,QLayout,QApplication
 from PyQt5.QtCore import Qt,QRect,QPoint
 from PyQt5.QtGui import QPainter,QColor,QPixmap,QTransform,QCursor
-from ...Structs.XJ_Section import XJ_Section
+from ....Structs.XJ_Section import XJ_Section
 
 class XJQ_InsertPreviewMask(QWidget):
 	'''
 		用于数据插入的可视化。
+		主用于布局内控件的插入，其他场合未实测。
 		被依附的主控件在重写dragEnterEvent、dragMoveEvent、dropEvent时要去主动调用本类的show、update、hide函数。
 	'''
 	def __init__(self,parent:QWidget):
@@ -22,8 +23,8 @@ class XJQ_InsertPreviewMask(QWidget):
 		self.__col_default=QColor(0,0,0,64)
 		self.__col_widget=QColor(255,0,0,64)
 		self.__col_border=QColor(0,0,255,64)
-		self.__exclude=set()
-		self.__include=set()
+		self.__excludeWids=set()
+		self.__includeLayouts=set()
 		self.__layoutAreas=[]#include中的布局的位置(已经映射到屏幕坐标)
 		self.__drawArea=[QRect(),None]#依次是布局和控件的位置(已经映射到本控件上)
 		self.setAttribute(Qt.WA_TransparentForMouseEvents, True)#鼠标事件穿透
@@ -63,7 +64,7 @@ class XJQ_InsertPreviewMask(QWidget):
 			ptr.restore()
 	def Set_Color(self,default:QColor=None,widget:QColor=None,border:QColor=None):
 		'''
-			设置颜色
+			设置颜色，分别是蒙版颜色、控件颜色以及控件边缘插入颜色
 		'''
 		if(default):
 			self.__col_default=default
@@ -80,12 +81,12 @@ class XJQ_InsertPreviewMask(QWidget):
 		'''
 			设置排除在外的控件，这些控件所在区域将不被被阴影遮盖
 		'''
-		self.__exclude=set(wids)
+		self.__excludeWids=set(wids)
 	def Set_IncludeLayout(self,*layouts:QLayout):
 		'''
 			设置包含在内的布局，这些布局所在区域将被阴影遮盖
 		'''
-		self.__include=set(layouts)
+		self.__includeLayouts=set(layouts)
 	def Set_DetectRadius(self,r:int):
 		'''
 			设置检测半径，以判断鼠标距离控件的哪个边缘比较近
@@ -115,7 +116,7 @@ class XJQ_InsertPreviewMask(QWidget):
 			layoutArea=None
 			widArea=wid.geometry()
 			widArea.moveTopLeft(wid.mapToGlobal(QPoint(0,0)))
-			if(self.__layoutAreas and wid not in self.__exclude):
+			if(self.__layoutAreas and wid not in self.__excludeWids):
 				if(self.__wid!=wid):#当前控件发生变化
 					for layoutArea in self.__layoutAreas:
 						if(layoutArea.contains(widArea)):#控件在目标布局内，确定dire
@@ -161,11 +162,11 @@ class XJQ_InsertPreviewMask(QWidget):
 		parent=self.parent()
 		if(parent):
 			self.resize(parent.size())
-			self.__exclude.add(parent)
+			self.__excludeWids.add(parent)
 		self.__wid=None
 		self.__drawArea[0]=QRect()
 		self.__layoutAreas.clear()
-		for layout in self.__include:
+		for layout in self.__includeLayouts:
 			rect=layout.geometry()
 			obj=layout
 			while(obj):

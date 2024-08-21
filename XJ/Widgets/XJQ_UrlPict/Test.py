@@ -4,7 +4,8 @@ __all__=['Test']
 
 from PyQt5.QtWidgets import QWidget,QVBoxLayout
 from PyQt5.QtCore import QUrl
-from .XJQ_UrlPict import XJQ_UrlPict,Config
+from PyQt5.QtGui import QMovie,QPixmap
+from .XJQ_UrlPict import XJQ_UrlPict,UrlPictConfig
 from ...ModuleTest import XJQ_Test
 from ...Functions.GetRealPath import GetRealPath
 
@@ -23,7 +24,7 @@ class Test(XJQ_Test):
 			GetRealPath('./放映带#B%C&D.png'),
 			GetRealPath('./放映带#B%C&D.png'),
 		]
-		config=Config((32,32),GetRealPath('./加载动画-1.gif'),GetRealPath('./文件错误.png'))
+		config=UrlPictConfig((32,32),QMovie(GetRealPath('./加载动画-1.gif')),QPixmap(GetRealPath('./文件错误.png')))
 		box=QVBoxLayout(self.__wid)
 		for url in urls:
 			print(f'异步请求图片数据：{url}')

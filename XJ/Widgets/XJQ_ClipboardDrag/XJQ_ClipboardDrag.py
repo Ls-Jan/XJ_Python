@@ -1,19 +1,20 @@
 __version__='1.0.0'
 __author__='Ls_Jan'
 __all__=['XJQ_ClipboardDrag']
-#TODO：2024/8/18
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from XJ.Structs.XJ_MouseStatus import XJ_MouseStatus
-from XJ.Functions.GetRealPath import GetRealPath
-from typing import Union
-# XJQ_AutoSizeLabel
 
-class XJQ_ClipboardDrag(QLabel):
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QPixmap,QColor,QMouseEvent,QPainter,QTextDocument,QDrag,QFont
+from PyQt5.QtCore import QSize,Qt,QMimeData,QRect,QRectF
+from ...Structs.XJ_MouseStatus import XJ_MouseStatus
+from ...Functions.GetRealPath import GetRealPath
+from ..XJQ_AutoSizeLabel import XJQ_AutoSizeLabel
+from typing import Union
+
+class XJQ_ClipboardDrag(XJQ_AutoSizeLabel):
 	'''
-		一个剪切板控件，
-		拖拽本控件相当于拖拽剪切板的数据。
+		一个剪切板控件，拖拽本控件相当于拖拽剪切板的数据。
+
+		补充：无法获取QQ截图的图片信息，因为QQ截图的图片数据并没有直接存放在剪切板中，目前暂时不知道获取手段，猜测可能使用了winAPI
 	'''
 	def __init__(self,icon:Union[QPixmap,str]=None):
 		'''
@@ -24,21 +25,33 @@ class XJQ_ClipboardDrag(QLabel):
 		self.__ms=XJ_MouseStatus()
 		self.setAcceptDrops(True)
 		if(icon==None):
-			icon=GetRealPath('./图标-剪切板.png')
+			icon=GetRealPath('./图标-剪贴板.png')
 		if(isinstance(icon,str)):
 			icon=QPixmap(icon)
-		# self.__sz=()
-		self.setAlignment()
-	def Set_DragPreviewDefaultPixmap(self,defaultPixmap:QPixmap):
+		self.setPixmap(icon)
+		self.__previewSize=QSize(400,160)
+		self.__previewPix=None
+		self.Set_DragPreviewDefaultPixmap(None)
+
+		#特殊说明：
+		#此处专门用来消耗掉QPainter初次绘制文本时造成的卡顿问题
+		pix=QPixmap(1,1)
+		ptr=QPainter(pix)
+		ptr.drawText(0,0,"ABC")
+		ptr.end()
+	def Set_DragPreviewDefaultPixmap(self,pix:QPixmap):
 		'''
 			设置拖拽时预览图的图片显示，传入空则使用纯色淡蓝
 		'''
-		self
-	def Set_DragPreviewSize(self,):
+		if(not pix):
+			pix=QPixmap(QSize(160,160))
+			pix.fill(QColor(200,224,248,176))
+		self.__previewPix=pix
+	def Set_DragPreviewSize(self,size):
 		'''
-			设置拖拽时预览图大小
+			设置拖拽时的预览图大小
 		'''
-
+		self.__previewSize=size
 	def mousePressEvent(self,event):
 		self.__ms.Opt_Update(event)
 	def mouseMoveEvent(self,event):
@@ -51,59 +64,28 @@ class XJQ_ClipboardDrag(QLabel):
 			for fmt in mDataSrc.formats():#无脑全复制
 				mData.setData(fmt,mDataSrc.data(fmt))
 			dg=QDrag(self)
-			self.Get_Preview(mData,)
+			dg.setPixmap(self.Get_Preview(mData,self.__previewPix,self.__previewSize))
 			dg.setMimeData(mData)
-			dg.exec(Qt.DropAction.MoveAction)
-	def dragEnterEvent(self,event:QDragEnterEvent):
-		return
-	# def dragEnterEvent(self,event):
-		event.setDropAction(Qt.DropAction.IgnoreAction)
-		mData=QMimeData()
-
-		# event.ignore()
-		# print(event)
-		# event.acceptProposedAction()
-		event.accept()
-		mDataSrc=event.mimeData()
-		for fmt in mDataSrc.formats():
-			print(fmt)
-			print(mDataSrc.data(fmt))
-			print()
-		return
-		mDataSrc=event.mimeData()
-		mData=QMimeData()
-		for fmt in mDataSrc.formats():#无脑全复制
-			mData.setData(fmt,mDataSrc.data(fmt))
-		QApplication.clipboard().setMimeData(mData)
-		for fmt in mDataSrc.formats():
-			print(fmt)
-			print(mDataSrc.data(fmt))
-			print()
-		# event.setDropAction(Qt.MoveAction)
-		event.acceptProposedAction()
-	def dragMoveEvent(self,event):
-		return
-		print(event)
+			dg.exec(Qt.DropAction.CopyAction)#不使用MoveAction，它并不实用。绝大多数场合下的拖拽都是复制的
 	@staticmethod
-	def Get_Preview(mData:QMimeData,empytFileImage:QImage,WH:tuple=(400,160)):
+	def Get_Preview(mData:QMimeData,empytFilePixmap:QPixmap,size:QSize=QSize(400,160)):
 		'''
 			获取QMimeData数据内容的简单渲染(返回QPixmap)；
-			emptyFileImage决定默认预览图；
-			WH决定宽高；
+			emptyFilePixmap决定默认预览图；
+			size决定预览图宽高；
 		'''
 		im=mData.imageData()
 		urls=mData.urls()
 		text=mData.text()
-		html=mData.html()
-
-		W,H=WH
+		html=mData.html()		
+		W,H=size.width(),size.height()
 		pix=QPixmap(W,H)
 		pix.fill(Qt.transparent)
 		ptr=QPainter(pix)
 		doc=QTextDocument()
 		if(im or urls):
 			if(not im):
-				im=empytFileImage
+				im=empytFilePixmap.toImage()
 			imW=im.width()
 			imH=im.height()
 			rate=min(W/imW,H/imH)
@@ -124,19 +106,4 @@ class XJQ_ClipboardDrag(QLabel):
 			doc.drawContents(ptr,QRectF(0,0,W,H))
 		ptr.end()
 		return pix
-
-
-if True:
-	app=QApplication([])
-	gb=XJQ_ClipboardDrag()
-
-	mData=QApplication.clipboard().mimeData()
-	gb=QLabel()
-	pix=XJQ_ClipboardDrag.Get_Preview(mData,QImage(GetRealPath('./图标-未知文件.ico')))
-	gb.setPixmap(pix)
-
-	gb.show()
-	gb.resize(640,480)
-	app.exec()
-
 

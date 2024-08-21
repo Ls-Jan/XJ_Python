@@ -5,9 +5,9 @@ __all__=['Test']
 from PyQt5.QtWidgets import QWidget,QVBoxLayout,QLabel
 from PyQt5.QtGui import QMouseEvent
 from .XJQ_InsertPreviewMask import XJQ_InsertPreviewMask
-from ...ModuleTest import XJQ_Test
-from ...Functions.GetRealPath import GetRealPath
-from ..XJQ_PureColorIcon import XJQ_PureColorIcon
+from ....ModuleTest import XJQ_Test
+from ....Functions.GetRealPath import GetRealPath
+from ...XJQ_PureColorIcon import XJQ_PureColorIcon
 
 class Win(QWidget):
 	def __init__(self):
@@ -19,14 +19,13 @@ class Win(QWidget):
 		msk.Set_ValidDire(False,True)
 		msk.hide()
 		self.__msk=msk
-	def mousePressEvent(self, event: QMouseEvent) -> None:
+	def enterEvent(self,event):
 		self.__msk.show()
+	def leaveEvent(self,event):
+		self.__msk.hide()
 	def mouseMoveEvent(self, event: QMouseEvent) -> None:
 		self.__msk.update()
 		return super().mouseMoveEvent(event)
-	def mouseReleaseEvent(self, a0: QMouseEvent) -> None:
-		self.__msk.hide()
-		return super().mouseReleaseEvent(a0)
 
 
 class Test(XJQ_Test):
@@ -37,10 +36,12 @@ class Test(XJQ_Test):
 		for i in range(3):
 			btn=QLabel()
 			btn.setText(str(i))
+			btn.setMouseTracking(True)
 			vbox.addWidget(btn)
-		win.setAcceptDrops(True)
+		win.setMouseTracking(True)
 		self.__win=win
 	def Opt_Run(self):
+		print("左键移动查看蒙版效果")
 		self.__win.resize(640,480)
 		self.__win.show()
 		super().Opt_Run()

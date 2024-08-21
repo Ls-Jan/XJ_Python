@@ -11,7 +11,8 @@ except Exception as e:
     long_description = description
 
 setup(name='XJ',
-      version='1.0',
+      version='1.0.0',
+    #   version='1.0',
       description=description,
       long_description=long_description,
       long_description_content_type='text/markdown',

@@ -3,29 +3,22 @@ __author__='Ls_Jan'
 __all__=['XJQ_AutoSizeLabel']
 
 from PyQt5.QtWidgets import QLabel
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize,Qt
 from PyQt5.QtGui import QPixmap,QMovie
 
 class XJQ_AutoSizeLabel(QLabel):
 	'''
-		大小自适应的QLabel。
-		控件会缩放，图片也会最适缩放。
+		大小自适应的QLabel，图片会最适缩放。
+		默认使用了居中对齐(Qt.AlignmentFlag.AlignCenter)，可根据实际需要去调用QLabel.setAlignment进行修改；
+		不建议调用QWidget.setSizePolicy修改大小策略；
 	'''
 	def __init__(self):
 		super().__init__()
-		self.__autoSize=False
 		self.__scaleRateMax=1
 		self.__pix=None
 		self.__mv=None
-		self.__originSize=None#初始大小
-		self.__resizeIgnore=False
-	def Set_AutoSize(self,flag:bool):
-		'''
-			控件大小自适应，建议同时调用setMaximumSize/setMinimum以限制最大最小尺寸。
-			flag为真时会根据图片进行大小调整。
-		'''
-		self.__autoSize=flag
-		self.update()
+		self.__originSize=QSize()#初始大小
+		self.setAlignment(Qt.AlignmentFlag.AlignCenter)
 	def Set_PictResize(self,scaleRateMax:float):
 		'''
 			图片大小缩放限制，事实上当图片过大时会无条件的将其缩小，所以此处只讨论图片过小时的放大行为。
@@ -33,6 +26,10 @@ class XJQ_AutoSizeLabel(QLabel):
 		'''
 		self.__scaleRateMax=scaleRateMax if scaleRateMax>=1 else 1<<31#如果传入的scaleRateMax无效，则取一个非常大的数作为替代
 		self.update()
+	def sizeHint(self):
+		return self.__originSize
+	def minimumSizeHint(self):
+		return QSize(24,24)#再小就看不见辣
 	@staticmethod
 	def __Get_ScaledRate(szSource:QSize,szLimit:QSize,inside:bool):
 		'''
@@ -52,45 +49,32 @@ class XJQ_AutoSizeLabel(QLabel):
 		self.__originSize=pix.size()
 		super().setPixmap(pix)
 	def setMovie(self,mv:QMovie):
-		if(mv.currentFrameNumber()<0):
-			mv.jumpToFrame(0)
 		self.__pix=None
 		self.__mv=mv
+		if(mv.currentFrameNumber()<0):
+			mv.jumpToFrame(0)
 		self.__originSize=mv.currentPixmap().size()
 		super().setMovie(mv)
 	def setText(self,tx:str):
 		self.__pix=None
 		self.__mv=None
-		self.__originSize=None
+		self.__originSize=QSize()
 		super().setText(tx)
 	def resizeEvent(self,event):
 		pix=self.__pix
 		mv=self.__mv
 		size=self.__originSize
-
-		if(size):#有内容物，进行大小修正
-			if(self.__resizeIgnore):
-				self.__resizeIgnore=False
-			elif(self.__autoSize):#根据内容物调整控件大小
-				rateUp=self.__Get_ScaledRate(size,self.minimumSize(),False)
-				rateDown=self.__Get_ScaledRate(size,self.maximumSize(),True)
-				rateUp=min(1,rateUp,self.__scaleRateMax)
-				rateDown=max(1,rateDown)
-				rate=rateUp if rateUp>1 else rateDown if rateDown<1 else 1
+		if(not size.isEmpty()):#有内容物，进行大小修正。不使用bool(size)是因为它会等效于size.isValid()，即使是QSize(0,0)也会返回真，属实恶趣味
+			#根据控件调整内容物大小
+			rate=self.__Get_ScaledRate(size,self.size(),True)
+			rate=min(rate,self.__scaleRateMax)
+			if(True):
 				rSize=size*rate
-				if(rSize!=self.size()):
-					self.__resizeIgnore=True
-					self.resize(rSize)
-					return
-			if(True):#根据控件调整内容物大小
-				rate=self.__Get_ScaledRate(size,self.size(),True)
-				rate=min(rate,self.__scaleRateMax)
-				if(rate!=1):
-					rSize=size*rate
-					if(pix):
+				if(pix):
+					if(super().pixmap().size()!=rSize):
 						super().setPixmap(pix.scaled(rSize))
-					else:
-						mv.setScaledSize(rSize)
+				else:
+					mv.setScaledSize(rSize)
 
 
 

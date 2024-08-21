@@ -24,34 +24,33 @@ class BaseCacheProxy:
 		self.__cache={}#url<str>:record<__Record>
 		self.__lock=Lock()
 		self.__urls=set()
-	def Get_UrlData(self):
+	def Get_UrlData(self,url:str):
 		'''
-			获取url的缓存数据
+			获取指定url的缓存数据(bytes)
 		'''
-		rst={}
-		for url,record in self.__cache.items():
-			rst[url]=record.data
-		return rst
-	def Get_RequestUrls(self):
+		return self.__cache.get(url)
+	def Get_UrlsLst(self,requesting:bool=False):
 		'''
-			获取正在请求中的url，虽然没啥意义。
+			获取所有的Url链接(list)。
+			当requesting为真时仅返回请求中的url，
+			当requesting为假时仅返回请求完毕后的url。
 		'''
-		return self.__urls.copy()
+		return list(self.__urls if requesting else self.__cache.keys())
 	def Set_UrlData(self,url:str,data:bytes):
 		'''
-			如果已经有二进制数据那么可以直接设置而不必调用Opt_GetUrl发出请求。
-			已经发出的请求并不会被终止(也就是Opt_GetUrl得到异步数据后会将原先设置的数据覆盖掉)，尽量不要做这种怪事。
+			如果已经有二进制数据那么可以直接设置而不必调用Opt_RequestUrl发出请求。
+			已经发出的请求并不会被终止(也就是Opt_RequestUrl得到异步数据后会将原先设置的数据覆盖掉)，尽量不要做这种怪事。
 		'''
 		record=self.__cache.setdefault(url,self.__Record(len(self.__cache)))
 		record.data=data
-	def Opt_GetUrl(self,url:str,cb:BaseCallback,timeout:float=0):
+	def Opt_RequestUrl(self,url:str,cb:BaseCallback,timeout:float=0):
 		'''
 			异步请求url；
 			cb为回调对象；
 			timeout设置超时时间(秒)；
 		'''
 		record=self.__cache.setdefault(url,self.__Record(len(self.__cache)))
-		if(record.data):#已有数据
+		if(record.data):#已有数据并且数据不为空
 			cb(record.data)
 		else:#无数据，进行请求
 			flag=url not in self.__urls
