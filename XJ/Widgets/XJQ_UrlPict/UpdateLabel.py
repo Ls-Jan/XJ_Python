@@ -23,14 +23,17 @@ class UpdateLabel(BaseCallback):
 		self.__shrink=func_shrinkedSize
 	def __call__(self, data: bytes):
 		self.__flag.clear()
+		pix=QPixmap()
 		if(data):
-			pix=QPixmap()
 			pix.loadFromData(data)
-			if(self.__shrink):
-				size=self.__shrink(pix.size())
-				pix=pix.scaled(size)
-			self.__flag.append(None)
-		else:
+			if(pix.isNull()):
+				pix=self.__pictFail
+			else:
+				if(self.__shrink):
+					size=self.__shrink(pix.size())
+					pix=pix.scaled(size)
+				self.__flag.append(None)
+		if(pix.isNull()):
 			pix=self.__pictFail
 		self.__lb.setPixmap(pix)
 	@staticmethod

@@ -27,4 +27,5 @@ class XJ_QUrlCacheProxy(BaseCacheProxy):
 		url=reply.url().url()
 		data=reply.readAll().data()
 		self._Update(url,data)
-		
+	def _TransUrl(self,url:str):
+		return QUrl(url).url()

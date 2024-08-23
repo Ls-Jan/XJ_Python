@@ -49,6 +49,7 @@ class BaseCacheProxy:
 			cb为回调对象；
 			timeout设置超时时间(秒)；
 		'''
+		url=self._TransUrl(url)
 		record=self.__cache.setdefault(url,self.__Record(len(self.__cache)))
 		if(record.data):#已有数据并且数据不为空
 			cb(record.data)
@@ -96,6 +97,11 @@ class BaseCacheProxy:
 			请求url数据并设置超时时间
 		'''
 		pass
-
-
+	def _TransUrl(self,url:str):
+		'''
+			通常来说不必重写该函数，
+			但总有一些异端会对url进行改动导致出现各种问题(没错说的就是QUrl.url())，
+			此时就要对url进行转换，得到真正使用的url数据
+		'''
+		return url
 

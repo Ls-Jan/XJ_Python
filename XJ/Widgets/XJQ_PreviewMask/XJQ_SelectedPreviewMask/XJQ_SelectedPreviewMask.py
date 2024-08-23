@@ -19,14 +19,23 @@ class XJQ_SelectedPreviewMask(QWidget):
 		self.__col_selected=QColor(255,0,0,128)
 		self.__lastWid=None
 		self.__lastWidRemove=False
+		self.__hold=False
+		self.__valid=False
 		self.setAttribute(Qt.WA_TransparentForMouseEvents, True)#鼠标事件穿透
 		self.raise_()
-	def Set_Color(self,selected:QColor=None):
+	def Set_Color(self,selected:QColor):
 		'''
 			设置选中颜色
 		'''
-		if(selected):
-			self.__col_selected=selected
+		self.__col_selected=selected
+	def Set_SelectedWids(self,wids,exclude:bool=False):
+		'''
+			设置选中的控件。
+			exclude为真则移除在wids中的控件。
+		'''
+		self.__wids=self.__wids.difference(wids) if(exclude) else set(wids)
+		self.__valid=False
+		self.update()
 	def Get_SelectedWidgets(self):
 		'''
 			返回被选中的控件
@@ -37,39 +46,63 @@ class XJQ_SelectedPreviewMask(QWidget):
 			返回最近一次被点击的控件，它同时是Opt_Press的返回结果。
 		'''
 		return self.__lastWid
+	def Get_IsPressed(self):
+		'''
+			判断鼠标是否处于按下状态，
+			在调用Opt_Press并且没调用Opt_Release、Opt_Clear、Set_SelectedWids时会返回真
+		'''
+		return self.__valid
 	def Opt_Press(self,hold:bool=False):
 		'''
 			鼠标按下，会返回被选中的控件(可为空)。
 			如果hold为真则为多选状态，并且点中已选中控件时不会立马状态反选，而是延后到Opt_Release的调用，该设计能很好的处理拖拽问题，
 			即点击了AB两控件，然后Ctrl左击A控件时仍是AB选中状态，但调用Opt_Release后A会取消选中。
 		'''
-		if(not hold):
-			self.__wids.clear()
 		wid=QApplication.widgetAt(QCursor.pos())
 		if(wid==self.parent()):
 			wid=None
 		exist=wid in self.__wids
+		if(not hold and not exist):
+			self.__wids.clear()
 		if(wid):
 			self.__wids.add(wid)
 			self.update()
+		self.__hold=hold
 		self.__lastWid=wid
-		self.__lastWidRemove=exist if hold else False
+		self.__lastWidRemove=exist
+		self.__valid=True
 		return wid
+	def Opt_Drag(self):
+		'''
+			鼠标发生拖拽时调用该函数
+		'''
+		self.__hold=True
+		self.__lastWidRemove=False
 	def Opt_Release(self):
 		'''
 			见Opt_Press的说明，在复数控件选中时决定是否反选最近一次点击的控件。
 		'''
-		if(self.__lastWidRemove and self.__lastWid):
-			self.__wids.remove(self.__lastWid)
+		if(not self.__valid):
+			return
+		self.__valid=False
+		if(not self.__hold):
+			self.__wids.clear()
+			self.__hold=True
 			self.__lastWidRemove=False
-			self.update()
+		if(self.__lastWid):
+			if(self.__lastWidRemove):
+				if(self.__lastWid in self.__wids):
+					self.__wids.remove(self.__lastWid)
+			else:
+				self.__wids.add(self.__lastWid)
+			self.__lastWidRemove=False
+		self.update()
 	def Opt_Clear(self):
 		'''
-			重置选中状态
+			重置状态
 		'''
-		self.__wids.clear()
+		self.Set_SelectedWids([])
 		self.__lastWid=None
-		self.update()
 	def paintEvent(self,event):
 		parent=self.parent()
 		if(parent and parent.size()!=self.size()):
@@ -77,9 +110,10 @@ class XJQ_SelectedPreviewMask(QWidget):
 			return
 		ptr=QPainter(self)
 		for wid in self.__wids:
-			rect=wid.geometry()
-			rect.setTopLeft(self.mapFromGlobal(wid.parent().mapToGlobal(rect.topLeft())))
-			ptr.fillRect(rect,self.__col_selected)
+			if(wid.isVisible()):
+				rect=wid.geometry()
+				rect.setTopLeft(self.mapFromGlobal(wid.parent().mapToGlobal(rect.topLeft())))
+				ptr.fillRect(rect,self.__col_selected)
 
 
 

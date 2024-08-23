@@ -112,7 +112,7 @@ class XJ_Section:
 			if(aR<val<bL):
 				rst=2
 			else:
-				if(abs(aR-val)<abs(bL-val)):
+				if(abs(self.__L-val)<abs(self.__R-val)):
 					rst=1
 				else:
 					rst=3

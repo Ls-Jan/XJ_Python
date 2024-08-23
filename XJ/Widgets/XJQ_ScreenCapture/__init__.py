@@ -1,0 +1,1 @@
+from .XJQ_ScreenCapture import XJQ_ScreenCapture

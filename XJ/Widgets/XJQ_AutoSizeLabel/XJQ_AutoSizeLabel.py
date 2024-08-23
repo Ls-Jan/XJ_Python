@@ -48,6 +48,7 @@ class XJQ_AutoSizeLabel(QLabel):
 		self.__mv=None
 		self.__originSize=pix.size()
 		super().setPixmap(pix)
+		self.__Opt_Update()
 	def setMovie(self,mv:QMovie):
 		self.__pix=None
 		self.__mv=mv
@@ -61,6 +62,8 @@ class XJQ_AutoSizeLabel(QLabel):
 		self.__originSize=QSize()
 		super().setText(tx)
 	def resizeEvent(self,event):
+		self.__Opt_Update()
+	def __Opt_Update(self):
 		pix=self.__pix
 		mv=self.__mv
 		size=self.__originSize
@@ -75,6 +78,5 @@ class XJQ_AutoSizeLabel(QLabel):
 						super().setPixmap(pix.scaled(rSize))
 				else:
 					mv.setScaledSize(rSize)
-
 
 

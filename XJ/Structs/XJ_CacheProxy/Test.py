@@ -34,7 +34,7 @@ class Test(XJQ_Test):
 		# cp=XJ_HttpCacheProxy()
 		url='https://github.githubassets.com/assets/mona-loading-dark-static-8b35171e5d6c.svg'
 		print(f'异步请求图片数据：{url}')
-		cp.Opt_GetUrl('https://github.githubassets.com/assets/mona-loading-dark-static-8b35171e5d6c.svg',Callback_UpdateLabel(self.__wid))
+		cp.Opt_RequestUrl(url,Callback_UpdateLabel(self.__wid))
 		super().Opt_Run()
 		# return self.__wid
 

@@ -41,7 +41,10 @@ class ValueShrink:
 		'''
 		rate=[]
 		for i in range(min(len(values),len(shrinks))):
-			rate.append(shrinks[i].Shrink(values[i])/values[i])
+			if(values[i]==0):
+				rate.append(1)
+			else:
+				rate.append(shrinks[i].Shrink(values[i])/values[i])
 		rate=min(rate) if _min else max(rate)
 		return tuple([int(values[i]*rate) for i in range(len(values))])
 		

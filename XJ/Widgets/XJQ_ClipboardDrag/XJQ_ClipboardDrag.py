@@ -16,10 +16,12 @@ class XJQ_ClipboardDrag(XJQ_AutoSizeLabel):
 
 		补充：无法获取QQ截图的图片信息，因为QQ截图的图片数据并没有直接存放在剪切板中，目前暂时不知道获取手段，猜测可能使用了winAPI
 	'''
-	def __init__(self,icon:Union[QPixmap,str]=None):
+	def __init__(self,icon:Union[QPixmap,str]=None,dragPreviewPixmap:QPixmap=None,size:QSize=QSize(128,128)):
 		'''
 			接受一个剪切板图标，可传入文件路径或是QPixmap对象，如果传入空则使用默认图标。
-			图标可以通过setPixmap进行替换
+			图标可以通过setPixmap进行替换。
+			dragPreviewPixmap为拖拽时的默认预览图，可以通过Set_DragPreviewDefaultPixmap进行设置。
+			size为控件图标大小
 		'''
 		super().__init__()
 		self.__ms=XJ_MouseStatus()
@@ -28,10 +30,10 @@ class XJQ_ClipboardDrag(XJQ_AutoSizeLabel):
 			icon=GetRealPath('./图标-剪贴板.png')
 		if(isinstance(icon,str)):
 			icon=QPixmap(icon)
-		self.setPixmap(icon)
+		self.setPixmap(icon.scaled(size))
 		self.__previewSize=QSize(400,160)
 		self.__previewPix=None
-		self.Set_DragPreviewDefaultPixmap(None)
+		self.Set_DragPreviewDefaultPixmap(dragPreviewPixmap)
 
 		#特殊说明：
 		#此处专门用来消耗掉QPainter初次绘制文本时造成的卡顿问题

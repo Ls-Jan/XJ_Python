@@ -30,7 +30,7 @@ class Test(XJQ_Test):
 		super().__init__()
 		cd=XJQ_ClipboardDrag()
 		gb=XJQ_GarbageBin()
-		gb.delected.connect(PrintMimeData)
+		gb.dropped.connect(PrintMimeData)
 
 		wid=QWidget()
 		vbox=QHBoxLayout(wid)

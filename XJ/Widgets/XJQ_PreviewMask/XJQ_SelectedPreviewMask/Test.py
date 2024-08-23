@@ -15,7 +15,10 @@ class Win(QWidget):
 		self.__msk=msk
 	def mousePressEvent(self,event):
 		self.__msk.Opt_Press(bool(event.modifiers()&Qt.Modifier.CTRL))
-		super().mousePressEvent(event)
+	def mouseMoveEvent(self,event):
+		self.__msk.Opt_Drag()
+		print('拖拽控件：',[wid.objectName() for wid in self.__msk.Get_SelectedWidgets()])
+		# self.__msk.Opt_Clear()
 	def mouseReleaseEvent(self,event):
 		self.__msk.Opt_Release()
 		
@@ -26,6 +29,7 @@ class Test(XJQ_Test):
 		vbox=QVBoxLayout(win)
 		for i in range(3):
 			wid=QLabel(f'Box:{i}')
+			wid.setObjectName(str(i))
 			vbox.addWidget(wid)
 		self.__win=win
 	def Opt_Run(self):
