@@ -19,6 +19,8 @@ class XJQ_PureColorIcon(QIcon):#纯色图标
 	'''
 		纯色图标，可改图标色以及背景色，以及可以预置/修改图标大小(调用pixmap函数时可不必再传入大小参数了)。
 		当然，类似QPushButton在调用setIcon后，icon发生更新时QPushButton显示的图标并不会发生改变，需要再次调用setIcon才行
+
+		强调，图片必须是四通，带有alpha透明度
 	'''
 	def __init__(self,
 			  data:Union[str,np.ndarray,QIcon,QPixmap,QImage]=None,

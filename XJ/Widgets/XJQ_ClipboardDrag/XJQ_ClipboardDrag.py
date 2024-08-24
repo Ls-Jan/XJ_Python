@@ -14,14 +14,18 @@ class XJQ_ClipboardDrag(XJQ_AutoSizeLabel):
 	'''
 		一个剪切板控件，拖拽本控件相当于拖拽剪切板的数据。
 
-		补充：无法获取QQ截图的图片信息，因为QQ截图的图片数据并没有直接存放在剪切板中，目前暂时不知道获取手段，猜测可能使用了winAPI
+		补充：
+			1.无法获取QQ截图的图片信息，因为QQ截图的图片数据并没有直接存放在剪切板中，目前暂时不知道获取手段，猜测可能使用了winAPI；
+			2.有时会出现不知名的系统原因，QMimeData受到损坏，无法放置图片数据，而这不仅导致剪切板无法放置图片，拖拽事件也无法携带图片数据；
+			3.尽管剪切板的QMimeData可能是坏的，依旧可以通过QClipboard.image/pixmap的方式获取剪切板的图片数据，
+				虽然如此也不能解决什么问题，因为拖拽的QMimeData一旦损坏那么该剪切板控件拖出来的图片数据也不能信任，只能说，太棘手了；
 	'''
-	def __init__(self,icon:Union[QPixmap,str]=None,dragPreviewPixmap:QPixmap=None,size:QSize=QSize(128,128)):
+	def __init__(self,icon:Union[QPixmap,str]=None,dragPreviewPixmap:QPixmap=None,size:QSize=QSize(128,128),minSize:QSize=QSize(64,64)):
 		'''
 			接受一个剪切板图标，可传入文件路径或是QPixmap对象，如果传入空则使用默认图标。
 			图标可以通过setPixmap进行替换。
 			dragPreviewPixmap为拖拽时的默认预览图，可以通过Set_DragPreviewDefaultPixmap进行设置。
-			size为控件图标大小
+			size为控件图标大小，minSize为控件最小大小。
 		'''
 		super().__init__()
 		self.__ms=XJ_MouseStatus()
@@ -31,6 +35,7 @@ class XJQ_ClipboardDrag(XJQ_AutoSizeLabel):
 		if(isinstance(icon,str)):
 			icon=QPixmap(icon)
 		self.setPixmap(icon.scaled(size))
+		self.setMinimumSize(minSize)
 		self.__previewSize=QSize(400,160)
 		self.__previewPix=None
 		self.Set_DragPreviewDefaultPixmap(dragPreviewPixmap)
@@ -61,10 +66,13 @@ class XJQ_ClipboardDrag(XJQ_AutoSizeLabel):
 		ms.Opt_Update(event)
 		btn,status=ms.Get_PressButtonStatus()
 		if(btn==Qt.MouseButton.LeftButton and status==QMouseEvent.MouseButtonPress and ms.Get_HasMoved(True)):#左键拖拽
-			mDataSrc=QApplication.clipboard().mimeData()
+			cb=QApplication.clipboard()
+			mDataSrc=cb.mimeData()
 			mData=QMimeData()
 			for fmt in mDataSrc.formats():#无脑全复制
 				mData.setData(fmt,mDataSrc.data(fmt))
+			if(mData.hasImage()):#特别处理，只不过就算这么做，拖拽事件的QMimeData中的图片数据也是无效的
+				mData.setImageData(cb.image())
 			dg=QDrag(self)
 			dg.setPixmap(self.Get_Preview(mData,self.__previewPix,self.__previewSize))
 			dg.setMimeData(mData)

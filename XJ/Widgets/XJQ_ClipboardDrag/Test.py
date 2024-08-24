@@ -33,7 +33,7 @@ class Test(XJQ_Test):
 		cd=XJQ_ClipboardDrag()
 		cd.Set_DragPreviewDefaultPixmap(QPixmap(GetRealPath('./图标-未知文件.ico')))
 		gb=XJQ_GarbageBin()
-		gb.delected.connect(PrintMimeData)
+		gb.dropped.connect(PrintMimeData)
 
 		wid=QWidget()
 		vbox=QHBoxLayout(wid)

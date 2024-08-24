@@ -4,15 +4,15 @@ __all__=['XJQ_UrlPict']
 
 import os
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import QUrl,QByteArray,pyqtSignal
+from PyQt5.QtCore import QUrl,QByteArray,pyqtSignal,QBuffer
 from .UrlPictConfig import UrlPictConfig
 from .UpdateLabel import UpdateLabel
 from ..XJQ_AutoSizeLabel import XJQ_AutoSizeLabel
-
+from typing import Union
 
 class XJQ_UrlPict(XJQ_AutoSizeLabel):
 	loaded=pyqtSignal(bool)
-	def __init__(self,config:UrlPictConfig,url:QUrl,data:bytes=None,timeout:float=0,func_shrinkedSize=None):
+	def __init__(self,config:UrlPictConfig,url:QUrl,data:Union[bytes,QPixmap]=None,timeout:float=0,func_shrinkedSize=None):
 		'''
 			传入的url会经过一次处理以保证顺利得到数据，因此以XJQ_UrlPict.Get_Url返回的url为准。
 			func_shrinkedSize(QSize)用于图片大小的额外调整，以避免出现图片过大的情况，传入None则使用默认调整。
@@ -25,6 +25,10 @@ class XJQ_UrlPict(XJQ_AutoSizeLabel):
 		super().__init__()
 		self.__valid=[]
 		if(data):
+			if(isinstance(data,QPixmap)):
+				arr=QByteArray()
+				data.save(QBuffer(arr),'png')
+				data=arr.data()
 			url=f'hash:{hash(data)}'
 			config.cacheProxy.Set_UrlData(url,data)
 		self.setMovie(config.pictWait)

@@ -4,15 +4,15 @@ __version__='1.0.0'
 __author__='Ls_Jan'
 __all__=['XJ_RectResize']
 
-from XJ.Structs.XJ_Section import XJ_Section
-from XJ_LimitSection.Op import Op_Move
-from XJ_LimitSection.Op import Op_Flippable
-from XJ_LimitSection.Op import Op_AsPoint
-from XJ_LimitSection.Op import Op_InsideArea
-from XJ_LimitSection.Op import Op_LimitLen
-from XJ_LimitSection.OpGroup import OpGroup_Combination
-from XJ_LimitSection.OpGroup import OpGroup_SizeRate
-from XJ_LimitSection.OpGroup import OpGroup_Base
+from ..XJ_Section import XJ_Section
+from ..XJ_LimitSection.Op import Op_Move
+from ..XJ_LimitSection.Op import Op_Flippable
+from ..XJ_LimitSection.Op import Op_AsPoint
+from ..XJ_LimitSection.Op import Op_InsideArea
+from ..XJ_LimitSection.Op import Op_LimitLen
+from ..XJ_LimitSection.OpGroup import OpGroup_Combination
+from ..XJ_LimitSection.OpGroup import OpGroup_SizeRate
+from ..XJ_LimitSection.OpGroup import OpGroup_Base
 # from XJ_LimitSection.OpGroup import OpGroup_ExcludeArea#【该模块不使用，因为没做】
 
 class XJ_RectResize:
@@ -197,7 +197,7 @@ class XJ_RectResize:
 					p=1 if abs(sc.L-xy[i])<abs(sc.R-xy[i]) else 3
 				rst[i]=p
 		if(not dim):
-			rst=5+sum([(rst[i]-2)*(pow(3,i)) for i in range(2)])
+			rst=max(rst[0]+3*(rst[1]-1),0)
 		return rst
 	def Get_Rect(self,adjust:bool=True):
 		'''

@@ -2,9 +2,8 @@ __version__='1.0.0'
 __author__='Ls_Jan'
 __all__=['XJQ_GarbageBin']
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import pyqtSignal,QMimeData,QSize,Qt
 from XJ.Functions.GetRealPath import GetRealPath
 from typing import Union
 from ..XJQ_AutoSizeLabel import XJQ_AutoSizeLabel
@@ -16,10 +15,10 @@ class XJQ_GarbageBin(XJQ_AutoSizeLabel):
 		图标可以通过setPixmap进行替换。
 	'''
 	dropped=pyqtSignal(QMimeData)
-	def __init__(self,icon:Union[QPixmap,str]=None,size:QSize=QSize(128,128)):
+	def __init__(self,icon:Union[QPixmap,str]=None,size:QSize=QSize(128,128),minSize:QSize=QSize(64,64)):
 		'''
 			接受一个垃圾桶图标，可传入文件路径或是QPixmap对象，如果传入空则使用默认图标。
-			size为控件图标大小
+			size为控件图标大小，minSize为控件最小大小。
 		'''
 		super().__init__()
 		if(icon==None):
@@ -27,6 +26,7 @@ class XJQ_GarbageBin(XJQ_AutoSizeLabel):
 		if(isinstance(icon,str)):
 			icon=QPixmap(icon)
 		self.setPixmap(icon.scaled(size))
+		self.setMinimumSize(minSize)
 		self.__mData=QMimeData()#拖拽消息的数据拷贝
 		self.setAcceptDrops(True)
 	def __del__(self):

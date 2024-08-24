@@ -155,20 +155,7 @@ class XJQ_InsertPreviewMask(QWidget):
 					currLayout=self.__layout
 					currLayoutArea=self.__layoutAreas.get(currLayout)
 					dire=5 if self.__wid!=None else 0
-		else:
-			for layout,layoutArea in self.__layoutAreas.items():
-				if(layoutArea.contains(pos)):#鼠标在布局内
-					parent=self.__Get_LayoutParentWid(layout)
-					if(isinstance(parent,QWidget) and parent.isVisible()):
-						if(layout.isEmpty()):
-							dire=5
-						currLayout=layout
-						currLayoutArea=layoutArea
-						widArea=layoutArea
-					else:
-						pass
-					break
-		if(dire>0):#修改dire，该值只可能取2、4、6、8、5
+		if(dire==5):#修改dire，该值只可能取2、4、6、8、5
 			target=wid if wid else self.__Get_LayoutParentWid(currLayout)
 			if(target):
 				pos=target.mapFromGlobal(pos)
@@ -194,6 +181,18 @@ class XJQ_InsertPreviewMask(QWidget):
 						dire=2<<((dire-1)//3)
 					else:#靠近左右边
 						dire=6-((dire%3)<<1)
+		else:
+			for layout,layoutArea in self.__layoutAreas.items():
+				if(layoutArea.contains(pos)):#鼠标在布局内
+					parent=self.__Get_LayoutParentWid(layout)
+					if(isinstance(parent,QWidget) and parent.isVisible()):
+						dire=5
+						currLayout=layout
+						currLayoutArea=layoutArea
+						widArea=layoutArea
+					else:
+						pass
+					break
 		if(self.__layout!=currLayout or self.__wid!=wid or self.__dire!=dire):#任一发生变化
 			self.__wid=wid
 			self.__dire=dire
@@ -225,24 +224,23 @@ class XJQ_InsertPreviewMask(QWidget):
 		ptr.fillRect(self.__drawArea[0],self.__col_default)
 		dire=self.__dire
 		if(dire>0):
-			if(dire>0):
-				rect=QRect(self.__drawArea[1])
-				ptr.fillRect(rect,Qt.GlobalColor.transparent)
-				ptr.fillRect(rect,self.__col_widget)
-				if(dire==2):
-					rect.setBottom(rect.top()+self.__r)
-				elif(dire==4):
-					rect.setRight(rect.left()+self.__r)
-				elif(dire==6):
-					rect.setLeft(rect.right()-self.__r+1)
-				elif(dire==8):
-					rect.setTop(rect.bottom()-self.__r+1)
-				else:
-					dire=0
-				if(dire):
-					ptr.eraseRect(rect)
-					ptr.fillRect(rect,self.__col_border)
-					self.__Opt_DrawArrow(self.__arrowUp,ptr,rect,(dire>>1)-1)
+			rect=QRect(self.__drawArea[1])
+			ptr.fillRect(rect,Qt.GlobalColor.transparent)
+			ptr.fillRect(rect,self.__col_widget)
+			if(dire==2):
+				rect.setBottom(rect.top()+self.__r)
+			elif(dire==4):
+				rect.setRight(rect.left()+self.__r)
+			elif(dire==6):
+				rect.setLeft(rect.right()-self.__r+1)
+			elif(dire==8):
+				rect.setTop(rect.bottom()-self.__r+1)
+			else:
+				dire=0
+			if(dire):
+				ptr.eraseRect(rect)
+				ptr.fillRect(rect,self.__col_border)
+				self.__Opt_DrawArrow(self.__arrowUp,ptr,rect,(dire>>1)-1)
 		ptr.end()
 		ptr=QPainter(self)
 		ptr.drawPixmap(0,0,pix)
