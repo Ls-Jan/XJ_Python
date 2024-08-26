@@ -21,7 +21,7 @@ class UpdateLabel(BaseCallback):
 		self.__pictFail=pictFail
 		self.__flag=flag
 		self.__shrink=func_shrinkedSize
-	def __call__(self, data: bytes):
+	def __call__(self,url:str, data: bytes):
 		self.__flag.clear()
 		pix=QPixmap()
 		if(data):

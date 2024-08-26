@@ -9,7 +9,7 @@ from PyQt5.QtCore import Qt,QPoint
 from PyQt5.QtGui import QPixmap,QPainter,QTransform,QColor,QPen
 
 from XJ.Functions.GetRealPath import GetRealPath
-from XJ.Arithmetic.XJ_BinarySearch import XJ_BinarySearch
+from XJ.Functions.XJ_BinarySearch import XJ_BinarySearch
 from XJ.Widgets.XJQ_PureColorIcon import XJQ_PureColorIcon
 
 __all__=['InsertPreview']
