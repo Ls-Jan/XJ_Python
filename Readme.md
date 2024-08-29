@@ -5,6 +5,7 @@
 
 - 可运行``ModuleTest.py``查看XJ包中每个模块的测试样例的效果。
 - 直接下载整个项目然后运行``buildWheel.bat``脚本直接生成并安装轮子，
+- 实际上安装轮子太过于费事，通常都是将项目代码拉到另一个需要的项目下面使用，或者设置一下Python环境路径``PYTHONPATH``然后将项目代码丢到这个环境路径中；
 
 ![ModuleTest](./Preview/Preview-ModuleTest.png)
 
