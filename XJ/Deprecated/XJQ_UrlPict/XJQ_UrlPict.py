@@ -7,8 +7,9 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import QUrl,QByteArray,pyqtSignal,QBuffer
 from .UrlPictConfig import UrlPictConfig
 from .UpdateLabel import UpdateLabel
-from ..XJQ_AutoSizeLabel import XJQ_AutoSizeLabel
+from ...Widgets.XJQ_AutoSizeLabel import XJQ_AutoSizeLabel
 from typing import Union
+from ...Structs.XJ_CacheProxy.XJ_QUrlCacheProxy import XJ_QUrlCacheProxy
 
 class XJQ_UrlPict(XJQ_AutoSizeLabel):
 	loaded=pyqtSignal(bool)
@@ -33,12 +34,8 @@ class XJQ_UrlPict(XJQ_AutoSizeLabel):
 			config.cacheProxy.Set_UrlData(url,data)
 		self.setMovie(config.pictWait)
 		if(url):
-			if(isinstance(url,QUrl)):#以弯弯绕的方式将本地文件路径改为用“file”前缀的url
-				path=QByteArray.fromPercentEncoding(QByteArray((url.url().encode()))).data().decode()#因为QUrl会将百分号进行转义，这一步不能跳
-				if(os.path.exists(path)):
-					url=QByteArray(path.encode()).toPercentEncoding().data().decode()#将路径改为百分号编码
-					url=QUrl(f'file:///{url}')
-				url=url.url()
+			if(isinstance(url,QUrl)):
+				url=config.cacheProxy.Get_TranslatedUrl(url.url())
 			cb=UpdateLabel(self,config.pictFail,self.__valid,func_shrinkedSize if func_shrinkedSize else UpdateLabel.Get_ShrinkedSize)
 			config.cacheProxy.Opt_RequestUrl(url,cb,timeout)
 		else:

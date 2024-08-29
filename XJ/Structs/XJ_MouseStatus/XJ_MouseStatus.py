@@ -5,7 +5,6 @@ __author__='Ls_Jan'
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtCore import QPoint,Qt,QObject
 from PyQt5.QtGui import QMouseEvent
-from enum import Enum
 
 __all__=['XJ_MouseStatus']
 
@@ -76,7 +75,7 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 		'''
 			返回两份数据：
 				- 当前鼠标的键(左中右)：形如Qt.MouseButton.XXXButton的枚举值；
-				- 按下状态(单击/双击/抬起)：形如QMouseEvent.MouseButtonXXX的枚举值；
+				- 按下状态(单击/双击/抬起)：形如QMouseEvent.Type.MouseButtonXXX的枚举值；
 		'''
 		return self.__record['currMouse'].btn,self.__record['currMouse'].pressStatus
 	def Get_MoveDelta(self,total:bool=True,strict:bool=True):

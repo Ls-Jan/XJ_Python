@@ -7,7 +7,7 @@ from PyQt5.QtGui import QMouseEvent
 from .XJQ_InsertPreviewMask import XJQ_InsertPreviewMask
 from ....ModuleTest import XJQ_Test
 from ....Functions.GetRealPath import GetRealPath
-from ...XJQ_PureColorIcon import XJQ_PureColorIcon
+from ....Widgets.XJQ_PureColorIcon import XJQ_PureColorIcon
 
 class Win(QWidget):
 	def __init__(self):

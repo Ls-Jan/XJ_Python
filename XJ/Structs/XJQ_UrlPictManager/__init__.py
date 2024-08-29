@@ -1,0 +1,1 @@
+from .XJQ_UrlPictManager import XJQ_UrlPictManager
