@@ -31,9 +31,12 @@ class XJQ_UrlPictManager(QObject):
 		def __call__(self,url:str,data:bytes):
 			self.__mutex.lock()
 			self.__finishUrls.add(url)
+			flag=False
 			if(data):
 				pix=QPixmap()
 				pix.loadFromData(data)
+				flag=not pix.size().isEmpty()
+			if(flag):
 				self.__urls[url]=pix
 			else:
 				self.__urls[url]=self.__failPict

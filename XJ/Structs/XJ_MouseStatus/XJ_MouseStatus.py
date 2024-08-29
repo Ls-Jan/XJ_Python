@@ -1,5 +1,5 @@
 
-__version__='1.0.2'
+__version__='1.0.3'
 __author__='Ls_Jan'
 
 from PyQt5.QtCore import pyqtSignal
@@ -154,6 +154,11 @@ class XJ_MouseStatus(QObject):#鼠标状态记录
 					record['currMouse'].pos=record['lastPress'].pos
 			record['lastMouse']=record['currMouse']
 			record['currMouse']=data_curr
-
-
+	def Opt_Release(self):
+		'''
+			特殊行为(纯纯打补丁)，选择性地将鼠标释放。
+			因为一些特殊场合(例如内部拖拽)会导致控件无法进入到mouseReleaseEvent中，导致无法顺利调用Opt_Update更新鼠标状态
+		'''
+		self.__record['currMouse'].pressStatus=self.__pressStatus['Release']
+		self.__record['lastMouse']=self.__record['currMouse']
 
