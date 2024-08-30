@@ -7,13 +7,14 @@
 # from XJ.Structs.XJ_EasyTimeStamp.Test import Test
 # from XJ.Widgets.XJQ_ScreenAreaSelector.Test import Test
 # from XJ.Widgets.XJQ_ScreenCapture.Test import Test
-from XJ.Widgets.XJQ_ClipboardDrag.Test import Test
+# from XJ.Widgets.XJQ_ClipboardDrag.Test import Test
 # from XJ.Widgets.XJQ_GarbageBin.Test import Test
 # from XJ.Widgets.XJQ_UrlPict.Test import Test
 # from XJ.Widgets.XJQ_AutoSizeLabel.Test import Test
 # from XJ.Widgets.XJQ_PreviewMask.XJQ_SelectedPreviewMask.Test import Test
 # from XJ.Widgets.XJQ_PreviewMask.XJQ_InsertPreviewMask.Test import Test
 # from XJ.Structs.XJ_CacheProxy.Test import Test
+from XJ.Structs.XJ_Hook.Test import Test
 # from XJ.Functions.XJ_BinarySearch.Test import Test
 Test().Opt_Run()
 
