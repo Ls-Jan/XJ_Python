@@ -1,5 +1,5 @@
 __author__='Ls_Jan'
-__version__='1.1.0'
+__version__='1.2.0'
 __all__=['BaseCacheProxy']
 
 from threading import Lock
@@ -12,21 +12,34 @@ class BaseCacheProxy:
 		此为抽象类，派生类仅需重写的函数有：
 			- _Request(self,url:str,timeout:float)；
 			- _TransUrl(self,oriUrl:str)；
-		派生类异步获取到数据后需要调用_Update(reqUrl:str,data:bytes)进行保存
+		派生类异步获取到数据后需要调用_Update(reqUrl:str,data:bytes)进行保存。
+
+		新增：
+			- 可使用post功能；
+			- 可清空缓存(清除所有)；
 	'''
 	class __Record:
 		'''
 			结构体，存储基本数据
 		'''
-		def __init__(self,index:int):
+		def __init__(self):
 			self.cbs=[]#回调对象
-			self.index=index#第i个url链接，虽然这数据并没价值
+			self.time=time()#不使用“index”了，使用time的数据价值更高而且还不用担心索引重复
 			self.data=b''#数据
 	def __init__(self):
-		self.__cache={}#请求的url<str>:record<__Record>
+		self.__cache={}#(请求的url<str>,携带数据的hash值):record<__Record>
 		self.__lock=Lock()
 		self.__requestingUrls=set()#请求中的url
-	def Get_UrlData(self,url:str)->bytes:
+	def Opt_Clear(self):
+		'''
+			清空缓存记录。
+		'''
+		self.__lock.acquire()
+		for url in self.__cache:
+			if(not self.__cache[url].cbs):#为空
+		self.__lock.release()
+
+	def Get_UrlData(self,url:str,payload:str=None)->bytes:
 		'''
 			获取指定url的缓存数据(bytes)
 		'''
@@ -46,17 +59,21 @@ class BaseCacheProxy:
 			如果已经有二进制数据那么可以直接设置而不必调用Opt_RequestUrl发出请求。
 			已经发出的请求并不会被终止(也就是Opt_RequestUrl得到异步数据后会将原先设置的数据覆盖掉)，尽量不要做这种怪事。
 		'''
-		record=self.__cache.setdefault(reqUrl,self.__Record(len(self.__cache)))
+		record=self.__cache.setdefault(reqUrl,self.__Record())
 		record.data=data
-	def Opt_RequestUrl(self,reqUrl:str,cb:BaseCallback,timeout:float=0):
+	def Opt_RequestUrl(self,reqUrl:str,cb:BaseCallback,payload:str=None,timeout:float=0):
 		'''
 			异步请求url，外部最好先去调用Get_RealUrl对url进行简单的处理以避免一些问题；
 			cb为回调对象；
 			timeout设置超时时间(秒)；
+
+			payload为负载的数据，如果payload不为None则使用Post方法请求数据，否则使用Get。
 		'''
-		record=self.__cache.setdefault(reqUrl,self.__Record(len(self.__cache)))
+		keyCache=(reqUrl,hash(payload)) if payload!=None else (reqUrl,)
+		keyRequest=(reqUrl,payload) if payload!=None else (reqUrl,)
+		record=self.__cache.setdefault(keyCache,self.__Record())
 		if(record.data):#已有数据并且数据不为空
-			cb(reqUrl,record.data)
+			cb(key,record.data)
 		else:#无数据，进行请求
 			flag=reqUrl not in self.__requestingUrls
 			self.__lock.acquire()

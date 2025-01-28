@@ -1,18 +1,28 @@
 
 __version__='1.0.0'
 __author__='Ls_Jan'
-__all__=['XJ_Keyboard_Type1']
+__all__=['XJ_Keyboard_Type1','VirtualKey']
 
-from ..VirtualKey import VirtualKey
+from .Base.VirtualKey import VirtualKey
+from .Base.XJ_Keyboard_Base import XJ_Keyboard_Base
 from typing import Union
 from pykeyboard import PyKeyboard
 
-class XJ_Keyboard_Type1:
+#怕忘了，这里留一段使用pywinauto的代码
+# import pywinauto
+# a=pywinauto.application.Application()
+# dialogWindow = a.connect(title="XJ_Process_Window.exe", class_name="ConsoleWindowClass",visible_only=False)
+# # dialogWindow = a.connect(title="Test", class_name="ConsoleWindowClass")
+# window = dialogWindow.top_window()
+# window.type_keys("echo{SPACE}hello\r")
+
+class XJ_Keyboard_Type1(XJ_Keyboard_Base):
 	'''
 		有不同的方式实现键盘模拟：https://geek-docs.com/python/python-ask-answer/317_python_python_simulate_keydown.html。
 		这里使用的是pykeyboard模块
 	'''
 	def __init__(self):
+		super().__init__()
 		self.__kb=PyKeyboard()
 	def Opt_PressKey(self,key:Union[str,VirtualKey],Press:bool=True):
 		kb=self.__kb
@@ -70,7 +80,11 @@ class XJ_Keyboard_Type1:
 		else:
 			kb.release_key(key)
 	def Opt_TypeStr(self,string:str,ms:int):
-		self.__kb.type_string(string,ms)
+		'''
+			pykeyboard.type_string貌似无法输出中文。
+			一些非常规做法是通过剪切板的方式实现中文键入。
+		'''
+		self.__kb.type_string(string,ms/len(string))
 
 
 

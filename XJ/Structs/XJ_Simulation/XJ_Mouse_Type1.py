@@ -1,11 +1,11 @@
 
 
-from ..XJ_Mouse import XJ_Mouse
+from .Base.XJ_Mouse_Base import XJ_Mouse_Base
 from pymouse import PyMouse
 
 __all__=['XJ_Mouse_Type1']
 
-class XJ_Mouse_Type1(XJ_Mouse):
+class XJ_Mouse_Type1(XJ_Mouse_Base):
 	'''
 		该派生类使用模块PyMouse实现鼠标控制。
 		
@@ -20,7 +20,7 @@ class XJ_Mouse_Type1(XJ_Mouse):
 		else:
 			self.__ms.release(*self.__ms.position(),key)
 	def Opt_Wheel(self,delta:int,horizontal:bool=False):
-		v,h=delta,0 if horizontal else 0,delta
+		v,h=(delta,0) if horizontal else (0,delta)
 		self.__ms.scroll(v,h)
 	def Opt_Move(self,pos:tuple):
 		self.__ms.move(*pos)

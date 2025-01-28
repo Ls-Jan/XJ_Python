@@ -7,6 +7,9 @@ from concurrent.futures import ThreadPoolExecutor
 from .BaseCacheProxy import BaseCacheProxy
 
 class XJ_HttpCacheProxy(BaseCacheProxy):
+	'''
+		使用requests以及concurrent模块进行网络数据异步请求
+	'''
 	def __init__(self,requestCount:int=None):
 		super().__init__()
 		self.__session=requests.session()

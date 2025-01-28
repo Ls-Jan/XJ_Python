@@ -10,6 +10,10 @@ from PyQt5.QtNetwork import QNetworkRequest,QNetworkAccessManager,QNetworkReply
 from .BaseCacheProxy import BaseCacheProxy
 
 class XJ_QUrlCacheProxy(BaseCacheProxy):
+	'''
+		使用PyQt5相关模块进行数据请求。
+		QNetworkAccessManager：https://blog.csdn.net/CodeWorld1999/article/details/139326812
+	'''
 	def __init__(self):
 		super().__init__()
 		manager=QNetworkAccessManager()

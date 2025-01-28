@@ -17,7 +17,7 @@ class Win(QWidget):
 		vbox.addWidget(lb,1)
 		vbox.addWidget(btn)
 		btn.clicked.connect(lambda:sa.show())
-		sa.doubleClicked.connect(lambda :(lb.setPixmap(sa.Get_Screenshot()),sa.hide(),sa.Opt_Clear()))
+		sa.selected.connect(lambda :(lb.setPixmap(sa.Get_Screenshot()),sa.hide(),sa.Opt_Clear()))
 		self.__sa=sa
 		self.__lb=lb
 
