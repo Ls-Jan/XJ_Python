@@ -39,7 +39,7 @@ class Test(XJQ_Test):
 		print("需要选择一个动图以查看效果")
 		file=self.Get_File(GetRealPath('../../Icons/Loading/加载动画-7.gif'),'请选择动图文件')
 		if(file):
-			print('图片数据将逐个加载，不会有明显卡顿')
+			print('图片数据将逐帧加载，不会有明显卡顿')
 			gm=XJ_GIFMaker()
 			gm.Opt_Insert(file)
 			for i in range(len(gm.frames)):

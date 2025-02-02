@@ -23,9 +23,11 @@ def CreateRandomLst(count):
 	shortLen=(20,50)
 	normalLen=(50,100)
 	longLen=(100,150)
-	return [random.randint(*shortLen) for i in range(shortCount)]+\
+	rst=[random.randint(*shortLen) for i in range(shortCount)]+\
 		[random.randint(*normalLen) for i in range(normalCount)]+\
 		[random.randint(*longLen) for i in range(longCount)]
+	random.shuffle(rst)
+	return rst
 
 
 

@@ -13,14 +13,20 @@ from ...ModuleTest import XJQ_Test
 class Callback_UpdateLabel(BaseCallback):
 	def __init__(self,label:QLabel):
 		self.__lb=label
-	def __call__(self, data: bytes):
-		if(len(data)):
-			print('请求成功！')
-			pix=QPixmap()
-			pix.loadFromData(data)
-			self.__lb.setPixmap(pix)
-		else:
+	def __call__(self, data: bytes,valid:bool):
+		if(not valid):
 			print('请求失败！')
+			return False
+		print('请求成功！')
+		pix=QPixmap()
+		pix.loadFromData(data)
+		if(pix.size().isEmpty()):
+			print('图片无效！')
+			return False
+		self.__lb.setPixmap(pix)
+		print('设置成功！')
+		return True
+
 
 class Test(XJQ_Test):
 	def __init__(self):

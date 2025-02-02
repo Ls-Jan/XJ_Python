@@ -13,6 +13,8 @@ from typing import Union
 class XJQ_ClipboardDrag(XJQ_AutoSizeLabel):
 	'''
 		一个剪切板控件，拖拽本控件相当于拖拽剪切板的数据。
+		拖拽与放置：https://doc.qt.io/qt-6/dnd.html#dropping；
+		剪切板：https://doc.qt.io/qt-5/qclipboard.html；
 
 		补充：
 			1.无法获取QQ截图的图片信息，因为QQ截图的图片数据并没有直接存放在剪切板中，目前暂时不知道获取手段，猜测可能使用了winAPI；
@@ -29,7 +31,7 @@ class XJQ_ClipboardDrag(XJQ_AutoSizeLabel):
 		'''
 		super().__init__()
 		self.__ms=XJ_MouseStatus()
-		self.setAcceptDrops(True)
+		# self.setAcceptDrops(True)
 		if(icon==None):
 			icon=GetRealPath('./图标-剪贴板.png')
 		if(isinstance(icon,str)):

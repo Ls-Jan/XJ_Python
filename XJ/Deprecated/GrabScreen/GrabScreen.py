@@ -15,6 +15,7 @@ def GrabScreen(screenID:int=0):
 
 		考虑到跨平台问题，没用到与Windows直接相关的东西(像是win32gui啥的)
 		使用Qt的截屏，返回QPixmap和QRect。后期可以使用QPixmap.copy来截取指定区域
+		因此必须创建QApplication对象后才能调用该函数。
 	'''
 	screens=QGuiApplication.screens()
 	if(0<=screenID<len(screens)):

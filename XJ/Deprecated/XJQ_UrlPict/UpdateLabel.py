@@ -11,7 +11,7 @@ from .ValueShrink import ValueShrink
 class UpdateLabel(BaseCallback):
 	def __init__(self,lb:QLabel,pictFail:QPixmap,flag:list=None,func_shrinkedSize=None):
 		'''
-			传入一个列表flag以判断pixmap的有效性，flag为空则说明数据无效；
+			传入一个列表flag以判断pixmap的有效性(bool是只读的，不方便作为状态量)，flag为空则说明数据无效；
 			如果func_shrinkedSize(QSize)为空则不调整图片大小，这里附赠一个默认的大小调节函数UpdateLabel.Get_ShrinkedSize
 		'''
 		if(flag==None):

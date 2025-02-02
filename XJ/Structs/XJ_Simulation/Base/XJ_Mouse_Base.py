@@ -1,8 +1,9 @@
 
 
-__all__=['XJ_Mouse']
+__all__=['XJ_Mouse_Base']
 
-class XJ_Mouse:
+from time import sleep
+class XJ_Mouse_Base:
 	'''
 		鼠标接口类。
 		这是个抽象接口类，不直接使用，具体功能由派生类完成。
@@ -11,6 +12,15 @@ class XJ_Mouse:
 	'''
 	def __init__(self):
 		pass
+	def Opt_Click(self,key:int,pressSecond:int=0.05):
+		'''
+			完成1次点击行为。
+			key可选值为：左键(1)、右键(2)、中键(3)。
+			pressSecond为鼠标按下与抬起之间的间隔
+		'''
+		self.Opt_PressKey(key,True)
+		sleep(pressSecond)
+		self.Opt_PressKey(key,False)
 	def Opt_PressKey(self,key:int,Press:bool=True):
 		'''
 			模拟鼠标按下/抬起。

@@ -3,7 +3,7 @@ __version__='1.0.0'
 __author__='Ls_Jan'
 
 
-__all__=['SetDPIMode']
+__all__=['SetDPIAawreness']
 
 def SetDPIAawreness(thread:bool=True):
 	'''

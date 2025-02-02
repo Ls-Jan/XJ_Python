@@ -8,7 +8,8 @@ from PyQt5.QtCore import Qt,QRect,QPoint,pyqtSignal
 from PyQt5.QtWidgets import QWidget
 
 from ...Structs.XJ_RectResize import XJ_RectResize
-from ...Functions.GrabScreen import GrabScreen
+from ...Functions.Screenshot import Screenshot
+from ...Functions.GetScreensArea import GetScreensArea
 
 class XJQ_ScreenAreaSelector(QWidget):
 	'''
@@ -59,7 +60,8 @@ class XJQ_ScreenAreaSelector(QWidget):
 		ptr.drawPixmap(0,0,self.__drawCache)
 	def showEvent(self,event):
 		self.__drawCache=QPixmap(self.size())
-		pix,area=GrabScreen(-1)
+		area=GetScreensArea(joint=True)
+		pix=Screenshot(area)
 		self.setGeometry(area)
 		self.__rs.Set_LimitArea(0,0,self.width(),self.height())
 		self.__screenshot=pix if self.__freeze else None
@@ -143,7 +145,8 @@ class XJQ_ScreenAreaSelector(QWidget):
 			是否冻结当前画面
 		'''
 		self.__freeze=flag
-		pix,area=GrabScreen(-1)
+		area=GetScreensArea(joint=True)
+		pix=Screenshot(area)
 		self.__screenshot=pix if self.__freeze else None
 		self.update()
 	def Set_Fixed(self,flag:bool):
@@ -170,8 +173,10 @@ class XJQ_ScreenAreaSelector(QWidget):
 		pix=None
 		if(LTRB):
 			area=QRect(QPoint(*LTRB[:2]),QPoint(*LTRB[2:]))
-			pix=self.__screenshot if self.__screenshot!=None else GrabScreen(-1)[0]
-			pix=pix.copy(area)
+			if(self.__screenshot!=None):
+				pix=self.__screenshot.copy(area)
+			else:
+				pix=Screenshot(area)
 		return pix
 	def Set_QuickSelect(self,flag:bool):
 		'''
