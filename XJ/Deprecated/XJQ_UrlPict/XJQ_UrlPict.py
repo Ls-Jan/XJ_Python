@@ -2,6 +2,8 @@ __version__='1.0.0'
 __author__='Ls_Jan'
 __all__=['XJQ_UrlPict']
 
+#废弃理由：用途过于单一，不如XJQ_UrlPictManager
+
 import os
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import QUrl,QByteArray,pyqtSignal,QBuffer

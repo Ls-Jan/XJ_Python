@@ -12,7 +12,7 @@ from time import sleep
 __all__=['XJQ_PictLoader']
 class XJQ_PictLoader(QObject):
 	'''
-		用于实现异步图片加载，使用Qt线程池完成，返回结果是QPixmap。
+		用于本地视频/动图的图片异步加载，使用Qt线程池完成，返回结果是QPixmap。
 		需依赖XJ_Frame提供图片元数据。
 
 		每个图片读取完毕后会发出loaded(int,QPixmap)信号，第一个信号代表id值。
