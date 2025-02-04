@@ -4,6 +4,7 @@ __author__='Ls_Jan'
 
 from .XJ_Test import XJ_Test
 from PyQt5.QtWidgets import QApplication,QFileDialog
+from ..Functions.GetRealPath import GetRealPath
 
 __all__=['XJQ_Test']
 
@@ -32,3 +33,10 @@ class XJQ_Test(XJ_Test):
 		'''
 		path=QFileDialog.getOpenFileName(None,hint,path,filter=filter)[0]
 		return path
+	@staticmethod
+	def Get_RealPath(relativePath:str):
+		'''
+			获取绝对路径。
+			其实就是函数XJ.Functions.GetRealPath
+		'''
+		return GetRealPath(relativePath)
