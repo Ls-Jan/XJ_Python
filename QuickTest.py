@@ -16,7 +16,8 @@
 # from XJ.Structs.XJ_CacheProxy.Test import Test
 # from XJ.Structs.XJ_Simulation.Test import Test
 # from XJ.Structs.XJ_Hook.Test import Test
-from XJ.Widgets.XJQ_Resizable.Test import Test
+from XJ.Widgets.XJQ_VisibleTree.Test import Test
+# from XJ.Widgets.XJQ_Resizable.Test import Test
 # from XJ.Structs.XJQ_UrlPictManager.Test import Test
 # from XJ.Structs.XJ_CacheProxy.Test import Test
 # from XJ.Functions.Screenshot.Test import Test
