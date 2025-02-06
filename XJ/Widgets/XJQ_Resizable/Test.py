@@ -20,7 +20,7 @@ class Test(XJQ_Test):
 			for j in range(5):
 				b=PushButton(str((i,j)))
 				b.setGeometry(QRect(i*100,j*50,80,40))
-				b.clicked.connect(lambda:print("CLICK!!!"))
+				b.clicked.connect((lambda info:lambda :print("CLICK!!!",info))((i,j)))
 				b.setParent(cv)
 				b.show()
 				lst.append(b)
@@ -30,7 +30,7 @@ class Test(XJQ_Test):
 		lb.setParent(cv)
 		lb.show()
 		cv.resize(1200,800)
-		cv.Set_Scale(2.5)
+		cv.Set_ScaleRate(2.5)
 		cv.Opt_MoveCenterTo(lst[len(lst)>>1])
 		cv.show()
 		super().Opt_Run()

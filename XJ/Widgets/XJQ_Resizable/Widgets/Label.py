@@ -1,13 +1,15 @@
+__version__='1.0.1'
+__author__='Ls_Jan'
+__all__=['Label']
 
 
-from ._Base import Base
+from ._Base import _Base
 from PyQt5.QtGui import QPaintEvent
 from PyQt5.QtWidgets import QLabel
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt,QPoint
 
 
-
-class Label(QLabel,Base):
+class Label(QLabel,_Base):
 	def __init__(self,*args):
 		super().__init__(*args)
 		self.__aspectRatio=True
@@ -26,8 +28,10 @@ class Label(QLabel,Base):
 		#见源码：https://codebrowser.dev/qt6/qtbase/src/widgets/widgets/qlabel.cpp.html#_ZN6QLabel10paintEventEP11QPaintEvent
 		ptr=self.painter()
 		style=self.style()
-		rect=self.scaleRect(self.rect())
+		rect=self.lgeometry()
+		rect.moveTopLeft(QPoint(0,0))
 		pix=self.__pixmap()
+		ptr.setRenderHint(ptr.RenderHint.SmoothPixmapTransform)#能让绘制的线条(简单绘图)不那么难看
 		if(pix):
 			style.drawItemPixmap(ptr,rect,Qt.AlignmentFlag.AlignCenter,pix)
 		else:
