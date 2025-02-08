@@ -4,9 +4,9 @@ __author__='Ls_Jan'
 __all__=['XJQ_VisibleTree']
 
 
-from XJ.Widgets.XJQ_Resizable.Canvas import Canvas
-from XJ.Widgets.XJQ_Resizable.Widgets.PushButton import PushButton
-from XJ.Widgets.XJQ_Resizable.Widgets.Label import Label
+from ..XJQ_Resizable.Canvas import Canvas
+from ..XJQ_Resizable.Widgets.PushButton import PushButton
+from ..XJQ_Resizable.Widgets.Label import Label
 from .XJ_TreeDrawer_Base import XJ_TreeDrawer_Base
 
 from PyQt5.QtCore import QRect,QPoint

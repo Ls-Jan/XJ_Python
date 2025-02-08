@@ -1,10 +1,12 @@
 
-__version__='1.0.0'
+__version__='1.0.1'
 __author__='Ls_Jan'
 __all__=['XJ_CoordinateTree']
 
 from typing import List
 from ._Node import _Node
+
+from typing import List
 
 class XJ_CoordinateTree:
 	'''
@@ -21,27 +23,44 @@ class XJ_CoordinateTree:
 	__reversed:bool=False#是否反向排列
 	__rootPos=(0,0)#根节点坐标
 	def __init__(self):
-		node=_Node()
-		node.w,node.h=self.__nodeSize
-		node.x,node.y=0,0
-		node.node_isVisible=True
-		node.nodeID_parent=-1#根节点的父节点id设置为-1
+		node=_Node(*self.__nodeSize,-1)#根节点的父节点id设置为-1
 		self.__nodes=[node]
 	def Opt_NodeInsert(self,nodeID:int,index:int=-1):
 		'''
 			插入节点，可指定是第几个子节点(默认最右)，返回节点id。
 		'''
-		node=_Node()
-		node.w,node.h=self.__nodeSize
-		node.node_isVisible=True
+		node=_Node(*self.__nodeSize,nodeID)
 		if(index<0):
 			index=2**30
-		node.nodeID_parent=nodeID
 		nodeTarget=self.__nodes[nodeID]
 		nodeTarget.nodeID_children.insert(index,len(self.__nodes))
 		self.__nodes.append(node)
 		self.__changed=True
 		return len(self.__nodes)-1
+	def Opt_TreeLoad(self,nodes:List[List[int]]):
+		'''
+			传入数组树进行设置，其中List[int]记录的是子节点索引。
+			效果等同于多次调用Opt_NodeInsert。
+		'''
+		self.Opt_TreeClear()
+		cnt=len(self.__nodes)
+		for i in range(len(nodes)):
+			node=self.__nodes[i]
+			node.nodeID_children=nodes[i].copy()
+			for n in nodes[i]:
+				while(n>=cnt):
+					self.__nodes.append(_Node(*self.__nodeSize),i)
+					cnt+=1
+		return True
+	def Opt_TreeClear(self):
+		'''
+			清除树，只留下根节点。
+		'''
+		del self.__nodes[1:]
+		node=self.__nodes[0]
+		node.nodeID_children.clear()
+		self.__changed=True
+		return True
 	def Opt_NodeMove(self,nodeID_src:int,nodeID_target:int,index:int=-1):
 		'''
 			将目标节点(及其子节点)移动到目标节点下(作为子节点)，可指定是第几个子节点(默认最右)。
@@ -154,6 +173,11 @@ class XJ_CoordinateTree:
 		for node in self.__nodes:
 			rst.append(((node.x,node.y,node.w,node.h),node.nodeID_children.copy()))
 		return rst
+	def Get_Tree(self)->List[List[int]]:
+		'''
+			返回数组树
+		'''
+		return self.__nodes
 	def __Opt_UpdateTree(self):
 		'''
 			更新整棵树。

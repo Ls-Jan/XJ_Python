@@ -63,6 +63,12 @@ class XJ_TreeDrawer_Base:
 		if(updateImmediately):
 			self.Opt_Update()
 		return id
+	def Opt_TreeLoad(self,nodes:List[List[int]]):
+		'''
+			传入数组树进行设置，其中List[int]记录的是子节点索引。
+			效果等同于多次调用Opt_NodeInsert。
+		'''
+		return self.__tree.Opt_TreeLoad(nodes)
 	def Get_NodeCount(self):
 		'''
 			获取节点个数
