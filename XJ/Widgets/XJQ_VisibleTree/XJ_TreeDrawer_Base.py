@@ -1,11 +1,11 @@
 
-__version__='1.0.0'
+__version__='1.1.0'
 __author__='Ls_Jan'
 __all__=['XJ_TreeDrawer_Base']
 
+from ...Structs.XJ_ArrayTree import XJ_ArrayTree
 from .XJ_CoordinateTree import XJ_CoordinateTree
 from typing import Tuple,List,Dict
-
 
 class XJ_TreeDrawer_Base:
 	'''
@@ -15,11 +15,10 @@ class XJ_TreeDrawer_Base:
 			- _DrawNode；
 			- _DrawStart；
 			- _DrawEnd；
-			- _InsertNode；
 	'''
-	def __init__(self):
+	def __init__(self,tree:XJ_CoordinateTree=None):
 		self.__colLine:Dict[Tuple[int,int],Tuple[int,int,int,int]]={(0,0):(0,0,0,255)}#特殊照顾(以其他颜色绘制线条)
-		self.__tree:XJ_CoordinateTree=XJ_CoordinateTree()
+		self.__tree:XJ_CoordinateTree=tree if tree else XJ_CoordinateTree()
 	def Set_LineColor(self,col:Tuple[int,int,int],*links:Tuple[int,int],clear:bool=False):
 		'''
 			为指定的节点连线设置颜色。
@@ -38,36 +37,11 @@ class XJ_TreeDrawer_Base:
 		else:
 			self.__colLine[(0,0)]=col
 		self.Opt_Update()
-	def Set_NodeSize(self,nodeID:int,W:float,H:float,applyAll:bool=False):
+	def Get_Tree(self)->XJ_ArrayTree:
 		'''
-			对指定节点设置大小。
-			如果指定nodeID<0则设置默认大小(只影响后续插入节点)，
-			如果applyAll为真则会对所有节点进行设置。
+			获取数组树
 		'''
-		if(nodeID<0 or applyAll):
-			self.__tree.Set_DefaultNodeSize(W,H,applyAll)
-		else:
-			self.__tree.Set_NodeSize(nodeID,W,H)
-	def Set_Interval(self,row:int,col:int):
-		'''
-			设置行列的间隔
-		'''
-		self.__tree.Set_Interval(row,col)
-	def Opt_NodeInsert(self,nodeID:int,index:int=-1,updateImmediately:bool=True):
-		'''
-			插入节点，可指定是第几个子节点(默认最右)，返回节点id。
-			可以指定updateImmediately以减少节点插入过程中的性能损耗(只不过节点插入完成后需手动调用Opt_Update)。
-		'''
-		id=self.__tree.Opt_NodeInsert(nodeID,index)
-		self._InsertNode(id)
-		if(updateImmediately):
-			self.Opt_Update()
-		return id
-	def Get_NodeCount(self):
-		'''
-			获取节点个数
-		'''
-		return self.__tree.Get_NodeCount()
+		return self.__tree
 	def Opt_Update(self):
 		'''
 			更新画布
@@ -77,9 +51,12 @@ class XJ_TreeDrawer_Base:
 			nexts:List[int]#子节点索引
 		nodes:List[Node]=[]
 		L,T,R,B=0,0,0,0#根节点坐标锁定(0,0)，也没什么理由去动它
-		for info in self.__tree.Get_NodesGeometry():
+		self.__tree.Opt_Update()
+		geometryLst=self.__tree.Get_NodesGeometry()
+		for index in range(len(self.__tree)):
 			node=Node()
-			node.posLTWH,node.nexts=info
+			node.posLTWH=geometryLst[index]
+			node.nexts=self.__tree[index][1:]
 			nodes.append(node)
 			x,y,w,h=node.posLTWH
 			R=max(R,x+w)
@@ -103,7 +80,6 @@ class XJ_TreeDrawer_Base:
 					if(col):
 						col=list(col)
 						col[-1]=128#半透明
-						cols.append()
 						colx.append(len(xs))
 					node=nodes[nIndex]
 					x,y,w,h=node.posLTWH
@@ -140,11 +116,6 @@ class XJ_TreeDrawer_Base:
 	def _DrawNode(self,x:int,y:int,w:int,h:int,nodeID:int):
 		'''
 			绘制节点
-		'''
-		pass
-	def _InsertNode(self,nodeID:int):
-		'''
-			插入新节点
 		'''
 		pass
 
