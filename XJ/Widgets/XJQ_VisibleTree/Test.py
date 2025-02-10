@@ -15,14 +15,15 @@ class Test(XJQ_Test):
 		self.__vt=vt
 	def Opt_Run(self):
 		vt=self.__vt
+		tr=vt.Get_Tree()
 		for id in [0,1,2,3,3,5,2,5,8,7]:#指定节点下插入节点
-			id=vt.Opt_NodeInsert(id,updateImmediately=False)
-		for id in range(vt.Get_NodeCount()):
+			tr.Opt_NodeNewChild(id)
+		vt.Get_Canvas().setGeometry(600,100,1000,800)
+		vt.Opt_Update()
+		for id in range(tr.Get_NodeCount()):
 			node=vt.Get_Node(id)
 			node.setText(str(id))
 			node.clicked.connect((lambda id:lambda:print("CLICK>",id))(id))
-		vt.Get_Canvas().setGeometry(600,100,1000,800)
-		vt.Opt_Update()
 
 		super().Opt_Run()
 		return self.__ts

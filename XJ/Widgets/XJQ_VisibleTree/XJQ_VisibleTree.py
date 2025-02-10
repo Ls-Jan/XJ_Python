@@ -69,11 +69,11 @@ class XJQ_VisibleTree(XJ_TreeDrawer_Base):
 		ptr.drawLine(x1,y1,x2,y2)
 	def _DrawNode(self,x:int,y:int,w:int,h:int,nodeID:int):
 		nodes=self.__nodes
+		for i in range(len(nodes),nodeID+1):
+			node=PushButton(self.__canvas)
+			self.__nodes.append(node)
+			node.show()
 		node:PushButton=nodes[nodeID]
 		node.setLGeometry(QRect(x,y,w,h))
-	def _InsertNode(self,nodeID:int):
-		node=PushButton(self.__canvas)
-		self.__nodes.append(node)
-		node.show()
 
 
