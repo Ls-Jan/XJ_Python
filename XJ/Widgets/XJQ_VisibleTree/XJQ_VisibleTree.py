@@ -1,5 +1,5 @@
 
-__version__='1.0.0'
+__version__='1.0.1'
 __author__='Ls_Jan'
 __all__=['XJQ_VisibleTree']
 
@@ -17,7 +17,7 @@ from typing import List,Tuple
 
 class XJQ_VisibleTree(XJ_TreeDrawer_Base):
 	'''
-		可视树绘制器。
+		可视树绘制器。需注意，其本身并不是控件，要调用Get_Canvas获取实际控件。
 		绘制结果基于XJ.Widgets.XJQ_Resizable下的Canvas(画布)、PushButton(按钮)、Label(标签)
 	'''
 	def __init__(self):
@@ -48,16 +48,17 @@ class XJQ_VisibleTree(XJ_TreeDrawer_Base):
 			返回节点控件
 		'''
 		return self.__nodes[nodeID]
-	def _DrawStart(self,w:int,h:int):
+	def _DrawStart(self,x:int,y:int,w:int,h:int):
 		pix=QPixmap(w,h)
-		pix.fill(QColor(0,0,0,0))
+		pix.fill(QColor(0,0,0,0))#将alpha改为50可以清晰看到线条绘制区域
 		ptr=self.__ptr
 		ptr.begin(pix)
 		pen=ptr.pen()
 		pen.setWidth(self.__lineWidth)
 		ptr.setPen(pen)
+		ptr.translate(-x,-y)
 		self.__pix=pix
-		self.__lines.setLGeometry(QRect(0,0,w,h))
+		self.__lines.setLGeometry(QRect(x,y,w,h))
 		self.__canvas.Opt_MoveCenterTo(QPoint(w>>1,h>>1))
 	def _DrawEnd(self):
 		self.__ptr.end()
@@ -65,7 +66,9 @@ class XJQ_VisibleTree(XJ_TreeDrawer_Base):
 		self.__canvas.Opt_Update()
 	def _DrawLine(self,x1:int,y1:int,x2:int,y2:int,rgba:Tuple[int,int,int,int]):
 		ptr=self.__ptr
-		ptr.setBrush(QColor(*rgba))
+		pen=ptr.pen()
+		pen.setColor(QColor(*rgba))
+		ptr.setPen(pen)
 		ptr.drawLine(x1,y1,x2,y2)
 	def _DrawNode(self,x:int,y:int,w:int,h:int,nodeID:int):
 		nodes=self.__nodes
@@ -75,5 +78,9 @@ class XJQ_VisibleTree(XJ_TreeDrawer_Base):
 			node.show()
 		node:PushButton=nodes[nodeID]
 		node.setLGeometry(QRect(x,y,w,h))
-
+	def _Clear(self):
+		for node in self.__nodes[1:]:
+			node.setParent(None)
+			node.close()
+		del self.__nodes[1:]
 

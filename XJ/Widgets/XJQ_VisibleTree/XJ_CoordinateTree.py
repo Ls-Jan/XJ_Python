@@ -1,5 +1,5 @@
 
-__version__='1.1.0'
+__version__='1.1.1'
 __author__='Ls_Jan'
 __all__=['XJ_CoordinateTree']
 
@@ -22,10 +22,11 @@ class XJ_CoordinateTree(XJ_ArrayTree):
 	__interval=(25,50)#行列之间的间隔
 	__alignment:int=0#左对齐(0)、居中(1)、右对齐(-1)
 	__reversed:bool=False#是否反向排列
-	__rootPos=(0,0)#根节点坐标
+	__rootPos:Tuple[int,int]=(0,0)#根节点坐标
+	__geometry:Tuple[int,int,int,int]=[0,0,0,0]#左上宽高
 	def __init__(self,newNode:Callable[[int],TreeNode]=lambda index:TreeNode([-1])):
 		super().__init__(newNode)
-	def Set_NodeSize(self,nodeID:int,W:float,H:float):
+	def Set_NodeSize(self,nodeID:int,W:float=None,H:float=None):
 		'''
 			设置节点大小，节点高度不能过大，传入0值则使用默认大小。
 			当nodeID为负值时视为设置默认大小。
@@ -34,8 +35,10 @@ class XJ_CoordinateTree(XJ_ArrayTree):
 			self.__nodeSize=(W,H)
 		else:
 			node:TreeNode=self[nodeID]
-			node._w=W
-			node._h=H
+			if(W!=None):
+				node._w=W
+			if(H!=None):
+				node._h=H
 		return True
 	def Set_NodeVisible(self,nodeID:int,flag:int):
 		'''
@@ -65,7 +68,8 @@ class XJ_CoordinateTree(XJ_ArrayTree):
 		'''
 			设置根节点坐标(默认0,0)
 		'''
-		self.__rootPos=(x,y)
+		self.__geometry[0]=x
+		self.__geometry[1]=y
 	def Get_NodesGeometry(self):
 		'''
 			获取所有节点的位置信息，返回的是一个形如[(x,y,w,h)]的列表。
@@ -75,6 +79,12 @@ class XJ_CoordinateTree(XJ_ArrayTree):
 		for node in self:
 			rst.append((node._x,node._y,self.__NodeWidth(node),self.__NodeHeight(node)))
 		return rst
+	def Get_Geometry(self):
+		'''
+			获取树的显示范围，返回左上宽高。
+			调用Opt_Update更新过后才会返回正确结果
+		'''
+		return self.__geometry
 	def Opt_Update(self):
 		class Data:#一些过程变量，如果用list存的话就过于繁琐，特此结构化
 			node:TreeNode#当前节点
@@ -85,14 +95,17 @@ class XJ_CoordinateTree(XJ_ArrayTree):
 				self.children=[]
 				self.align=None
 		super().Opt_Update()
-		width=[]#深度对应宽度
-		stk=[[Data(self[0]),],]#索引即是深度
+		width=[-2**30]#深度对应宽度
+		stk=[[Data(self[0]),],]#长度即是当前深度。遍历方式是深度遍历
+		coincidents=self.Get_CoincidentNodes()#成环的问题点，若不排除则会导致无限循环
 		while(stk):#位置的确定是自底而上的，而非自顶而下。坐标是相对位置而非绝对位置
 			group=stk[-1]
 			if(group):#存在节点，继续向下探寻
 				data=group[-1]
 				if(data.node._node_isVisible==1):
 					for id in data.node[1:]:
+						if(id in coincidents):
+							continue
 						child:TreeNode=self[id]
 						if(child._node_isVisible!=-1):
 							child._y=self.__nodeSize[1]+self.__interval[1]#节点高度锁定为默认值而非data.node.h
@@ -100,14 +113,15 @@ class XJ_CoordinateTree(XJ_ArrayTree):
 				newGroup=[Data(node) for node in data.children]
 				if(self.__alignment!=1 and newGroup):
 					data.align=data.children[self.__alignment]
-				if(self.__reversed):
+				if(not self.__reversed):
 					newGroup.reverse()
 				stk.append(newGroup)
 			else:#子节点列表为空，反哺父节点(数据向上传递)，同时将父节点移除
-				depth=len(stk)
+				depth=len(stk)-1
 				while(depth>=len(width)):
-					width.append(-2**30)
+					width.append(width[-1])
 				stk.pop()
+				depth-=1
 				if(not stk):
 					break
 				group=stk[-1]
@@ -115,29 +129,26 @@ class XJ_CoordinateTree(XJ_ArrayTree):
 				node=data.node
 				align=data.align
 				children=data.children
-				x,w=0,0
+				x=0
 				nw=self.__NodeWidth(node)
 				if(align!=None):#存在对齐
-					w=align._cw
-					x=align._x+w/2
+					x=align._x+self.__NodeWidth(align)/2
 					node._cw=max(align._cw,nw)#最大列宽向上传递
 				else:#无对齐，居中
 					node._cw=nw
 					if(children):
-						w=children[-1]._x-children[0]._x+children[-1]._cw
-						x=children[0]._x+w/2
-				w=max(w,nw)
-				x-=w/2#父节点理论位置(绝对位置)
-				p=width[depth]+self.__interval[0]#安全位置
+						x=(children[0]._x+children[-1]._x)/2+(self.__NodeWidth(children[0])+self.__NodeWidth(children[-1]))/4
+				x-=nw/2#父节点理论位置(绝对位置)
+				p=width[depth]#安全位置
 				x=max(x,p)#保证位置有效
 				node._x=x
-				width[depth]=x+node._cw+self.__interval[0]
-				for d in range(depth,len(width)):#无脑更新depth后面的width
-					width[d]=width[depth]
+				width[depth]=x+nw+self.__interval[0]
+				for d in range(depth+1,len(width)):#无脑更新depth后面的width
+					width[d]=max(width[d],width[depth])
 				for child in children:#将子节点的绝对位置重新调整为相对位置
-					child._x=x-child._x
+					child._x=child._x-x
 				group.pop()#该节点的数据已确定，将其移除
-		if True:#处理根节点，使其居中
+		if False:#处理根节点，使其居中
 			node:TreeNode=self[0]
 			children:List[TreeNode]=[self[id] for id in node[1:] if self[id]._node_isVisible!=-1]
 			if(children):
@@ -148,16 +159,23 @@ class XJ_CoordinateTree(XJ_ArrayTree):
 				for child in children:#重新调整子节点相对位置
 					child._x+=d
 		if True:#将根节点坐标设置为指定位置，并且将所有的节点由相对坐标改为绝对坐标
-			node=self[0]
-			node._x,node._y=self.__rootPos
+			node:TreeNode=self[0]
+			L,T=self.__rootPos
+			R,B=L+self.__NodeWidth(node),T+self.__NodeHeight(node)
+			node._x,node._y=L,T
 			stk=[node]
 			while(stk):
 				node=stk.pop()
-				children=[self[id] for id in node[1:] if self[id]._node_isVisible!=-1]
+				children=[self[id] for id in node[1:] if id not in coincidents and self[id]._node_isVisible!=-1]
 				for child in children:
 					child._x+=node._x
 					child._y+=node._y
+					R=max(child._x+self.__NodeWidth(child),R)
+					B=max(child._y+self.__NodeHeight(child),B)
+					L=min(child._x,L)
+					T=min(child._y,T)
 				stk.extend(children)
+			self.__geometry=[int(L),int(T),int(R-L),int(B-T)]
 	def __NodeWidth(self,node:TreeNode):
 		return node._w if node._w else self.__nodeSize[0]
 	def __NodeHeight(self,node:TreeNode):

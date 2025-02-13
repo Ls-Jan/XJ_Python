@@ -12,8 +12,17 @@ class XJ_ArrayTree(list):
 
 		允许逻辑成环，但会记录重合点位置
 	'''
-	__invalid:List[Tuple[int,int]]#无效点位置
-	__coincident:Dict[int,List[Tuple[int,int]]]#汇集点/重合点位置
+	class __Position:
+		'''
+			间接记录问题节点的位置
+		'''
+		parent:int#父节点索引
+		index:int#所在位置
+		def __init__(self,p:int,i:int):
+			self.parent=p
+			self.index=i
+	__invalid:List[__Position]#无效点位置
+	__coincident:Dict[int,List[__Position]]#汇集点/重合点位置
 	__detached:Set[int]#游离节点索引
 	def __init__(self,newNode:Callable[[int],List[int]]=lambda index:[-1]):
 		self.__invalid=[]
@@ -24,13 +33,13 @@ class XJ_ArrayTree(list):
 	def Get_CoincidentNodes(self):
 		'''
 			获取重合点位置。
-			返回的Tuple[int,int]间接记录目标点，第一个值是父节点，第二个值为索引。
+			返回的是Dict[int,List[Position]]，其中int代表重合点索引值，List[Position]记录那些重合的问题节点的位置
 		'''
-		return list(self.__coincident.items())
+		return self.__coincident
 	def Get_InvalidNodes(self):
 		'''
 			获取无效点位置(索引对应节点不存在)。
-			返回的Tuple[int,int]间接记录目标点，第一个值是父节点，第二个值为索引。
+			返回的是List[Position]
 		'''
 		return self.__invalid
 	def Get_DetachedNodes(self):
@@ -78,20 +87,21 @@ class XJ_ArrayTree(list):
 			for n in children:
 				j+=1
 				if(n>=length):
-					self.__invalid.append((i,j))
+					self.__invalid.append(self.__Position(i,j))
 				else:
 					c=self[n]
 					if(len(c)==0):
 						c.append(-1)
 					c[0]=i#设置父索引
-					stk.append(n)
-					self.__detached.discard(n)
-				self.__coincident.setdefault(n,[]).append((i,j))
+					if(n in self.__detached):
+						self.__detached.discard(n)
+						stk.append(n)
+				self.__coincident.setdefault(n,[]).append(self.__Position(i,j))
 		key=[]
 		for i in self.__detached:
 			for n in self[i][1:]:
 				if(n>=length):
-					self.__invalid.append((i,j))
+					self.__invalid.append(self.__Position(i,j))
 				else:
 					c=self[n]
 					if(len(c)==0):
@@ -99,7 +109,7 @@ class XJ_ArrayTree(list):
 					c[0]=i#设置父索引
 		for i in self.__coincident:
 			lst=self.__coincident[i]
-			if(len(lst)==1):
+			if(len(lst)==1 and i>0):
 				key.append(i)
 			else:
 				lst.reverse()
@@ -115,8 +125,9 @@ class XJ_ArrayTree(list):
 		return True
 	def Opt_NodeNewChild(self,index_target:int,index_child:int=-1,pos:int=-1):
 		'''
-			在目标节点的子节点列表指定位置中插入index_child。
-			如果index_child为负值则自动创建新节点(节点类型已在初始化时确定)。
+			在目标节点的子节点列表指定位置中插入索引index_child。
+			如果index_child为负值则自动创建新节点(节点类型已在初始化时确定)，
+			在此基础上index_target也为负值的话将创建游离的点；
 			返回子节点。
 		'''
 		length=len(self)
@@ -127,7 +138,8 @@ class XJ_ArrayTree(list):
 				index_child=length
 				node=self.__newNode(index_child)
 				self.append(node)
-			self[index_target].insert(pos+1,index_child)
+			if(index_target>=0):
+				self[index_target].insert(pos+1,index_child)
 			return self[index_child]
 		return None
 	def Opt_NodeMove(self,index_src:int,index_target:int,pos:int=-1):
@@ -160,4 +172,6 @@ class XJ_ArrayTree(list):
 		nodeSrc[0]=index_target
 		nodeTarget.insert(pos,index_src)
 		return True
+
+
 

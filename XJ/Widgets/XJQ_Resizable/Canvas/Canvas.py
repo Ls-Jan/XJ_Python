@@ -1,10 +1,10 @@
 
-__version__='1.1.0'
+__version__='1.1.1'
 __author__='Ls_Jan'
 __all__=['Canvas']
 
 from PyQt5.QtWidgets import QWidget
-from PyQt5.QtCore import Qt,QRect,QPoint,QChildEvent,QEvent
+from PyQt5.QtCore import Qt,QRect,QPoint,QChildEvent,QEvent,QMargins
 from PyQt5.QtGui import QWheelEvent,QResizeEvent,QMouseEvent
 from typing import Union,Dict#与py的“类型注解”用法有关：https://zhuanlan.zhihu.com/p/419955374
 from ..Widgets._Base import _Base
@@ -88,6 +88,19 @@ class Canvas(QWidget):
 			center=QPoint(size.width()>>1,size.height()>>1)
 			offset=center-pos
 			self.Opt_MoveCanvas(offset)
+	def Set_ViewArea(self,area:QRect=None):
+		'''
+			设置需要显示的逻辑范围。
+			如果area为None则缩放显示所有控件
+		'''
+		if(area==None):
+			area=QRect()
+			for child in self.children():
+				area=area.united(self.Get_WidPos(child))
+		area=area.marginsAdded(QMargins(10,10,10,10))#小加一点空白
+		self.Set_ScaleRate(min(self.width()/area.width(),self.height()/area.height()))
+		self.Opt_MoveCenterTo(area.center())
+		return True
 	def Opt_MoveCanvas(self,offset:QPoint):
 		'''
 			增量移动画布，移动效果与鼠标拖拽一致
@@ -96,11 +109,17 @@ class Canvas(QWidget):
 		self.Opt_Update()
 	def Set_WidPos(self,wid:QWidget,rect:QRect):
 		'''
-			设置控件位置。
+			设置控件逻辑位置。
 			本质上就是调用wid.setProperty('lgeometry',rect)
 		'''
 		wid.setProperty('lgeometry',rect)
 		self.Opt_Update()
+	def Get_WidPos(self,wid:QWidget):
+		'''
+			获取控件逻辑位置。
+			本质上就是调用wid.property('lgeometry')
+		'''
+		return wid.property('lgeometry')
 	def Opt_Update(self):
 		'''
 			更新画布，在内部控件位置发生变化时需手动主动调用
@@ -111,7 +130,6 @@ class Canvas(QWidget):
 				if(rect):
 					wid.setGeometry(self.__matrix.Get_TransQRect(rect)[0])
 		self.update()
-
 	def wheelEvent(self,event:QWheelEvent):
 		if(self.__option.scalable):
 			pos=None if self.__option.scaleCenter else event.pos()#如果锁定拖拽那么以中心进行缩放

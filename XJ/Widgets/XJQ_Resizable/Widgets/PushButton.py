@@ -22,3 +22,6 @@ class PushButton(QPushButton,_Base):
 		style.drawControl(QStyle.ControlElement.CE_PushButton,opt,ptr,self)
 
 
+
+	
+
