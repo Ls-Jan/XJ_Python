@@ -3,7 +3,6 @@ __version__='1.1.1'
 __author__='Ls_Jan'
 __all__=['XJ_TreeDrawer_Base']
 
-from ...Structs.XJ_ArrayTree import XJ_ArrayTree
 from .XJ_CoordinateTree import XJ_CoordinateTree
 from typing import Tuple,List,Dict
 

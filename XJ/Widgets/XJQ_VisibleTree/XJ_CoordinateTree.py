@@ -7,7 +7,7 @@ from typing import List
 from .TreeNode import TreeNode
 
 from ...Structs.XJ_ArrayTree import XJ_ArrayTree
-from typing import List,Tuple,Callable
+from typing import List,Tuple,Type
 
 class XJ_CoordinateTree(XJ_ArrayTree):
 	'''
@@ -24,8 +24,8 @@ class XJ_CoordinateTree(XJ_ArrayTree):
 	__reversed:bool=False#是否反向排列
 	__rootPos:Tuple[int,int]=(0,0)#根节点坐标
 	__geometry:Tuple[int,int,int,int]=[0,0,0,0]#左上宽高
-	def __init__(self,newNode:Callable[[int],TreeNode]=lambda index:TreeNode([-1])):
-		super().__init__(newNode)
+	def __init__(self,nodeClass:Type[TreeNode]=TreeNode):
+		super().__init__(nodeClass)
 	def Set_NodeSize(self,nodeID:int,W:float=None,H:float=None):
 		'''
 			设置节点大小，节点高度不能过大，传入0值则使用默认大小。

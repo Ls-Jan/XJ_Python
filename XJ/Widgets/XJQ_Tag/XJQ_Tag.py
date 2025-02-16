@@ -9,6 +9,7 @@ from typing import Union
 from PyQt5.QtWidgets import QPushButton,QSizePolicy,QWidget
 from PyQt5.QtCore import pyqtSignal,Qt
 
+#TODO:迟早把它重构。应该以“插件”的形式完成相关功能，而非继承
 __all__=['XJQ_Tag']
 class XJQ_Tag(QPushButton):#原先是继承QLabel，后来需要扩展“点击”效果，只能换成QPushButton了
 	'''

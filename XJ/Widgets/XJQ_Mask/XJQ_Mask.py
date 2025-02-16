@@ -5,9 +5,9 @@ __author__='Ls_Jan'
 from ...Functions.QColorToRGBA import QColorToRGBA
 from ...Structs.XJ_MouseStatus import XJ_MouseStatus
 
-from PyQt5.QtCore import Qt,pyqtSignal
-from PyQt5.QtWidgets import QWidget,QLabel,QHBoxLayout
-from PyQt5.QtGui import QColor
+from PyQt5.QtCore import Qt,pyqtSignal,QPoint,QRect
+from PyQt5.QtWidgets import QWidget,QLabel,QHBoxLayout,QStyleOptionFrame
+from PyQt5.QtGui import QColor,QPainter,QPixmap,QBitmap
 
 __all__=['XJQ_Mask']
 
@@ -42,6 +42,7 @@ class XJQ_Mask(QLabel):#加载动画蒙版
 		hbox.setAlignment(Qt.AlignCenter)
 		self.__centerWidget=None
 		self.__mt=XJ_MouseStatus()
+		self.__uncoverWidgets=tuple()#不被遮挡的控件
 		self.Set_MaskColor(color)
 		self.Set_CenterWidget(centerWidget)
 	def Set_CenterWidget(self,wid:QWidget):
@@ -61,6 +62,17 @@ class XJQ_Mask(QLabel):#加载动画蒙版
 				background-color:{QColorToRGBA(color,True)};
 			}}
 		''')
+	def Set_UncoverWidgets(self,*wids:QWidget):
+		'''
+			设置不被遮挡的控件
+		'''
+		self.__uncoverWidgets=wids
+		self.update()
+	def Get_CenterWidget(self):
+		'''
+			返回中心控件。
+		'''
+		return self.__centerWidget
 	def mousePressEvent(self,event):
 		self.__mt.Opt_Update(event)
 		return super().mousePressEvent(event)
@@ -72,4 +84,13 @@ class XJQ_Mask(QLabel):#加载动画蒙版
 		if(not self.parent()):
 			return
 		self.resize(self.parent().size())
+		bit=QBitmap(self.size())
+		bit.fill(Qt.GlobalColor.black)
+		ptr=QPainter(bit)
+		for wid in self.__uncoverWidgets:
+			p1=wid.mapToGlobal(QPoint(0,0))
+			p2=self.mapFromGlobal(p1)
+			ptr.fillRect(QRect(p2,wid.size()),Qt.GlobalColor.white)
+		ptr.end()
+		self.setMask(bit)
 		super().paintEvent(event)
