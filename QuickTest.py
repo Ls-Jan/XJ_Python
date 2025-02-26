@@ -19,6 +19,7 @@
 from XJ.Widgets.XJQ_TextInputDialog.Test import Test
 # from XJ.Widgets.XJQ_Mask.Test import Test
 # from XJ.Widgets.XJQ_VisibleTree.Test import Test
+# from XJ.Widgets.XJQ_StringSelector.Test import Test
 # from XJ.Widgets.XJQ_Resizable.Test import Test
 # from XJ.Structs.XJQ_UrlPictManager.Test import Test
 # from XJ.Structs.XJ_CacheProxy.Test import Test

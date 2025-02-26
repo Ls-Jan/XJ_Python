@@ -9,6 +9,7 @@ from .TreeNode import TreeNode
 from ...Structs.XJ_ArrayTree import XJ_ArrayTree
 from typing import List,Tuple,Type
 
+#TODO:完成strecth以实现高级对齐
 class XJ_CoordinateTree(XJ_ArrayTree):
 	'''
 		简单的坐标化树，会返回节点的位置信息，隐去根节点则成为森林。
@@ -24,6 +25,7 @@ class XJ_CoordinateTree(XJ_ArrayTree):
 	__reversed:bool=False#是否反向排列
 	__rootPos:Tuple[int,int]=(0,0)#根节点坐标
 	__geometry:Tuple[int,int,int,int]=[0,0,0,0]#左上宽高
+	__intervalStretch:Tuple[int,int]=(2**30,2**30)#行列对齐的允许增长量
 	def __init__(self,nodeClass:Type[TreeNode]=TreeNode):
 		super().__init__(nodeClass)
 	def Set_NodeSize(self,nodeID:int,W:float=None,H:float=None):
@@ -58,11 +60,17 @@ class XJ_CoordinateTree(XJ_ArrayTree):
 		flag=0 if flag<0 else 1 if flag==0 else -1
 		self.__alignment=flag
 		return True
-	def Set_Interval(self,row:int,col:int):
+	def Set_Interval(self,row:int,col:int,StrecthRow:int,StretchCol:int):
 		'''
-			设置行列的间隔
+			设置行列的间隔。
+			strecth用于宏观对齐，当它为负数或无穷大数时表现为所有的节点的间距都是一致的，就仿若在一个表格中
 		'''
 		self.__interval=(row,col)
+		if(StrecthRow<0):
+			StrecthRow=2**30
+		if(StrecthCol<0):
+			StrecthCol=2**30
+		self.__intervalStretch=(StrecthRow,StretchCol)
 		return True
 	def Set_RootNodePos(self,x:float,y:float):
 		'''
@@ -96,6 +104,7 @@ class XJ_CoordinateTree(XJ_ArrayTree):
 				self.align=None
 		super().Opt_Update()
 		width=[-2**30]#深度对应宽度
+		# rowInterval=[]#每行的间隔，若是当前行小于指定高度则会强制调整为该值
 		stk=[[Data(self[0]),],]#长度即是当前深度。遍历方式是深度遍历
 		coincidents=self.Get_CoincidentNodes()#成环的问题点，若不排除则会导致无限循环
 		while(stk):#位置的确定是自底而上的，而非自顶而下。坐标是相对位置而非绝对位置

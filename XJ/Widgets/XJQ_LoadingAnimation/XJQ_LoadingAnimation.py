@@ -9,6 +9,7 @@ from typing import Union
 from PyQt5.QtWidgets import QWidget,QLabel,QLabel,QBoxLayout
 from PyQt5.QtGui import QMovie
 from PyQt5.QtCore import Qt,QSize,QTimer
+from typing import Callable,Any,List
 
 __all__=['XJQ_LoadingAnimation']
 
@@ -18,8 +19,8 @@ class XJQ_LoadingAnimation(QWidget):#加载动画蒙版
 	'''
 	def __init__(self,
 			  iconPath:str=GetRealPath('./LoadingGIF.gif'),
-			  textLst:list=[('加载中'+'.'*i).ljust(6) for i in range(4)],
-			  textFunc=lambda tx:tx,
+			  textLst:list=list(range(4)),
+			  textFunc=lambda arg:'加载中'+'.'*arg,
 			  *,
 			  dire:QBoxLayout.Direction=QBoxLayout.Direction.TopToBottom):
 		'''
@@ -72,14 +73,16 @@ class XJQ_LoadingAnimation(QWidget):#加载动画蒙版
 			self.__text.setText(self.__txFunc(self.__txLst[self.__txIndex]))
 		else:
 			self.__timer.stop()
-	def Set_Text(self,textLst:list=None,textFunc=None):
+	def Set_Text(self,textLst:List[Any]=None,textFunc:Callable[[Any],str]=None):
 		'''
-			设置动态文本以及文本转换函数textFunc(tx:str)
+			设置动态文本的参数列表以及文本转换函数textFunc(arg)，
+			在加载过程中会循环textLst的参数并将其传递给textFunc以实现文本动态效果
 		'''
 		if(textLst!=None):
 			self.__txLst=textLst
 		if(textFunc!=None):
 			self.__txFunc=textFunc
+		self.__UpdateText()
 	def Set_Icon(self,size:Union[QSize,tuple]=None,path:str=None):
 		'''
 			设置图标的文件路径以及图标大小

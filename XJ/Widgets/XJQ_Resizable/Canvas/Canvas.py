@@ -6,7 +6,7 @@ __all__=['Canvas']
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import Qt,QRect,QPoint,QChildEvent,QEvent,QMargins
 from PyQt5.QtGui import QWheelEvent,QResizeEvent,QMouseEvent
-from typing import Union,Dict#与py的“类型注解”用法有关：https://zhuanlan.zhihu.com/p/419955374
+from typing import Union,Set
 from ..Widgets._Base import _Base
 from ._Option import _Option
 from ....Structs.XJ_MouseStatus import XJ_MouseStatus
@@ -26,11 +26,13 @@ class Canvas(QWidget):
 	__option:_Option#特殊功能
 	__mouseStatus:XJ_MouseStatus#XJ_MouseStatus
 	__matrix:QMatrix#转换矩阵，逻辑坐标→显示坐标
+	__fixed:Set[int]#狗皮膏药一动不动的控件，用于特殊场合。仅记录id(wid)而不是wid
 	def __init__(self):
 		super().__init__()
 		self.__option=_Option()
 		self.__matrix=QMatrix()
 		self.__mouseStatus=XJ_MouseStatus()
+		self.__fixed=set()
 	def Set_Option(self,scale:bool=None,drag:bool=None):
 		'''
 			可以启用/禁用滚轮缩放、鼠标拖拽
@@ -114,6 +116,21 @@ class Canvas(QWidget):
 		'''
 		wid.setProperty('lgeometry',rect)
 		self.Opt_Update()
+	def Set_WidFixed(self,wid:QWidget,flag:bool=True):
+		'''
+			设置控件是否位置固定。
+			固定的控件不受画布拖拽缩放影响，不受“逻辑位置”变化，始终在画布固定位置(也可以将其称之为“非画布元素”)，
+			目标控件可调用wid.setGeometry直接设置实际位置。
+			如果wid=None并且flag=False那么将取消所有固定的控件。
+		'''
+		if(flag):
+			if(wid):
+				self.__fixed.add(id(wid))
+		else:
+			if(wid):
+				self.__fixed.remove(id(wid))
+			else:
+				self.__fixed.clear()
 	def Get_WidPos(self,wid:QWidget):
 		'''
 			获取控件逻辑位置。
@@ -127,7 +144,7 @@ class Canvas(QWidget):
 		for wid in self.children():
 			if(isinstance(wid,QWidget)):
 				rect=wid.property('lgeometry')
-				if(rect):
+				if(rect and id(wid) not in self.__fixed):
 					wid.setGeometry(self.__matrix.Get_TransQRect(rect)[0])
 		self.update()
 	def wheelEvent(self,event:QWheelEvent):
