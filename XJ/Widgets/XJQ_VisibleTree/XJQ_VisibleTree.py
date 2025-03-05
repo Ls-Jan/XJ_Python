@@ -33,6 +33,7 @@ class XJQ_VisibleTree(XJ_TreeDrawer_Base):
 		self.__canvas.show()
 		self.__canvas.resize(1200,700)
 		self.__lines.setLGeometry(QRect(0,0,100,100))
+		self.__treeSize=(0,0)
 		self._DrawNode(0,0,0,0,0)#添加一个根节点，算是偷懒的做法(因为要绑信号槽)
 		self.Set_LineWidth()
 	def Set_LineWidth(self,width:int=3):
@@ -56,6 +57,11 @@ class XJQ_VisibleTree(XJ_TreeDrawer_Base):
 			返回按钮点击信号clicked(int)，其中int为对应的索引
 		'''
 		return self.__smp.mappedInt
+	def Opt_Focus(self):
+		'''
+			将树的中心移动至控件中心
+		'''
+		self.__canvas.Opt_MoveCenterTo(QPoint(*self.__treeSize)/2)
 	def _DrawStart(self,x:int,y:int,w:int,h:int):
 		count=len(self.Get_Tree())
 		for i in range(count,len(self.__nodes)):
@@ -71,7 +77,7 @@ class XJQ_VisibleTree(XJ_TreeDrawer_Base):
 		ptr.translate(-x,-y)
 		self.__pix=pix
 		self.__lines.setLGeometry(QRect(x,y,w,h))
-		self.__canvas.Opt_MoveCenterTo(QPoint(w>>1,h>>1))
+		self.__treeSize=(w,h)
 	def _DrawEnd(self):
 		self.__ptr.end()
 		self.__lines.setPixmap(self.__pix)

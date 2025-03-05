@@ -5,11 +5,17 @@ __all__=['Label']
 
 from ._Base import _Base
 from PyQt5.QtGui import QPaintEvent
-from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLabel,QWidget
 from PyQt5.QtCore import Qt,QPoint
+import typing
 
 
 class Label(QLabel,_Base):
+	@typing.overload
+	def __init__(self, parent: typing.Optional[QWidget] = ..., flags: typing.Union[Qt.WindowFlags, Qt.WindowType] = ...) -> None: ...
+	@typing.overload
+	def __init__(self, text: str, parent: typing.Optional[QWidget] = ..., flags: typing.Union[Qt.WindowFlags, Qt.WindowType] = ...) -> None: ...
+
 	def __init__(self,*args):
 		super().__init__(*args)
 		self.__aspectRatio=True

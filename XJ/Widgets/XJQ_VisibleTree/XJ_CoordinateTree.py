@@ -10,6 +10,7 @@ from ...Structs.XJ_ArrayTree import XJ_ArrayTree
 from typing import List,Tuple,Type
 
 #TODO:完成strecth以实现高级对齐
+#TODO:没处理成环的情况
 class XJ_CoordinateTree(XJ_ArrayTree):
 	'''
 		简单的坐标化树，会返回节点的位置信息，隐去根节点则成为森林。
@@ -147,26 +148,16 @@ class XJ_CoordinateTree(XJ_ArrayTree):
 					node._cw=nw
 					if(children):
 						x=(children[0]._x+children[-1]._x)/2+(self.__NodeWidth(children[0])+self.__NodeWidth(children[-1]))/4
-				x-=nw/2#父节点理论位置(绝对位置)
+				tx=x-nw/2#父节点理论位置(绝对位置)
 				p=width[depth]#安全位置
-				x=max(x,p)#保证位置有效
+				x=max(tx,p)#保证位置有效
 				node._x=x
 				width[depth]=x+nw+self.__interval[0]
 				for d in range(depth+1,len(width)):#无脑更新depth后面的width
 					width[d]=max(width[d],width[depth])
 				for child in children:#将子节点的绝对位置重新调整为相对位置
-					child._x=child._x-x
+					child._x=child._x-tx#由child._x-x+(x-tx)化简而来
 				group.pop()#该节点的数据已确定，将其移除
-		if False:#处理根节点，使其居中
-			node:TreeNode=self[0]
-			children:List[TreeNode]=[self[id] for id in node[1:] if self[id]._node_isVisible!=-1]
-			if(children):
-				w=children[-1]._x-children[0]._x+children[-1]._cw
-				x=children[0]._x+w/2
-				node._x=x-w/2
-				d=children[0]._x-node._x
-				for child in children:#重新调整子节点相对位置
-					child._x+=d
 		if True:#将根节点坐标设置为指定位置，并且将所有的节点由相对坐标改为绝对坐标
 			node:TreeNode=self[0]
 			L,T=self.__rootPos

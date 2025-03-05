@@ -3,7 +3,7 @@ __version__='1.0.0'
 __author__='Ls_Jan'
 __all__=['XJ_ArrayTree']
 
-from typing import List,Dict,Set,Type
+from typing import List,Dict,Set,Type,Iterable
 
 class XJ_ArrayTree(list):
 	'''
@@ -39,6 +39,9 @@ class XJ_ArrayTree(list):
 			super().append(self.__NewNode(obj))
 			return True
 		return False
+	def extend(self,lst:Iterable[object]):
+		for obj in lst:
+			self.append(obj)
 	def insert(self,index:int,obj:object):
 		if(isinstance(obj,list)):
 			super().insert(index,self.__NewNode(obj))

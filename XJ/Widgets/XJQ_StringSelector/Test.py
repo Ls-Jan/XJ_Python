@@ -11,17 +11,20 @@ class Test(XJQ_Test):
 		super().__init__()
 		ss=XJQ_StringSelector()
 		self.__ss=ss
-		lst=['1','2','3','4']
-		ss.Set_DisableList(lst)
+		lst=['1','2','3']
+		ss.Set_DisableList([str(i) for i in range(10)])
 		ss.Set_SelectableList(lst)
 		ss.createNewString.connect(lambda key:None if key.isdigit() else ss.Opt_CancelLastString())
 	def Opt_Run(self):
-		lv=self.__ss.Get_ListView()
+		ss=self.__ss
+		lv=ss.Get_ListView()
 		# lv.edit(lv.model().index(lv.model().rowCount()-1,0))
-		lv.show()
-
-		super().Opt_Run()
-		return self.__ss
+		ss.show()
+		ss.Set_AdditionHint("<新增字串(只允许纯数字两位以上)>")
+		data=ss.exec()
+		print(data)
+		# super().Opt_Run()
+		return ss
 
 
 

@@ -14,7 +14,7 @@ class XJQ_TextInputDialog(QWidget):
 		新增阻塞操作exec。
 	'''
 	textSent=pyqtSignal(str)#发送文本
-	def __init__(self,title:str='文本输入',parent:QWidget=None,*,tx:QTextEdit=None,btnOK:QPushButton=None):
+	def __init__(self,parent:QWidget=None,*,title:str='文本输入',tx:QTextEdit=None,btnOK:QPushButton=None):
 		'''
 			可指定具体的文本框控件tx和确认按钮控件btnOK
 		'''
@@ -110,7 +110,6 @@ class XJQ_TextInputDialog(QWidget):
 			如果使用了消息循环则不发送信号。
 		'''
 		self.__txData=self.__tx.toPlainText()
-		self.__tx.clear()
 		if(self.__loop.isRunning()):
 			self.__loop.quit()
 		else:
@@ -119,11 +118,11 @@ class XJQ_TextInputDialog(QWidget):
 			self.__closeSend=False
 			self.close()
 	def showEvent(self,event:QShowEvent):
+		if(self.__dialogMode):
+			self.__tx.clear()
 		self.__closeSend=self.__dialogMode
 		return super().showEvent(event)
 	def hideEvent(self,event:QHideEvent):
-		if(self.__dialogMode):
-			self.__tx.clear()
 		if(self.__closeSend):
 			self.__SendText()
 		return super().hideEvent(event)
